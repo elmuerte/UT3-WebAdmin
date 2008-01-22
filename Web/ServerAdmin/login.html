@@ -1,0 +1,18 @@
+<html>
+<body>
+<form method="POST">
+<input type="hidden" name="token" value="<%token%>" />
+<fieldset>
+<legend>Login</legend>
+<div class="error"><%message%></div>
+<dl>
+	<dt><label for="username">Username</label></dt>
+	<dd><input type="text" id="username" name="username" value="" /></dd>
+	<dt><label for="password">Password</label></dt>
+	<dd><input type="password" id="password" name="password" value="" /></dd>
+	<dd><input type="submit" value="login" /><dd>
+</dl>
+</fieldset>
+</form>
+</body>
+</html>
