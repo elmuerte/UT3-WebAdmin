@@ -1,52 +1,69 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
 <head>
-	<title>UT3 WebAdmin</title>
+	<title>UT3 WebAdmin - Chat console</title>
 	<link rel="stylesheet" type="text/css" href="ut3.css" title="Unreal Tournament 3" />
 </head>
 <body>
 
 <div id="header">
 <h1><span>UT3 WebAdmin</span></h1>
-<h3>/current</h3>
-<h4>Welcome <span class="username">admin</span></h4>
+
+<h2 id="pageTitle">Chat console</h2>
+<p id="pageDescription">This console allows you to chat with the players on the server.</p>
+<h3 id="pageUri">/current/chat</h3>
+<h4 id="adminName">Welcome <span class="username">asdf</span></h4>
 </div>
+
 
 <div id="content">
-<h2>Current Game</h2>
-<dl>
-	<dt>Game type</dt>
-	<dd>Deathmatch</dd>
-	
-	<dt>Map</dt>
-	<dd>DM-SomeMap</dd>
-	
-	<dt>Players</dt>
-	<dd>10/12</dd>
-	
-	<dt>Rules</dt>
-	<dd>...</dd>
-</dl>
+
+<div id="chatlog">
+<div class="chatmessage">
+<span class="teamcolor" style="background: transparent">&nbsp;</span>
+
+&lt;<span class="username">asdf</span>&gt;
+<span class="message">test message test message test message test message test message test message test message test message test message test message test message</span>
+</div>
 
 </div>
+
+<div id="chat">
+<form id="chatform" action="/ServerAdmin/current/chat#chat" method="POST">
+<input type="text" id="chatmessage" name="message" value="" size="80"> <button type="submit">say</button>
+</form>
+
+</div>
+
+</div>
+
 
 <div id="menu">
 <h2>Navigation</h2>
-<ul>
-	<li><a href="">Current game</a>
-		<ul>
-			<li><a href="">Chat</a></li>
-			<li><a href="">Players</a></li>
-		</ul>
-	</li>
-	<li><a href="">Default Settings</a></li>
-	<li><a href="">Console</a></li>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="Show the current game status.">Current Game</a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server.">Chat console</a>
+<ul class="navigation">
+
 </ul>
+
+</li>
+<li><a href="/ServerAdmin/current/players" title="The players currently on the server.">Players</a></li>
+
+</ul>
+</li>
+
+</ul>
+
 </div>
 
+
 <div id="footer">
-Copyright 2008 - Epic Games, Inc.
+Copyright 2008 - <a href="http://www.epicgames.com">Epic Games, Inc.</a>
 </div>
 
 </body>
+
 </html>
