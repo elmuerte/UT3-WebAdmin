@@ -9,6 +9,8 @@
  */
 class WebAdmin extends WebApplication dependsOn(IQueryHandler) config(WebAdmin);
 
+`define WITH_BASE64ENC
+
 /**
  * The menu handler
  */
@@ -55,9 +57,15 @@ var array<IQueryHandler> handlers;
 var config array<string> QueryHandlers;
 
 /**
- * If set to true, use HTTP Basic authentication rather than a HTML form.
+ * If set to true, use HTTP Basic authentication rather than a HTML form. Using
+ * HTTP authentication gives the functionality of automatic re-authentication.
  */
 var config bool bHttpAuth;
+
+/**
+ * The starting page. Defaults to /current
+ */
+var config string startpage;
 
 /**
  * local storage. Used to construct the auth URLs.
@@ -142,6 +150,9 @@ function CleanupApp()
 	sessions = none;
 }
 
+/**
+ * Load the registered query handlers
+ */
 protected function initQueryHandlers()
 {
 	local IQueryHandler qh;
@@ -171,15 +182,14 @@ protected function initQueryHandlers()
 			`Log("Unable to create query handler: "$entry,,'WebAdmin');
 		}
 		else {
-			qh.init(self);
-			qh.registerMenuItems(menu);
 			addQueryHandler(qh);
 		}
 	}
 }
 
 /**
- * Add a query handler to the list
+ * Add a query handler to the list. This will also call init() and
+ * registerMenuItems() on the query handler.
  */
 function addQueryHandler(IQueryHandler qh)
 {
@@ -187,6 +197,8 @@ function addQueryHandler(IQueryHandler qh)
 	{
 		return;
 	}
+	qh.init(self);
+	qh.registerMenuItems(menu);
 	handlers.addItem(qh);
 }
 
@@ -204,6 +216,10 @@ function Query(WebRequest Request, WebResponse Response)
 	local WebAdminQuery currentQuery;
 	local WebAdminMenu wamenu;
 	local IQueryHandler handler;
+	local string title, description;
+
+	response.Subst("page.uri", Request.URI);
+	response.Subst("page.fulluri", Path$Request.URI);
 
 	currentQuery.request = Request;
 	currentQuery.response = Response;
@@ -227,40 +243,53 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 	response.Subst("navigation.menu", currentQuery.session.getString("WebAdminMenu.rendered"));
 
-	`Log("Request uri = "$request.URI,,'WebAdmin');
 	if (request.URI == "/")
 	{
-		sendPage(currentQuery, "index.html");
+		if (len(startpage) != 0)
+		{
+			Response.Redirect(path$startpage);
+			return;
+		}
+		pageGenericError(currentQuery, "No starting page");
 		return;
 	}
 	else if (request.URI == "/logout")
 	{
 		if (auth.logout(currentQuery.user)) {
 			sessions.destroy(currentQuery.session);
-			Response.Redirect("/");
-			Response.AddHeader("Set-Cookie: sessionid=; Path="$path$"/");
+			Response.Redirect(path);
+			Response.AddHeader("Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0");
+			Response.AddHeader("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
 			return;
 		}
 		pageGenericError(currentQuery, "Unable to log out");
 		return;
 	}
 	// get proper handler
-	handler = wamenu.getHandlerFor(request.URI);
-	if ((handler != none) && handler.handleQuery(currentQuery))
+	handler = wamenu.getHandlerFor(request.URI, title, description);
+	if (handler != none)
 	{
-		return;
-	}
-	// try other way
-	foreach handlers(handler)
-	{
-		if (handler.unhandledQuery(currentQuery))
+		response.Subst("page.title", title);
+		response.Subst("page.description", description);
+		if (handler.handleQuery(currentQuery))
 		{
 			return;
 		}
 	}
 
+	if (currentQuery.user.canPerform(getAuthURL(request.URI))) {
+		// try other way
+		foreach handlers(handler)
+		{
+			if (handler.unhandledQuery(currentQuery))
+			{
+				return;
+			}
+		}
+	}
+
 	Response.HTTPResponse("HTTP/1.1 404 Not Found");
-	pageGenericError(currentQuery, "Request page not found");
+	pageGenericError(currentQuery, "Requested page not found. You either entered an incorrect URL or you do not have access to the page.");
 }
 
 protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookies)
@@ -277,8 +306,9 @@ protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookie
 		if (pos > -1)
 		{
 			kvp.key = Left(entry, pos);
+			kvp.key -= " ";
 			kvp.value = Mid(entry, pos+1);
-			`Log("Received cookie with name="$kvp.key$" ; value="$kvp.value,,'WebAdmin');
+			//`Log("Received cookie with name="$kvp.key$" ; value="$kvp.value,,'WebAdmin');
 			cookies.AddItem(kvp);
 		}
 	}
@@ -308,6 +338,7 @@ protected function bool getSession(out WebAdminQuery q)
 	if (q.session == none)
 	{
 		q.session = sessions.create();
+		q.response.headers.AddItem("Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/");
 	}
 	if (q.session == none)
 	{
@@ -315,7 +346,6 @@ protected function bool getSession(out WebAdminQuery q)
 		return false;
 	}
 	q.response.Subst("sessionid", q.session.getId());
-	q.response.AddHeader("Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/");
 	return true;
 }
 
@@ -324,7 +354,9 @@ protected function bool getSession(out WebAdminQuery q)
  */
 protected function bool getWebAdminUser(out WebAdminQuery q)
 {
-	local string username, password, token, errorMsg;
+	local string username, password, token, errorMsg, rememberCookie;
+	local int idx;
+	local bool checkToken;
 
 	local string realm;
 	if (bHttpAuth)
@@ -349,18 +381,38 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		}
 		return true;
 	}
+
+	idx = q.cookies.Find('key', "authcred");
+	if (idx > -1)
+	{
+		rememberCookie = q.cookies[idx].value;
+	}
+	else {
+		rememberCookie = "";
+	}
+
+	checkToken = false;
+
 	// 2: try to authenticate
 	if (len(q.request.Username) > 0 && len(q.request.Password) > 0)
 	{
 		username = q.request.Username;
 		password = q.request.Password;
-		token = "true";
-		q.session.putString("AuthFormToken", token);
 	}
-	else {
+	else if (len(rememberCookie) > 0)
+	{
+		username = q.request.DecodeBase64(rememberCookie);
+		idx = InStr(username, Chr(10));
+		password = Mid(username, idx+1);
+		username = Left(username, idx);
+	}
+
+	if (len(username) == 0 || len(password) == 0)
+	{
 		username = q.request.GetVariable("username");
 		password = q.request.GetVariable("password");
 		token = q.request.GetVariable("token");
+		checkToken = true;
 	}
 
 	if (len(username) == 0 || len(password) == 0)
@@ -370,19 +422,35 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	}
 
 	// check data
-	if (len(token) == 0 || token != q.session.getString("AuthFormToken"))
+	if (checkToken && (len(token) == 0 || token != q.session.getString("AuthFormToken")))
 	{
-		pageAuthentication(q, "Invalid form data."); // TODO: localize
+		pageAuthentication(q, "Invalid form data.");
 		return false;
 	}
 	q.user = auth.authenticate(username, password, errorMsg);
 
 	if (q.user == none)
 	{
+		if (len(rememberCookie) > 0)
+		{
+			// unset cookie
+			q.response.headers.AddItem("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
+			errorMsg = "cookie failed";
+			rememberCookie = "";
+		}
 		pageAuthentication(q, errorMsg);
 		return false;
 	}
 	q.session.putObject("IWebAdminUser", q.user);
+
+	`if(WITH_BASE64ENC)
+	if (q.request.GetVariable("remember") == "1")
+	{
+		rememberCookie = q.request.EncodeBase64(username$chr(10)$password);
+		q.response.headers.AddItem("Set-Cookie: authcred="$rememberCookie$"; Path="$path$"/; Max-Age=2678400"); // 2678400 = 1 month
+	}
+	`endif
+
 	return true;
 }
 
@@ -408,6 +476,8 @@ function sendPage(WebAdminQuery q, string file)
  */
 function pageGenericError(WebAdminQuery q, coerce string errorMsg)
 {
+	q.response.Subst("page.title", "Error");
+	q.response.Subst("page.description", "");
 	q.response.Subst("message", errorMsg);
 	sendPage(q, "error.html");
 }
@@ -426,6 +496,8 @@ function pageAuthentication(WebAdminQuery q, string errorMsg)
 	}
 	token = Right(ToHex(Rand(MaxInt)), 4)$Right(ToHex(Rand(MaxInt)), 4);
 	q.session.putString("AuthFormToken", token);
+	q.response.Subst("page.title", "Login");
+	q.response.Subst("page.description", "");
 	q.response.Subst("message", errorMsg);
 	q.response.Subst("token", token);
 	sendPage(q, "login.html");

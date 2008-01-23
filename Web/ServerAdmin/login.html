@@ -1,5 +1,4 @@
-<html>
-<body>
+<!-- #include file="header.inc" -->
 <form method="POST">
 <input type="hidden" name="token" value="<%token%>" />
 <fieldset>
@@ -10,9 +9,12 @@
 	<dd><input type="text" id="username" name="username" value="" /></dd>
 	<dt><label for="password">Password</label></dt>
 	<dd><input type="password" id="password" name="password" value="" /></dd>
-	<dd><input type="submit" value="login" /><dd>
+	<dd><input type="submit" value="login" /> 
+        <input type="checkbox" id="remember" name="remember" value="1" />
+        <label for="remember" title="Store authentication information on this machine for a very long time">remember me</label>
+    <dd>
 </dl>
 </fieldset>
 </form>
-</body>
-</html>
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->

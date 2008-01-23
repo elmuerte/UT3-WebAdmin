@@ -1,5 +1,5 @@
 /**
- * A session
+ * A session implementation
  *
  * Copyright 2008 Epic Games, Inc. All Rights Reserved
  *

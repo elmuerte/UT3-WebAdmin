@@ -21,7 +21,7 @@ function ISession create()
 	skv.s = new(Self) class'Session';
 	skv.id = skv.s.getId();
 	sessions.AddItem(skv);
-	`Log("Created a new session with id: "$skv.id,,'WebAdmin');
+	//`Log("Created a new session with id: "$skv.id,,'WebAdmin');
 	return skv.s;
 }
 
@@ -31,7 +31,7 @@ function ISession get(string id)
 	idx = sessions.Find('id', id);
 	if (idx > -1)
 	{
-		`Log("Found session with id: "$id,,'WebAdmin');
+		//`Log("Found session with id: "$id,,'WebAdmin');
 		return sessions[idx].s;
 	}
 	return none;
@@ -44,7 +44,7 @@ function bool destroy(ISession session)
 	if (idx > -1)
 	{
 		session.reset();
-		`Log("Destroyed session with id: "$sessions[idx].id,,'WebAdmin');
+		//`Log("Destroyed session with id: "$sessions[idx].id,,'WebAdmin');
 		sessions.remove(idx, 1);
 		return true;
 	}

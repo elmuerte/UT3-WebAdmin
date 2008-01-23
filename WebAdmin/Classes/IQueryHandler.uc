@@ -1,5 +1,12 @@
 /**
- * The query handler interface
+ * The query handler interface. The WebAdmin contains a collection of query
+ * handlers with handle most requests assigned to the WebAdmin application.
+ * During creating the query handler will receive a couple of set up calls:
+ * init(...) and registerMenuItems(...). The webadmin has to register all
+ * URLs it will handle (url without the webapp path prefix). It is also allowed
+ * to replace an existing menu item. When the WebAdmin is shut down the
+ * cleanup() method will be called. Use this to perform some clean up and to set
+ * all Actor references to none (in case the query handler extends Object).
  *
  * Copyright 2008 Epic Games, Inc. All Rights Reserved
  *
@@ -31,7 +38,8 @@ struct WebAdminQuery
 function init(WebAdmin webapp);
 
 /**
- * Cleanup (prepare for being destroyed)
+ * Cleanup (prepare for being destroyed). If the implementation extends Object
+ * it should set all actor references to none.
  */
 function cleanup();
 

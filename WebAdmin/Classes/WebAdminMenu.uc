@@ -57,7 +57,7 @@ var array<TreeItem> tree;
 
 /**
  * Add an item to the menu, or if the path already exist, update an existing
- * item.
+ * item. To create a hidden item simply leave out the title.
  */
 function addMenuItem(MenuItem item)
 {
@@ -93,12 +93,14 @@ function addMenu(string path, string title, IQueryHandler handler,
 /**
  * Get the menu handler for a given path
  */
-function IQueryHandler getHandlerFor(string path)
+function IQueryHandler getHandlerFor(string path, out string title, out string desc)
 {
 	local int idx;
 	idx = menu.find('path', path);
 	if (idx > -1)
 	{
+		title = menu[idx].title;
+		desc = menu[idx].description;
 		return menu[idx].handler;
 	}
 	return none;
@@ -247,7 +249,7 @@ protected function string renderChilds(array<int> childs, WebResponse wr)
 	foreach childs(child)
 	{
 		menuid = tree[child].cur;
-		if (menuid > -1)
+		if ((menuid > -1) && (Len(menu[menuid].title) > 0))
 		{
 			if (tree[child].children.length > 0)
 			{

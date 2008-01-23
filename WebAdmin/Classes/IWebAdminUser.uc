@@ -7,6 +7,15 @@
  */
 interface IWebAdminUser;
 
+struct MessageEntry
+{
+	var int counter;
+	var PlayerReplicationInfo sender;
+	var string senderName;
+	var string message;
+	var name type;
+};
+
 /**
  * Return the name of the user
  */
@@ -21,3 +30,21 @@ function string getUsername();
  *				Note that the webapplication path is not included.
  */
 function bool canPerform(string url);
+
+
+/**
+ * Return a PlayerController associated with this user. This method might return
+ * none when there is no player controller associated with this user.
+ */
+function PlayerController getPC();
+
+/**
+ * Execute a console command. This function as the same signature as the one in
+ * Actor to make things easier.
+ */
+function string ConsoleCommand(string Command, optional bool bWriteToLog = true);
+
+/**
+ * Get the message history.
+ */
+function messageHistory(out array<MessageEntry> history, optional int startingFrom);

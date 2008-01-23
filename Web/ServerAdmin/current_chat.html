@@ -1,0 +1,40 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<div id="chatlog">
+<%chat.log%>
+</div>
+
+<div id="chat">
+<form id="chatform" action="<%page.fulluri%>#chat" method="POST">
+<input type="text" id="chatmessage" name="message" value="" size="80"> <input type="submit" value="say" />
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#chatmessage').focus();
+    setTimeout('getMessages()', <%chat.refresh%>);
+});
+
+$('#chatform').submit(function() {
+    jQuery.post('<%page.fulluri%>/data', {message: $('#chatmessage').val()}, chatMessage);
+    $('#chatmessage').val('');
+    return false;
+});
+
+function getMessages() {
+    jQuery.post('<%page.fulluri%>/data', {}, chatMessage);
+    setTimeout('getMessages()', <%chat.refresh%>);
+}
+
+function chatMessage(data, textStatus) {
+  $('#chatlog').append(data);
+}
+</script>
+</div>
+
+
+</div>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->
