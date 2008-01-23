@@ -84,6 +84,7 @@ function init()
 
 	menu = new(Self) class'WebAdminMenu';
 	menu.webadmin = self;
+	menu.addMenu("/logout", "Log out", none);
 
 	if (len(AuthenticationClass) != 0)
 	{
@@ -257,9 +258,9 @@ function Query(WebRequest Request, WebResponse Response)
 	{
 		if (auth.logout(currentQuery.user)) {
 			sessions.destroy(currentQuery.session);
-			Response.Redirect(path);
 			Response.AddHeader("Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0");
 			Response.AddHeader("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
+			Response.Redirect(path$"/");
 			return;
 		}
 		pageGenericError(currentQuery, "Unable to log out");

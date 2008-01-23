@@ -88,7 +88,6 @@ BUTTON, INPUT.button {
 	color: #ffffff;
 	width: 200px;
 	padding-left: 25px;
-	overflow: auto;
 	float: left;
 	position: absolute;
 	top: 225px;
@@ -142,7 +141,7 @@ BUTTON, INPUT.button {
 #chat INPUT {
 	width: 90%;
 }
-#chat BUTTON {
+#chat BUTTON, #chat INPUT.button {
 	width: 9%;
 }
 
