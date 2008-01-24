@@ -10,7 +10,21 @@ class QHCurrent extends Object implements(IQueryHandler) config(WebAdmin);
 
 var WebAdmin webadmin;
 
+/**
+ * Refresh time of the chat console
+ */
 var config int ChatRefresh;
+
+/**
+ * If true the management console will be available. This will allow users to
+ * directly enter console commands on the server. This means that the user will
+ * have the ability to shutdown the server or execute commands that change
+ * certain core variables.
+ */
+var config bool bConsoleEnabled;
+
+var string cssVisible;
+var string cssHidden;
 
 function init(WebAdmin webapp)
 {
@@ -33,6 +47,13 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/current/players", "Players", self, "The players currently on the server.");
 	menu.addMenu("/current/chat", "Chat console", self, "This console allows you to chat with the players on the server.");
 	menu.addMenu("/current/chat/data", "", self);
+	if (bConsoleEnabled)
+	{
+		menu.addMenu("/console", "Management Console", self,
+			"Execute console commands as if they are directly entered on the console of the server."$
+			"You may not have access to the same commands as you would when logged in as admin when playing on the server."
+		);
+	}
 }
 
 function bool handleQuery(WebAdminQuery q)
@@ -51,6 +72,13 @@ function bool handleQuery(WebAdminQuery q)
 		case "/current/chat/data":
 			handleCurrentChatData(q);
 			return true;
+		case "/console":
+			if (bConsoleEnabled)
+			{
+				handleConsole(q);
+				return true;
+			}
+			return false;
 	}
 }
 
@@ -123,4 +151,29 @@ function procChatData(WebAdminQuery q, optional int startFrom, optional string s
 		q.response.subst(substvar, result);
 	}
 	q.session.putString("chatlog.lastid", ""$startFrom);
+}
+
+function handleConsole(WebAdminQuery q)
+{
+	local string cmd, result;
+	cmd = q.request.getVariable("command");
+	if (len(cmd) > 0)
+	{
+		result = webadmin.WorldInfo.Game.ConsoleCommand(cmd);
+		q.response.subst("console.command", class'WebAdminUtils'.static.HTMLEscape(cmd));
+		q.response.subst("console.results", class'WebAdminUtils'.static.HTMLEscape(result));
+		q.response.subst("console.visible", cssVisible);
+	}
+	else {
+		q.response.subst("console.command", "");
+		q.response.subst("console.results", "");
+		q.response.subst("console.visible", cssHidden);
+	}
+	webadmin.sendPage(q, "console.html");
+}
+
+defaultproperties
+{
+	cssVisible=""
+	cssHidden="display: none;"
 }

@@ -21,6 +21,9 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 	{
 		ReceiveMessage(pri, s, type);
 	}
+	else {
+		`Log("Received message that is not 'say' or 'teamsay': "$type$": "$s);
+	}
 }
 
 auto state NotPlaying

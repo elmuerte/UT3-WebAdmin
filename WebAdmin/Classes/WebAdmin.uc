@@ -11,6 +11,8 @@ class WebAdmin extends WebApplication dependsOn(IQueryHandler) config(WebAdmin);
 
 `define WITH_BASE64ENC
 
+`include(WebAdmin/timestamp.uci)
+
 /**
  * The menu handler
  */
@@ -71,6 +73,11 @@ var config string startpage;
  * local storage. Used to construct the auth URLs.
  */
 var protected string serverIp;
+
+/**
+ * Will contain the timestamp when this package was compiled
+ */
+var const string timestamp;
 
 function init()
 {
@@ -139,16 +146,18 @@ function init()
 function CleanupApp()
 {
 	local IQueryHandler handler;
-	super.CleanupApp();
 	foreach handlers(handler)
 	{
 		handler.cleanup();
 	}
 	handlers.Remove(0, handlers.Length);
+	menu.menu.Remove(0, menu.menu.length);
+	menu = none;
 	auth.cleanup();
 	auth = none;
 	sessions.destroyAll();
 	sessions = none;
+	super.CleanupApp();
 }
 
 /**
@@ -219,6 +228,8 @@ function Query(WebRequest Request, WebResponse Response)
 	local IQueryHandler handler;
 	local string title, description;
 
+	response.Subst("build.timestamp", timestamp);
+	response.Subst("webadmin.path", path);
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
 
@@ -508,4 +519,5 @@ defaultproperties
 {
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
+	timestamp=`{TIMESTAMP}
 }

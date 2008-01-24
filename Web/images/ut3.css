@@ -159,3 +159,7 @@ BUTTON, INPUT.button {
 	padding-left: 0.4em;
 	font-size: 80%;
 }
+
+#consoleResults .command {
+	color: #520000;
+}

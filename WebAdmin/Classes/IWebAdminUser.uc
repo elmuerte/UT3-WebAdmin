@@ -26,6 +26,7 @@ function string getUsername();
  *
  * @param path an URL containing the action description. See rfc2396 for more information.
  * 				The scheme part of the URL will be used as identifier for the interface.
+ *				The host is the IP to witch the webserver is bound.
  *				for example:	webadmin://127.0.0.1:8080/current/console
  *				Note that the webapplication path is not included.
  */
@@ -37,12 +38,6 @@ function bool canPerform(string url);
  * none when there is no player controller associated with this user.
  */
 function PlayerController getPC();
-
-/**
- * Execute a console command. This function as the same signature as the one in
- * Actor to make things easier.
- */
-function string ConsoleCommand(string Command, optional bool bWriteToLog = true);
 
 /**
  * Get the message history.

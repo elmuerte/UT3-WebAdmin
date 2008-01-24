@@ -53,10 +53,10 @@ function bool destroy(ISession session)
 
 function destroyAll()
 {
-	local SessionKV skv;
-	foreach sessions(skv)
+	local int i;
+	for (i = 0; i < sessions.length; i++)
 	{
-		skv.s.reset();
+		sessions[i].s.reset();
 	}
 	sessions.Remove(0, sessions.Length);
 }

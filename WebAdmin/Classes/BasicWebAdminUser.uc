@@ -58,11 +58,6 @@ function bool canPerform(string uri)
 	return true;
 }
 
-function string ConsoleCommand(string Command, optional bool bWriteToLog = true)
-{
-	return PC.ConsoleCommand(command, bWriteToLog);
-}
-
 function messageHistory(out array<MessageEntry> history, optional int startingFrom)
 {
 	local int idx, i;

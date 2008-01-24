@@ -21,5 +21,11 @@ function Query(WebRequest Request, WebResponse Response)
 		Response.IncludeBinaryFile( Path $ Request.URI );
 		return;
 	}
+	else if( Right(Request.URI, 4) ~= ".txt" )
+	{
+		Response.SendStandardHeaders("text/plain", true);
+		Response.IncludeBinaryFile( Path $ Request.URI );
+		return;
+	}
 	super.query(Request, Response);
 }
