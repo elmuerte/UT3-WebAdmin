@@ -79,6 +79,8 @@ var protected string serverIp;
  */
 var const string timestamp;
 
+var const string version;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -91,7 +93,8 @@ function init()
 
 	menu = new(Self) class'WebAdminMenu';
 	menu.webadmin = self;
-	menu.addMenu("/logout", "Log out", none);
+	menu.addMenu("/about", "", none,, -999);
+	menu.addMenu("/logout", "Log out", none, "Log out from the webadmin and clear all authentication information.", -1000);
 
 	if (len(AuthenticationClass) != 0)
 	{
@@ -228,7 +231,6 @@ function Query(WebRequest Request, WebResponse Response)
 	local IQueryHandler handler;
 	local string title, description;
 
-	response.Subst("build.timestamp", timestamp);
 	response.Subst("webadmin.path", path);
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
@@ -277,6 +279,12 @@ function Query(WebRequest Request, WebResponse Response)
 		pageGenericError(currentQuery, "Unable to log out");
 		return;
 	}
+	else if (request.URI == "/about")
+	{
+		pageAbout(currentQuery);
+		return;
+	}
+
 	// get proper handler
 	handler = wamenu.getHandlerFor(request.URI, title, description);
 	if (handler != none)
@@ -301,7 +309,7 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 
 	Response.HTTPResponse("HTTP/1.1 404 Not Found");
-	pageGenericError(currentQuery, "Requested page not found. You either entered an incorrect URL or you do not have access to the page.");
+	pageGenericError(currentQuery, "Requested page not found. You either entered an incorrect URL or you do not have access to the page.", "Error 404 - Page not found");
 }
 
 protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookies)
@@ -486,9 +494,9 @@ function sendPage(WebAdminQuery q, string file)
 /**
  * Create a generic error message
  */
-function pageGenericError(WebAdminQuery q, coerce string errorMsg)
+function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional string title = "Error")
 {
-	q.response.Subst("page.title", "Error");
+	q.response.Subst("page.title", title);
 	q.response.Subst("page.description", "");
 	q.response.Subst("message", errorMsg);
 	sendPage(q, "error.html");
@@ -515,9 +523,27 @@ function pageAuthentication(WebAdminQuery q, string errorMsg)
 	sendPage(q, "login.html");
 }
 
+function pageAbout(WebAdminQuery q)
+{
+	q.response.Subst("page.title", "About");
+	q.response.Subst("page.description", "Various information about the UT3 WebAdmin");
+	q.response.Subst("build.timestamp", timestamp);
+	q.response.Subst("build.version", version);
+	q.response.Subst("engine.version", worldinfo.EngineVersion);
+	q.response.Subst("engine.netversion", worldinfo.MinNetVersion);
+	q.response.Subst("client.address", q.request.RemoteAddr);
+	q.response.Subst("webadmin.address", serverIp$":"$WebServer.ListenPort);
+	if (bHttpAuth) q.response.Subst("webadmin.authmethod", "HTTP Authentication");
+	else q.response.Subst("webadmin.authmethod", "Login form");
+	if (q.cookies.Find('key', "authcred") > -1) q.response.Subst("client.remember", "True");
+	else q.response.Subst("client.remember", "False");
+	sendPage(q, "about.html");
+}
+
 defaultproperties
 {
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
+	version="0.1"
 }
