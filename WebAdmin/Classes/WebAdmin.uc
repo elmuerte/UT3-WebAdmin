@@ -93,8 +93,8 @@ function init()
 
 	menu = new(Self) class'WebAdminMenu';
 	menu.webadmin = self;
-	menu.addMenu("/about", "", none,, -999);
-	menu.addMenu("/logout", "Log out", none, "Log out from the webadmin and clear all authentication information.", -1000);
+	menu.addMenu("/about", "", none,, MaxInt-1);
+	menu.addMenu("/logout", "Log out", none, "Log out from the webadmin and clear all authentication information.", MaxInt);
 
 	if (len(AuthenticationClass) != 0)
 	{
@@ -308,8 +308,16 @@ function Query(WebRequest Request, WebResponse Response)
 		}
 	}
 
-	Response.HTTPResponse("HTTP/1.1 404 Not Found");
-	pageGenericError(currentQuery, "Requested page not found. You either entered an incorrect URL or you do not have access to the page.", "Error 404 - Page not found");
+	// check with the overal menu, if the handler is null the page doesn't exist
+	if (menu.getHandlerFor(request.URI, title, description) == none)
+	{
+		Response.HTTPResponse("HTTP/1.1 404 Not Found");
+		pageGenericError(currentQuery, "The requested page was not found.", "Error 404 - Page not found");
+	}
+	else {
+		Response.HTTPResponse("HTTP/1.1 403 Forbidden");
+		pageGenericError(currentQuery, "You do not have the privileges to view this page.", "Access Denied");
+	}
 }
 
 protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookies)
@@ -508,10 +516,16 @@ function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional stri
 function pageAuthentication(WebAdminQuery q, string errorMsg)
 {
 	local string token;
+	if (q.request.getVariable("ajax") == "1")
+	{
+		q.response.HTTPResponse("HTTP/1.1 403 Forbidden");
+		pageGenericError(q, "Unauthorized access.", "Error 403 - Forbidden");
+		return;
+	}
 	if (bHttpAuth)
 	{
 		q.response.HTTPResponse("HTTP/1.1 401 Unauthorized");
-		pageGenericError(q, "Unauthorized access");
+		pageGenericError(q, "Unauthorized access. You need to log in.", "Error 401 - Unauthorized");
 		return;
 	}
 	token = Right(ToHex(Rand(MaxInt)), 4)$Right(ToHex(Rand(MaxInt)), 4);
@@ -537,6 +551,7 @@ function pageAbout(WebAdminQuery q)
 	else q.response.Subst("webadmin.authmethod", "Login form");
 	if (q.cookies.Find('key', "authcred") > -1) q.response.Subst("client.remember", "True");
 	else q.response.Subst("client.remember", "False");
+	q.response.Subst("client.sessionid", q.session.getId());
 	sendPage(q, "about.html");
 }
 

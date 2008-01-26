@@ -14,15 +14,62 @@ H1, H2, H3, H4 {
 	margin: 0;
 }
 
+FORM {
+	margin: 0;
+}
+
 A {
 	color: #800202;
+}
+
+INPUT {
+	font-size: 1em;
+}
+
+INPUT[type="text"], INPUT[type="password"], INPUT[type=""] {
+	border: 1px solid #520000;	
+	padding-left: 0.1em;
+	background-color: White;
+	height: 1.25em;
+}
+
+DT {
+	font-weight: bold;
+	font-size: 0.9em;
+}
+
+DT:After {
+	content: ":";
+}
+
+DD {
+	margin-bottom: 0.1em;
+}
+
+LEGEND {
+	border: 1px solid #520000;
+	font-weight: bold;
+	background-color: #520000;
+	color: #f0f0f0;
+	padding: 0.1eml
+}
+
+FIELDSET {
+	border: 1px solid #520000;
+	padding: 0.5em;
 }
 
 BUTTON, INPUT.button {
 	background-color: #520000;
 	color: #ffffff;
-	border-width: 2px;
+	border-width: 1px;
 	border-color: #520000;
+	border-style: solid;
+	height: 1.8em;
+}
+
+BUTTON:Hover, INPUT.button:Hover {
+	background-color: #730000;
 }
 
 #header {
@@ -154,12 +201,57 @@ BUTTON, INPUT.button {
 	color: #363636;
 }
 
+#chatlog .username {
+	padding-right: 0.1em;
+}
+
 .teamcolor  {
-	border: 1px solid silver;
+	background-color: silver;
 	padding-left: 0.4em;
-	font-size: 80%;
 }
 
 #consoleResults .command {
 	color: #520000;
+}
+
+#consoleResults {
+	/*white-space: pre;*/
+	font-family: monospace;
+	overflow: auto;
+	border: 1px solid #520000;
+	padding: 2px;
+	margin-top: 1em;
+}
+
+TABLE#players {
+	border: 1px solid #520000;
+	border-collapse: collapse;
+}
+
+TABLE#players TD, TABLE#players TH {
+	border: 1px solid #520000;
+}
+
+TABLE#players TH {
+	padding: 0 0.4em 0 0.4em;
+	font-size: 0.9em;
+	font-weight: bold;
+	color: white;
+	background-color: #520000;
+}
+
+TABLE#players TH A {
+	color: white;
+}
+
+.row1 {
+	background-color: silver;
+}
+
+.right {
+	text-align: right;
+}
+
+.center {
+	text-align: center;
 }

@@ -2,7 +2,64 @@
 
 <div id="content">
 
-<%game.properties%>
+<table width="100%">
+<colgroup>
+    <col width="50%"/>
+    <col width="50%"/>
+</colgroup>
+<tr>
+<td>
+
+<h3>Current Game</h3>
+<dl id="currentGame">
+    <dt>Server Name</dt>
+    <dd><%server.name%></dd>
+    <dt>Administrator</dt>
+    <dd><a href="mailto:<%server.admin.name%>"><%server.admin.email%></a></dd>
+    <dt>MOTD</dt>
+    <dd><%server.motd%></dd>
+    <dt>Game type</dt>
+    <dd><%game.name%><br /><code><%game.type%></code></dd>
+    <dt>Map</dt>
+    <dd><code><%map.name%></code><br /><%map.title%></dd>
+</dl>
+
+</td>
+<td>
+
+<h3>Rules</h3>
+<dl id="currentRules">
+    <dt>Time Limit</dt>
+    <dd><%rules.timelimit%> minutes<br /><%time.remaining%> seconds remaining</dd>
+    <dt>Goal Score</dt>
+    <dd><%rules.goalscore%></dd>
+    <dt>Maximum Lives</dt>
+    <dd><%rules.maxlives%></dd>
+    <dt>Maximum Players</dt>
+    <dd><%rules.maxplayers%></dd>
+    <dt>Maximum Spectators</dt>
+    <dd><%rules.maxspectators%></dd>
+</dl>
+
+</td>
+</tr>
+</table>
+
+<h3>Players</h3>
+<table id="players">
+<tr>
+    <th><!-- team --></th>
+    <th><a href="<%page.fulluri%>?sortby=name&reverse=<%reverse.name%>" class="<%sorted.name%>">Player name</a></th>
+    <th><a href="<%page.fulluri%>?sortby=ranking&reverse=<%reverse.ranking%>" class="<%sorted.ranking%>">Ranking</a></th>
+    <th><a href="<%page.fulluri%>?sortby=score&reverse=<%reverse.score%>" class="<%sorted.score%>">Score</a></th>
+    <th><a href="<%page.fulluri%>?sortby=deaths&reverse=<%reverse.deaths%>" class="<%sorted.deaths%>">Deaths</a></th>
+    <th><a href="<%page.fulluri%>?sortby=kills&reverse=<%reverse.kills%>" class="<%sorted.kills%>">Kills</a></th>
+    <th><a href="<%page.fulluri%>?sortby=ping&reverse=<%reverse.ping%>" class="<%sorted.ping%>">Ping</a></th>
+    <th>Bot</th>
+    <th>Admin</th>
+</tr>
+<%players%>
+</table>
 
 </div>
 

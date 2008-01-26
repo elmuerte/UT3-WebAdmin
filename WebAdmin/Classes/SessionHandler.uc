@@ -5,7 +5,9 @@
  *
  * @author  Michiel 'elmuerte' Hendriks
  */
-class SessionHandler extends Object implements(ISessionHandler);
+class SessionHandler extends Object implements(ISessionHandler) dependson(WebAdminUtils);
+
+`define WITH_BROKEN_RAND
 
 struct SessionKV
 {
@@ -18,6 +20,18 @@ var protected array<SessionKV> sessions;
 function ISession create()
 {
 	local SessionKV skv;
+	local WebAdminUtils.DateTime dt;
+	local int i;
+
+	`if(WITH_BROKEN_RAND)
+	// seed the broken rand function
+	class'WebAdminUtils'.static.getDateTime(dt);
+	for (i = 0; i < dt.second+dt.minute+dt.day; i++)
+	{
+		rand(0xffff);
+	}
+	`endif
+
 	skv.s = new(Self) class'Session';
 	skv.id = skv.s.getId();
 	sessions.AddItem(skv);

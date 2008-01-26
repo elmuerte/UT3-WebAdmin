@@ -30,7 +30,7 @@ function string getId()
 	{
 		for (i = 0; i < 8; i++)
 		{
-			id $= Right(ToHex(Rand(MaxInt)), 4);
+			id $= Right(ToHex(rand(MaxInt)), 4);
 		}
 	}
 	return id;

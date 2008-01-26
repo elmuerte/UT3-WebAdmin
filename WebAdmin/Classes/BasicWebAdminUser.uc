@@ -20,7 +20,13 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 	msgHistory.Add(1);
 	msgHistory[idx].counter = ++counter;
 	msgHistory[idx].Sender = Sender;
-	msgHistory[idx].senderName = Sender.GetPlayerAlias();
+	if (Sender != none)
+	{
+		msgHistory[idx].senderName = Sender.GetPlayerAlias();
+	}
+	else {
+		msgHistory[idx].senderName = "";
+	}
 	msgHistory[idx].message = msg;
 	msgHistory[idx].type = type;
 

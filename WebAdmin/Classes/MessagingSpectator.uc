@@ -17,18 +17,15 @@ simulated event PostBeginPlay()
 
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )
 {
-	if (type == 'Say' || type == 'TeamSay')
+	if (type != 'Say' && type != 'TeamSay' && type != 'none')
 	{
-		ReceiveMessage(pri, s, type);
+		`Log("Received message that is not 'say' or 'teamsay'. Type="$type$" Message= "$s);
 	}
-	else {
-		`Log("Received message that is not 'say' or 'teamsay': "$type$": "$s);
-	}
+	ReceiveMessage(pri, s, type);
 }
 
 auto state NotPlaying
-{
-}
+{}
 
 function InitPlayerReplicationInfo()
 {

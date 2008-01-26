@@ -3,15 +3,14 @@
 <div id="content">
 
 <div id="consoleCommand">
+<p><em>Note:</em> not all console commands will return information. This does not mean that they were not executed.</p>
 <form action="<%page.fulluri%>" method="POST">
-<input type="text" name="command" value="" size="80"> <button type="submit">execute</button>
+<input type="text" name="command" value="" size="80"><button type="submit">execute</button>
 </form>
 </div>
 
-<div id="consoleResults" style="<%console.visible%>">
-<pre>&gt; <span class="command"><%console.command%></span>
-<%console.results%>
-</pre></div>
+<div id="consoleResults" style="<%console.visible%>">&gt; <span class="command"><%console.command%></span><br />
+<%console.results%></div>
 
 </div>
 

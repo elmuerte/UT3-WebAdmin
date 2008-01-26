@@ -8,7 +8,7 @@
 
 <div id="chat">
 <form id="chatform" action="<%page.fulluri%>#chat" method="POST">
-<input type="text" id="chatmessage" name="message" value="" size="80"> <button type="submit">say</button>
+<input type="text" id="chatmessage" name="message" value="" size="80"><button type="submit">say</button>
 </form>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -17,18 +17,40 @@ $(document).ready(function(){
 });
 
 $('#chatform').submit(function() {
-    jQuery.post('<%page.fulluri%>/data', {message: $('#chatmessage').val()}, chatMessage);
+    $.ajax({
+        type: "POST",
+        url: '<%page.fulluri%>/data',
+        data: {ajax: 1, message: $('#chatmessage').val()},
+        success: chatMessage,
+        error: ajaxError
+    });
     $('#chatmessage').val('');
     return false;
 });
 
 function getMessages() {
-    jQuery.post('<%page.fulluri%>/data', {}, chatMessage);
+    $.ajax({
+        type: "POST",
+        url: '<%page.fulluri%>/data',
+        data: {ajax: 1},
+        success: chatMessage,
+        error: ajaxError
+    });
     setTimeout('getMessages()', <%chat.refresh%>);
 }
 
 function chatMessage(data, textStatus) {
-  $('#chatlog').append(data);
+    cnt = $('.chatmessage').size()-1;
+    $('#chatlog').append(data);
+    x = $('.chatmessage:gt('+cnt+')');
+    x.hide();
+    x.fadeIn("fast");
+}
+
+function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
+    if (XMLHttpRequest.status == 403) {
+        document.location = '<%page.fulluri%>';
+    }
 }
 </script>
 </div>
