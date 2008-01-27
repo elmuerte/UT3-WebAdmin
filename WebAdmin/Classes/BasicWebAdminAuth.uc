@@ -5,13 +5,21 @@
  *
  * @author  Michiel 'elmuerte' Hendriks
  */
-class BasicWebAdminAuth extends Object implements(IWebAdminAuth);
+class BasicWebAdminAuth extends Object implements(IWebAdminAuth) config(WebAdmin);
 
 var AccessControl ac;
 
 var WorldInfo worldinfo;
 
 var array<BasicWebAdminUser> users;
+
+/**
+ * If this is not empty the simple authentication handler will require this 
+ * username. Otherwise any username accepted by the current AccessControl will
+ * be accepted. In case of the standard AccessControl this means that any 
+ * username is ok. 
+ */ 
+var config string RequireUsername;
 
 function init(WorldInfo wi)
 {
@@ -55,6 +63,11 @@ function bool logout(IWebAdminUser user)
 
 function bool validate(string username, string password, out string errorMsg)
 {
+    if (RequireUsername != "" && RequireUsername != username)
+    {
+        errorMsg = "Invalid credentials.";
+        return false;
+    }
 	if (ac.ValidLogin(username, password))
 	{
 		return true;
