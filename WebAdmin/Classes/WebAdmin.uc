@@ -26,7 +26,7 @@ var IWebAdminAuth auth;
 /**
  * Defines the authentication handler class to use instead of the default one.
  */
-var config string AuthenticationClass;
+var globalconfig string AuthenticationClass;
 
 /**
  * The default authentication class
@@ -41,7 +41,7 @@ var ISessionHandler sessions;
 /**
  * The session handler to use instead of the default session handler
  */
-var config string SessionHandlerClass;
+var globalconfig string SessionHandlerClass;
 
 /**
  * The default session handler class
@@ -56,18 +56,18 @@ var array<IQueryHandler> handlers;
 /**
  * The list of query handlers to automativally load
  */
-var config array<string> QueryHandlers;
+var globalconfig array<string> QueryHandlers;
 
 /**
  * If set to true, use HTTP Basic authentication rather than a HTML form. Using
  * HTTP authentication gives the functionality of automatic re-authentication.
  */
-var config bool bHttpAuth;
+var globalconfig bool bHttpAuth;
 
 /**
  * The starting page. Defaults to /current
  */
-var config string startpage;
+var globalconfig string startpage;
 
 /**
  * local storage. Used to construct the auth URLs.
@@ -264,7 +264,7 @@ function Query(WebRequest Request, WebResponse Response)
 			Response.Redirect(path$startpage);
 			return;
 		}
-		pageGenericError(currentQuery, "No starting page");
+		pageGenericError(currentQuery, "No starting page.");
 		return;
 	}
 	else if (request.URI == "/logout")
@@ -276,7 +276,7 @@ function Query(WebRequest Request, WebResponse Response)
 			Response.Redirect(path$"/");
 			return;
 		}
-		pageGenericError(currentQuery, "Unable to log out");
+		pageGenericError(currentQuery, "Unable to log out.");
 		return;
 	}
 	else if (request.URI == "/about")
@@ -463,7 +463,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		{
 			// unset cookie
 			q.response.headers.AddItem("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
-			errorMsg = "cookie failed";
+			errorMsg = "Authentication cookie does not contain correct information.";
 			rememberCookie = "";
 		}
 		pageAuthentication(q, errorMsg);
@@ -483,7 +483,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 }
 
 /**
- * Include the specified file
+ * Include the specified file.
  */
 function string include(WebAdminQuery q, string file)
 {
@@ -491,7 +491,7 @@ function string include(WebAdminQuery q, string file)
 }
 
 /**
- * Load the given file and send it to the client
+ * Load the given file and send it to the client.
  */
 function sendPage(WebAdminQuery q, string file)
 {
@@ -500,7 +500,7 @@ function sendPage(WebAdminQuery q, string file)
 }
 
 /**
- * Create a generic error message
+ * Create a generic error message.
  */
 function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional string title = "Error")
 {

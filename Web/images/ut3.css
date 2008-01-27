@@ -33,6 +33,11 @@ INPUT[type="text"], INPUT[type="password"], INPUT[type=""] {
 	height: 1.25em;
 }
 
+SELECT {
+	border: 1px solid #520000;	
+	background-color: White;
+}
+
 DT {
 	font-weight: bold;
 	font-size: 0.9em;
@@ -253,15 +258,16 @@ TH A {
 	margin-top: 1em;
 }
 
-TABLE#players {
+TABLE.grid {
 	border-collapse: collapse;
+	margin-bottom: 1em;
 }
 
-TABLE#players TD {
+TABLE.grid TD {
 	border: 1px solid #520000;
 }
 
-TABLE#players TD {
+TABLE.grid TD {
 	vertical-align: middle;
 }
 
@@ -275,4 +281,8 @@ TABLE#players TD {
 
 .center {
 	text-align: center;
+}
+
+.monospace {
+	font-family: monospace;
 }

@@ -35,7 +35,7 @@ function init(WebAdmin webapp)
 	{
 		webapp.startpage = "/current";
 	}
-	if (ChatRefresh < 1000) ChatRefresh = 5000;
+	if (ChatRefresh < 500) ChatRefresh = 5000;
 }
 
 function cleanup()
@@ -46,8 +46,8 @@ function cleanup()
 
 function registerMenuItems(WebAdminMenu menu)
 {
-	menu.addMenu("/current", "Current Game", self, "Show the current game status.", -100);
-	menu.addMenu("/current/players", "Players", self, "The players currently on the server.");
+	menu.addMenu("/current", "Current Game", self, "The current game status.", -100);
+	menu.addMenu("/current/players", "Players", self, "Manage the players currently on the server.");
 	menu.addMenu("/current/chat", "Chat console", self, "This console allows you to chat with the players on the server.");
 	menu.addMenu("/current/chat/data", "", self);
 	if (bConsoleEnabled)
@@ -98,6 +98,7 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("game.type", ""$webadmin.WorldInfo.Game.class);
 
 	q.response.subst("map.title", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Title));
+	q.response.subst("map.author", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Author));
 	q.response.subst("map.name", webadmin.WorldInfo.GetPackageName());
 
 	q.response.subst("rules.timelimit", webadmin.WorldInfo.Game.TimeLimit);
@@ -256,10 +257,14 @@ protected function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.teamid", pri.TeamID);
 	if (pri.Team != none)
 	{
-		q.response.subst("player.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.TeamColor));
+		q.response.subst("player.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.GetHUDColor()));
+		q.response.subst("player.teamcolor2", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.GetTextColor()));
+		q.response.subst("player.teamname", class'WebAdminUtils'.static.HTMLEscape(pri.Team.GetHumanReadableName()));
 	}
 	else {
 		q.response.subst("player.teamcolor", "transparent");
+		q.response.subst("player.teamcolor2", "transparent");
+		q.response.subst("player.teamname", "");
 	}
 	q.response.subst("player.admin", pri.bAdmin);
 	q.response.subst("player.bot", pri.bBot);
@@ -272,10 +277,11 @@ function handleCurrentPlayers(WebAdminQuery q)
 {
 	local PlayerReplicationInfo PRI;
 	local int idx;
-	local string players, IP;
+	local string players, IP, action;
 	local PlayerController PC;
 
-	if (q.request.getVariable("action") != "")
+	action = q.request.getVariable("action");
+	if (action != "")
 	{
 		PRI = webadmin.WorldInfo.Game.GameReplicationInfo.FindPlayerByID(int(q.request.getVariable("playerid")));
 		if (PRI == none)
@@ -293,12 +299,12 @@ function handleCurrentPlayers(WebAdminQuery q)
 				q.response.subst("message", "No human player associated with this player.");
 			}
 			else {
-				`Log("Action = "$q.request.getVariable("action"));
-				if (q.request.getVariable("action") ~= "banip")
+				//`Log("Action = "$q.request.getVariable("action"));
+				if (action ~= "banip" || action ~= "ban ip")
 				{
 					banByIP(PC);
 				}
-				else if (q.request.getVariable("action") ~= "banid")
+				else if (action ~= "banid" || action ~= "ban unique id")
 				{
 					banByID(PC);
 				}
@@ -334,7 +340,7 @@ function handleCurrentPlayers(WebAdminQuery q)
 	q.response.subst("sorted."$q.request.getVariable("sortby", "name"), "sorted");
 	if (!(q.request.getVariable("reverse", "") ~= "true"))
 	{
-		q.response.subst("reverse."$q.request.getVariable("sortby", "name"), "");
+		q.response.subst("reverse."$q.request.getVariable("sortby", "name"), "true");
 	}
 
 	q.response.subst("players", players);

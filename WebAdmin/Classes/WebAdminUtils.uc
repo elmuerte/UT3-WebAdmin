@@ -18,13 +18,14 @@ struct DateTime
 };
 
 /**
- * Escape HTML tags in the given string.
+ * Escape HTML tags in the given string. Expects the input to not contain any
+ * escaped entities (i.e. &...;)
  */
 function static final String HTMLEscape(coerce string inp)
 {
+	inp = Repl(inp, "&", "&amp;");
 	inp = Repl(inp, "<", "&lt;");
-	inp = Repl(inp, ">", "&gt;");
-	return Repl(inp, "&", "&amp;");
+	return Repl(inp, ">", "&gt;");
 }
 
 /**
@@ -32,7 +33,7 @@ function static final String HTMLEscape(coerce string inp)
  */
 function static final String ColorToHTMLColor(Color clr)
 {
-	return "#"$Left(ToHex(clr.R), 2)$Left(ToHex(clr.G), 2)$Left(ToHex(clr.B), 2);
+	return "#"$Right(ToHex(clr.R), 2)$Right(ToHex(clr.G), 2)$Right(ToHex(clr.B), 2);
 }
 
 /**
