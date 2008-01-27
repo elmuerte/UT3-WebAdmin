@@ -119,31 +119,7 @@ function handleCurrent(WebAdminQuery q)
 	foreach sortedPRI(pri, idx)
 	{
 		q.response.subst("evenodd", idx % 2);
-		if (len(pri.PlayerName) == 0)
-		{
-			q.response.subst("player.name", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerAlias));
-		}
-		else {
-			q.response.subst("player.name", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerName));
-		}
-		q.response.subst("player.score", int(pri.score));
-		q.response.subst("player.deaths", int(pri.deaths));
-		q.response.subst("player.ping", pri.ping);
-		q.response.subst("player.lives", pri.numlives);
-		q.response.subst("player.ranking", pri.playerranking);
-		q.response.subst("player.teamid", pri.TeamID);
-		if (pri.Team != none)
-		{
-			q.response.subst("player.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.TeamColor));
-		}
-		else {
-			q.response.subst("player.teamcolor", "transparent");
-		}
-		q.response.subst("player.admin", pri.bAdmin);
-		q.response.subst("player.bot", pri.bBot);
-		q.response.subst("player.spectator", pri.bIsSpectator);
-		q.response.subst("player.kills", pri.kills);
-		q.response.subst("player.starttime", pri.starttime);
+		substPri(q, pri);
 		players $= webadmin.include(q, "current_player_row.inc");
 	}
 	q.response.subst("sorted."$q.request.getVariable("sortby", "score"), "sorted");
@@ -156,7 +132,7 @@ function handleCurrent(WebAdminQuery q)
 	webadmin.sendPage(q, "current.html");
 }
 
-function buildSortedPRI(string sortkey, optional bool reverse=false)
+function buildSortedPRI(string sortkey, optional bool reverse=false, optional bool includeBots=true)
 {
 	local Controller P;
 	local PlayerReplicationInfo PRI;
@@ -169,6 +145,10 @@ function buildSortedPRI(string sortkey, optional bool reverse=false)
 	{
 		if (!P.bDeleteMe && P.PlayerReplicationInfo != None && P.bIsPlayer)
 		{
+			if (!includeBots && P.PlayerReplicationInfo.bBot)
+			{
+				continue;
+			}
 			inserted = false;
 			foreach sortedPRI(PRI, idx)
 			{
@@ -254,26 +234,135 @@ protected static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerRepl
 	{
 		return pri1.starttime > pri2.starttime;
 	}
-	/*
-	else if (key ~= "admin")
+}
+
+protected function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
+{
+	q.response.subst("player.playerid", pri.PlayerID);
+	if (len(pri.PlayerName) == 0)
 	{
-		return pri1.admin > pri2.admin;
+		q.response.subst("player.name", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerAlias));
 	}
-	else if (key ~= "bot")
+	else {
+		q.response.subst("player.name", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerName));
+	}
+	q.response.subst("player.playername", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerName));
+	q.response.subst("player.playeralias", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerAlias));
+	q.response.subst("player.score", int(pri.score));
+	q.response.subst("player.deaths", int(pri.deaths));
+	q.response.subst("player.ping", pri.ping);
+	q.response.subst("player.lives", pri.numlives);
+	q.response.subst("player.ranking", pri.playerranking);
+	q.response.subst("player.teamid", pri.TeamID);
+	if (pri.Team != none)
 	{
-		return pri1.bot > pri2.bot;
+		q.response.subst("player.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.TeamColor));
 	}
-	else if (key ~= "spectator")
-	{
-		return pri1.spectator > pri2.spectator;
+	else {
+		q.response.subst("player.teamcolor", "transparent");
 	}
-	*/
+	q.response.subst("player.admin", pri.bAdmin);
+	q.response.subst("player.bot", pri.bBot);
+	q.response.subst("player.spectator", pri.bIsSpectator);
+	q.response.subst("player.kills", pri.kills);
+	q.response.subst("player.starttime", pri.starttime);
 }
 
 function handleCurrentPlayers(WebAdminQuery q)
 {
+	local PlayerReplicationInfo PRI;
+	local int idx;
+	local string players, IP;
+	local PlayerController PC;
+
+	if (q.request.getVariable("action") != "")
+	{
+		PRI = webadmin.WorldInfo.Game.GameReplicationInfo.FindPlayerByID(int(q.request.getVariable("playerid")));
+		if (PRI == none)
+		{
+			q.response.subst("message", "Unable to find the requested player.");
+		}
+		else {
+			PC = PlayerController(PRI.Owner);
+			if ( NetConnection(PC.Player) == None )
+			{
+				PC = none;
+			}
+			if (PC == none)
+			{
+				q.response.subst("message", "No human player associated with this player.");
+			}
+			else {
+				`Log("Action = "$q.request.getVariable("action"));
+				if (q.request.getVariable("action") ~= "banip")
+				{
+					banByIP(PC);
+				}
+				else if (q.request.getVariable("action") ~= "banid")
+				{
+					banByID(PC);
+				}
+				if (!webadmin.WorldInfo.Game.AccessControl.KickPlayer(PC, webadmin.WorldInfo.Game.AccessControl.DefaultKickReason))
+				{
+					q.response.subst("message", "Unable to kick the player "$PRI.PlayerName$". Logged in admins can not be kicked.");
+				}
+				else {
+					q.response.subst("message", "Player "$PRI.PlayerName$" was removed from the server.");
+				}
+			}
+		}
+	}
+
+	buildSortedPRI(q.request.getVariable("sortby", "name"), q.request.getVariable("reverse", "") ~= "true", false);
+	foreach sortedPRI(pri, idx)
+	{
+		PC = PlayerController(pri.owner);
+		if (PC == none)
+		{
+			continue;
+		}
+
+		q.response.subst("evenodd", idx % 2);
+		substPri(q, pri);
+		IP = PC.GetPlayerNetworkAddress();
+		IP = Left(IP, InStr(IP, ":"));
+		q.response.subst("player.ip", IP);
+		q.response.subst("player.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(pri.UniqueId));
+
+		players $= webadmin.include(q, "current_players_row.inc");
+	}
+	q.response.subst("sorted."$q.request.getVariable("sortby", "name"), "sorted");
+	if (!(q.request.getVariable("reverse", "") ~= "true"))
+	{
+		q.response.subst("reverse."$q.request.getVariable("sortby", "name"), "");
+	}
+
+	q.response.subst("players", players);
 
 	webadmin.sendPage(q, "current_players.html");
+}
+
+protected function banByIP(PlayerController PC)
+{
+	local string IP;
+	IP = PC.GetPlayerNetworkAddress();
+	IP = Left(IP, InStr(IP, ":"));
+ 	webadmin.WorldInfo.Game.AccessControl.IPPolicies[webadmin.WorldInfo.Game.AccessControl.IPPolicies.length] = "DENY," $ IP;
+	webadmin.WorldInfo.Game.AccessControl.SaveConfig();
+}
+
+protected function banByID(PlayerController PC)
+{
+	local BannedInfo NewBanInfo;
+	if ( PC.PlayerReplicationInfo.UniqueId != PC.PlayerReplicationInfo.default.UniqueId &&
+			!webadmin.WorldInfo.Game.AccessControl.IsIDBanned(PC.PlayerReplicationInfo.UniqueID) )
+	{
+		NewBanInfo.BannedID = PC.PlayerReplicationInfo.UniqueId;
+		NewBanInfo.PlayerName = PC.PlayerReplicationInfo.PlayerName;
+		NewBanInfo.TimeStamp = Timestamp();
+		webadmin.WorldInfo.Game.AccessControl.BannedPlayerInfo.AddItem(NewBanInfo);
+		webadmin.WorldInfo.Game.AccessControl.SaveConfig();
+	}
 }
 
 function handleCurrentChat(WebAdminQuery q)

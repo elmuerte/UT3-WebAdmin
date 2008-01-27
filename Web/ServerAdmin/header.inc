@@ -9,8 +9,8 @@
 
 <div id="header">
 <h1><span>UT3 WebAdmin</span></h1>
-<h2 id="pageTitle"><%page.title%></h2>
-<p id="pageDescription"><%page.description%></p>
 <h3 id="pageUri"><%page.uri%></h3>
 <h4 id="adminName">Welcome <span class="username"><%admin.name%></span></h4>
+<h2 id="pageTitle"><%page.title%></h2>
+<p id="pageDescription"><%page.description%></p>
 </div>

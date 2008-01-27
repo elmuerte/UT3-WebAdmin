@@ -47,11 +47,13 @@ DD {
 }
 
 LEGEND {
-	border: 1px solid #520000;
 	font-weight: bold;
-	background-color: #520000;
 	color: #f0f0f0;
-	padding: 0.1eml
+	padding: 0 0.75em 0 0.75em;
+	background-image: url(hbar.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	line-height: 32px;
 }
 
 FIELDSET {
@@ -72,6 +74,25 @@ BUTTON:Hover, INPUT.button:Hover {
 	background-color: #730000;
 }
 
+TD {
+	vertical-align: top;
+}
+
+TH {
+	padding: 0.2em 0.4em 0.1em 0.4em;
+	font-size: 0.9em;
+	font-weight: bold;
+	color: white;
+	/*background-color: #520000;*/
+	background-image: url(hbar.png);
+	background-repeat: no-repeat;
+	background-position: top center;
+}
+
+TH A {
+	color: white;
+}
+
 #header {
 	background-image: url(header.gif);
 	background-repeat: no-repeat;
@@ -84,7 +105,7 @@ BUTTON:Hover, INPUT.button:Hover {
 }
 
 #header H1 {
-	background-image: url(ut3-logo.gif);
+	background-image: url(ut3-logo.png);
 	background-repeat: no-repeat;
 	background-position: center;
 	width: 240px;
@@ -125,6 +146,15 @@ BUTTON:Hover, INPUT.button:Hover {
 #content {
 	margin-right: 10px;
 	margin-left: 10px;
+}
+
+#content H2, #content H3 {
+	background-image: url(hbar.png);
+	background-repeat: no-repeat;
+	line-height: 32px;
+	color: white;
+	padding-left: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 #menu {
@@ -170,7 +200,7 @@ BUTTON:Hover, INPUT.button:Hover {
 }
 
 #footer {
-	padding-top: 0.5em;
+	padding-top: 1em;
 	clear: both;
 	text-align: center;
 	font-size: 0.7em;
@@ -224,24 +254,15 @@ BUTTON:Hover, INPUT.button:Hover {
 }
 
 TABLE#players {
-	border: 1px solid #520000;
 	border-collapse: collapse;
 }
 
-TABLE#players TD, TABLE#players TH {
+TABLE#players TD {
 	border: 1px solid #520000;
 }
 
-TABLE#players TH {
-	padding: 0 0.4em 0 0.4em;
-	font-size: 0.9em;
-	font-weight: bold;
-	color: white;
-	background-color: #520000;
-}
-
-TABLE#players TH A {
-	color: white;
+TABLE#players TD {
+	vertical-align: middle;
 }
 
 .row1 {

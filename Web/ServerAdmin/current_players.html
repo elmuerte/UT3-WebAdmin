@@ -1,7 +1,22 @@
 <!-- #include file="header.inc" -->
 
 <div id="content">
-...
+
+<p><%message%></p>
+
+<table id="players">
+<tr>
+    <th><!-- team --></th>
+    <th><a href="<%page.fulluri%>?sortby=name&reverse=<%reverse.name%>" class="<%sorted.name%>">Player name</a></th>
+    <th><a href="<%page.fulluri%>?sortby=ping&reverse=<%reverse.ping%>" class="<%sorted.ping%>">Ping</a></th>
+    <th>IP</th>
+    <th>Unique ID</th>
+    <th>Admin</th>
+    <th></th>
+</tr>
+<%players%>
+</table>
+
 </div>
 
 <!-- #include file="navigation.inc" -->
