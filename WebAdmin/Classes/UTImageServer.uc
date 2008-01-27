@@ -21,9 +21,9 @@ function Query(WebRequest Request, WebResponse Response)
 		Response.IncludeBinaryFile( Path $ Request.URI );
 		return;
 	}
-	else if( Right(Request.URI, 4) ~= ".txt" )
+	else if( Right(Request.URI, 4) ~= ".ico" )
 	{
-		Response.SendStandardHeaders("text/plain", true);
+		Response.SendStandardHeaders("image/x-icon", true);
 		Response.IncludeBinaryFile( Path $ Request.URI );
 		return;
 	}
