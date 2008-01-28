@@ -1,0 +1,77 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<form method="POST" action="<%page.fulluri%>">
+
+<fieldset>
+<legend>Game and map</legend>
+<dl>
+    <dt><label for="gametype">Game type</label></dt>
+    <dd>
+        <select id="gametype" name="gametype">
+        <%gametypes%>
+        </select>
+        <button type="submit" name="action" value="update" id="btnupdate">update map list</button>
+    </dd>
+    <dt><label for="map">Map</label></dt>
+    <dd>
+        <select id="map" name="map">
+        <%maps%>
+        </select>
+    </dd>
+</dl>
+</fieldset>
+
+<fieldset>
+<legend>Mutators</legend>
+<table>
+<colgroup>
+    <col width="1*" />
+    <col width="1*" />
+    <col width="1*" />
+</colgroup>
+<%mutators%>
+</table>
+</fieldset>
+
+<button type="submit" name="action" value="change" id="btnchange">Change game</button>
+</form>
+
+<script type="text/javascript">
+$('#gametype').change(function() {
+    $('#gametypeThrobber').show();
+    $.ajax({
+        type: "POST",
+        url: '<%page.fulluri%>/data',
+        data: {ajax: 1, gametype: $('#gametype').val()},
+        success: mapListUpdate,
+        error: ajaxError
+    });
+});
+
+function mapListUpdate(data, textStatus) {
+    $('#gametypeThrobber').hide();
+    $('#map').fadeOut('fast', function() {
+        $('#map option').remove();
+        $(this).append(data);
+        $(this).fadeIn('fast');
+    });    
+}
+
+function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
+    $('#gametypeThrobber').hide();
+    if (XMLHttpRequest.status == 403) {
+        document.location = '<%page.fulluri%>';
+    }
+}
+
+$('#btnupdate').remove();
+$('#gametype').after(' <img src="/images/throbber.gif" alt="loading..." id="gametypeThrobber" />');
+$('#gametypeThrobber').hide();
+</script>
+
+</div>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->

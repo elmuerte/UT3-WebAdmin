@@ -81,6 +81,8 @@ var const string timestamp;
 
 var const string version;
 
+var DataStoreCache dataStoreCache;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -96,6 +98,8 @@ function init()
 		QueryHandlers[0] = "WebAdmin.QHCurrent";
 		QueryHandlers[1] = "WebAdmin.QHDefaults";
 	}
+
+	dataStoreCache = new(Self) class'DataStoreCache';
 
 	menu = new(Self) class'WebAdminMenu';
 	menu.webadmin = self;
@@ -166,6 +170,8 @@ function CleanupApp()
 	auth = none;
 	sessions.destroyAll();
 	sessions = none;
+	dataStoreCache.cleanup();
+	dataStoreCache = none;
 	super.CleanupApp();
 }
 

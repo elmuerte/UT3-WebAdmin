@@ -50,6 +50,8 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/current/players", "Players", self, "Manage the players currently on the server.");
 	menu.addMenu("/current/chat", "Chat console", self, "This console allows you to chat with the players on the server.");
 	menu.addMenu("/current/chat/data", "", self);
+	menu.addMenu("/current/change", "Change Game", self, "Change the current game.");
+	menu.addMenu("/current/change/data", "", self);
 	if (bConsoleEnabled)
 	{
 		menu.addMenu("/console", "Management Console", self,
@@ -82,6 +84,12 @@ function bool handleQuery(WebAdminQuery q)
 				return true;
 			}
 			return false;
+		case "/current/change":
+			handleCurrentChange(q);
+			return true;
+		case "/current/change/data":
+			handleCurrentChangeData(q);
+			return true;
 	}
 }
 
@@ -174,7 +182,7 @@ function buildSortedPRI(string sortkey, optional bool reverse=false, optional bo
 	}
 }
 
-protected static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInfo PRI2, string key)
+static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInfo PRI2, string key)
 {
 	local string s1, s2;
 	if (key ~= "name")
@@ -237,7 +245,7 @@ protected static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerRepl
 	}
 }
 
-protected function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
+static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 {
 	q.response.subst("player.playerid", pri.PlayerID);
 	if (len(pri.PlayerName) == 0)
@@ -453,6 +461,134 @@ function handleConsole(WebAdminQuery q)
 		q.response.subst("console.visible", cssHidden);
 	}
 	webadmin.sendPage(q, "console.html");
+}
+
+function handleCurrentChange(WebAdminQuery q)
+{
+	local UTUIDataProvider_GameModeInfo gametype;
+	local string currentGameType, curmap;
+	local string substvar;
+	local int idx, i;
+	local array<UTUIDataProvider_MapInfo> maps;
+
+ 	webadmin.dataStoreCache.loadGameTypes();
+
+ 	currentGameType = q.request.getVariable("gametype");
+ 	if (currentGameType != "")
+ 	{
+ 		q.session.putString("current.gametype", currentGameType);
+ 	}
+ 	else {
+ 		currentGameType = q.session.getString("current.gametype", "");
+ 	}
+
+ 	if (currentGameType == "")
+ 	{
+ 		currentGameType = string(webadmin.WorldInfo.Game.class);
+ 		curmap = string(webadmin.WorldInfo.GetPackageName());
+ 	}
+ 	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
+ 	if (idx > -1)
+ 	{
+ 		currentGameType = webadmin.dataStoreCache.gametypes[idx].GameMode;
+ 		if (curmap == "")
+ 		{
+ 			curmap = webadmin.dataStoreCache.gametypes[idx].DefaultMap;
+ 		}
+ 	}
+ 	else {
+ 		currentGameType = "";
+ 	}
+
+	substvar = "";
+ 	foreach webadmin.dataStoreCache.gametypes(gametype)
+ 	{
+ 		if (gametype.bIsCampaign)
+ 		{
+ 			continue;
+ 		}
+ 		q.response.subst("gametype.gamemode", class'WebAdminUtils'.static.HTMLEscape(gametype.GameMode));
+ 		q.response.subst("gametype.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.defaultmap", class'WebAdminUtils'.static.HTMLEscape(gametype.DefaultMap));
+ 		q.response.subst("gametype.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+ 		if (currentGameType ~= gametype.GameMode)
+ 		{
+ 			q.response.subst("gametype.selected", "selected=\"selected\"");
+ 		}
+ 		else {
+ 			q.response.subst("gametype.selected", "");
+ 		}
+ 		substvar $= webadmin.include(q, "current_change_gametype.inc");
+ 	}
+ 	q.response.subst("gametypes", substvar);
+
+	substvar = "";
+ 	if (currentGameType != "")
+ 	{
+ 		maps = webadmin.dataStoreCache.getMaps(currentGameType);
+ 		for (i = 0; i < maps.length; i++)
+ 		{
+			q.response.subst("map.mapname", class'WebAdminUtils'.static.HTMLEscape(maps[i].MapName));
+ 			q.response.subst("map.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].FriendlyName)));
+ 			q.response.subst("map.mapid", string(maps[i].MapID));
+ 			q.response.subst("map.numplayers", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].NumPlayers)));
+ 			q.response.subst("map.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].Description)));
+	 		if (curmap ~= maps[i].MapName)
+ 			{
+ 				q.response.subst("map.selected", "selected=\"selected\"");
+	 		}
+ 			else {
+ 				q.response.subst("map.selected", "");
+	 		}
+ 			substvar $= webadmin.include(q, "current_change_map.inc");
+ 		}
+ 	}
+ 	q.response.subst("maps", substvar);
+
+	webadmin.sendPage(q, "current_change.html");
+}
+
+function handleCurrentChangeData(WebAdminQuery q)
+{
+	local string currentGameType, curmap;
+	local array<UTUIDataProvider_MapInfo> maps;
+	local int i;
+
+	currentGameType = q.request.getVariable("gametype");
+ 	if (currentGameType != "")
+ 	{
+ 		q.session.putString("current.gametype", currentGameType);
+ 	}
+ 	else {
+ 		currentGameType = q.session.getString("current.gametype", "");
+ 	}
+
+	if (currentGameType != "")
+ 	{
+ 		webadmin.dataStoreCache.loadGameTypes();
+ 		i = webadmin.dataStoreCache.resolveGameType(currentGameType);
+	 	if (i > -1)
+ 		{
+ 			curmap = webadmin.dataStoreCache.gametypes[i].DefaultMap;
+ 		}
+ 		maps = webadmin.dataStoreCache.getMaps(currentGameType);
+ 		for (i = 0; i < maps.length; i++)
+ 		{
+			q.response.subst("map.mapname", class'WebAdminUtils'.static.HTMLEscape(maps[i].MapName));
+ 			q.response.subst("map.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].FriendlyName)));
+ 			q.response.subst("map.mapid", string(maps[i].MapID));
+ 			q.response.subst("map.numplayers", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].NumPlayers)));
+ 			q.response.subst("map.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].Description)));
+	 		if (curmap ~= maps[i].MapName)
+ 			{
+ 				q.response.subst("map.selected", "selected=\"selected\"");
+	 		}
+ 			else {
+ 				q.response.subst("map.selected", "");
+	 		}
+ 			q.response.SendText(webadmin.include(q, "current_change_map.inc"));
+ 		}
+ 	}
 }
 
 defaultproperties

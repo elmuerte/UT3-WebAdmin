@@ -21,7 +21,7 @@ struct DateTime
  * Escape HTML tags in the given string. Expects the input to not contain any
  * escaped entities (i.e. &...;)
  */
-function static final String HTMLEscape(coerce string inp)
+static final function String HTMLEscape(coerce string inp)
 {
 	inp = Repl(inp, "&", "&amp;");
 	inp = Repl(inp, "<", "&lt;");
@@ -31,7 +31,7 @@ function static final String HTMLEscape(coerce string inp)
 /**
  * Convert a color to the HTML equivalent
  */
-function static final String ColorToHTMLColor(Color clr)
+static final function String ColorToHTMLColor(color clr)
 {
 	return "#"$Right(ToHex(clr.R), 2)$Right(ToHex(clr.G), 2)$Right(ToHex(clr.B), 2);
 }
@@ -40,7 +40,7 @@ function static final String ColorToHTMLColor(Color clr)
  * Parse a timestamp to a DateTime structure. When no timestamp is given the current timestamp will be used.
  * The format of the timestamp is: YYYY/MM/DD - HH:MM:SS
  */
-function static final bool getDateTime(out DateTime record, optional string ts = TimeStamp())
+static final function bool getDateTime(out DateTime record, optional string ts = TimeStamp())
 {
 	local int idx;
 	local array<string> parts;
@@ -58,4 +58,17 @@ function static final bool getDateTime(out DateTime record, optional string ts =
 	record.minute = int(parts[1]);
 	record.second = int(parts[2]);
 	return true;
+}
+
+static final function string getLocalized(coerce string data)
+{
+	local array<string> parts;
+	if (!(Left(data, 9) ~= "<Strings:")) return data;
+	data = Mid(data, 9, Len(data)-10);
+	ParseStringIntoArray(data, parts, ".", true);
+	if (parts.length >= 3)
+	{
+		return Localize(parts[1], parts[2], parts[0]);
+	}
+	return "";
 }

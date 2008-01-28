@@ -64,6 +64,7 @@ LEGEND {
 FIELDSET {
 	border: 1px solid #520000;
 	padding: 0.5em;
+	margin-bottom: 1em;
 }
 
 BUTTON, INPUT.button {
