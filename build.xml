@@ -1,0 +1,61 @@
+<project name="UT3WebAdmin" default="build">
+
+  <dirname property="ut3dir" file="${basedir}"/>
+  <tstamp>
+    <format property="distfile.tstamp" pattern="yyyy-MM-dd" />
+  </tstamp>
+
+  <target name="clean" description="Clean ...">
+    <delete dir="build" />
+    <delete dir="dist" />
+    <delete file="${ut3dir}/UTGame/Script/WebAdmin.u" />
+  </target>
+
+  <target name="build" description="Build the UT3 WebAdmin">
+    <exec executable="${ut3dir}/Development/Src/WebAdmin/settimestamp.cmd" dir="${ut3dir}/Development/Src/WebAdmin" />
+    <exec executable="${ut3dir}/binaries/utgame.com" dir="${ut3dir}/binaries">
+      <arg value="make" />
+      <arg value="-unattended" />
+    </exec>
+  </target>
+
+  <target name="-dist-copy-files">
+    <mkdir dir="build/Web"/>
+    <copy todir="build/Web">
+      <fileset dir="${ut3dir}/Web"/>
+    </copy>
+    
+    <mkdir dir="build/UTGame/Script"/>
+    <copy todir="build/UTGame/Script">
+      <fileset dir="${ut3dir}/UTGame/Script">
+        <include name="WebAdmin.u" />
+      </fileset>
+    </copy>
+
+    <mkdir dir="build/UTGame/Config"/>
+    <copy todir="build/UTGame/Config">
+      <fileset dir="${ut3dir}/UTGame/Config">
+        <include name="DefaultWebAdmin.ini" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="dist" depends="clean,build,-dist-copy-files" description="Build a release package">
+    <mkdir dir="dist" />
+    <zip destfile="dist/WebAdmin-${distfile.tstamp}.zip" basedir="build" />
+  </target>
+
+  <target name="dist-dev" depends="clean,build,-dist-copy-files" description="Build a developer release package">
+    <mkdir dir="build/Development/Src"/>
+    <copy todir="build/Development/Src">
+      <fileset dir="${ut3dir}/Development/Src">
+        <include name="WebAdmin/**" />
+        <exclude name="**/*_old/**" />
+        <exclude name="**/*.user" />
+      </fileset>
+    </copy>
+    <mkdir dir="dist" />
+    <zip destfile="dist/WebAdmin-${distfile.tstamp}.zip" basedir="build" />
+  </target>
+  
+</project>
