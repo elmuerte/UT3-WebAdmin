@@ -91,6 +91,12 @@ function init()
 
 	super.init();
 
+	if (QueryHandlers.length == 0)
+	{
+		QueryHandlers[0] = "WebAdmin.QHCurrent";
+		QueryHandlers[1] = "WebAdmin.QHDefaults";
+	}
+
 	menu = new(Self) class'WebAdminMenu';
 	menu.webadmin = self;
 	menu.addMenu("/about", "", none,, MaxInt-1);
@@ -531,7 +537,7 @@ function pageAuthentication(WebAdminQuery q, string errorMsg)
 	token = Right(ToHex(Rand(MaxInt)), 4)$Right(ToHex(Rand(MaxInt)), 4);
 	q.session.putString("AuthFormToken", token);
 	q.response.Subst("page.title", "Login");
-	q.response.Subst("page.description", "");
+	q.response.Subst("page.description", "Log in using the administrator username and password. Cookies must be enabled for this site.");
 	q.response.Subst("message", errorMsg);
 	q.response.Subst("token", token);
 	sendPage(q, "login.html");
