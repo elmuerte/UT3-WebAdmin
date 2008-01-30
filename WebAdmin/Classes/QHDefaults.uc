@@ -112,7 +112,7 @@ function handleIPPolicy(WebAdminQuery q)
 		q.response.subst("policy.id", ""$i);
 		policy = webadmin.worldinfo.game.accesscontrol.IPPolicies[i];
 		idx = InStr(policy, ",");
-		if (idx == -1) idx = InStr(policy, ";");
+		if (idx == INDEX_NONE) idx = InStr(policy, ";");
 		q.response.subst("policy.ipmask", class'WebAdminUtils'.static.HTMLEscape(Mid(policy, idx+1)));
 		q.response.subst("policy.policy", class'WebAdminUtils'.static.HTMLEscape(Left(policy, idx)));
 		q.response.subst("policy.selected."$Caps(Left(policy, idx)), "selected=\"selected\"");
@@ -136,7 +136,7 @@ function handleBans(WebAdminQuery q)
 	{
 		action = q.request.getVariable("banid");
 		i = InStr(action, "legacy:");
-		if (i == -1)
+		if (i == INDEX_NONE)
 		{
 			i = int(action);
 			if (i > -1 && i < webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.Length)

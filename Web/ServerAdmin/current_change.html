@@ -35,12 +35,22 @@
 </table>
 </fieldset>
 
+<fieldset>
+<legend>Miscelaneous</legend>
+<dl>
+    <dt><label for="urlextra">Additional URL variables</label></dt>
+    <dd>
+        <input type="text" id="urlextra" name="urlextra" size="80" />
+    </dd>
+</dl>
+</fieldset>
+
 <button type="submit" name="action" value="change" id="btnchange">Change game</button>
 </form>
 
 <script type="text/javascript">
 $('#gametype').change(function() {
-    $('#gametypeThrobber').show();
+    $('#throbber').show();
     $.ajax({
         type: "POST",
         url: '<%page.fulluri%>/data',
@@ -51,7 +61,7 @@ $('#gametype').change(function() {
 });
 
 function mapListUpdate(data, textStatus) {
-    $('#gametypeThrobber').hide();
+    $('#throbber').hide();
     $('#map').fadeOut('fast', function() {
         $('#map option').remove();
         $(this).append(data);
@@ -60,15 +70,15 @@ function mapListUpdate(data, textStatus) {
 }
 
 function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
-    $('#gametypeThrobber').hide();
+    $('#throbber').hide();
     if (XMLHttpRequest.status == 403) {
         document.location = '<%page.fulluri%>';
     }
 }
 
 $('#btnupdate').remove();
-$('#gametype').after(' <img src="/images/throbber.gif" alt="loading..." id="gametypeThrobber" />');
-$('#gametypeThrobber').hide();
+$('#gametype').after(' <img src="/images/throbber.gif" alt="loading..." id="throbber" />');
+$('#throbber').hide();
 </script>
 
 </div>

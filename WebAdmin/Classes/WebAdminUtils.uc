@@ -46,7 +46,7 @@ static final function bool getDateTime(out DateTime record, optional string ts =
 	local array<string> parts;
 	ts -= " ";
 	idx = InStr(ts, "-");
-	if (idx == -1) return false;
+	if (idx == INDEX_NONE) return false;
 	ParseStringIntoArray(Left(ts, idx), parts, "/", false);
 	if (parts.length != 3) return false;
 	record.year = int(parts[0]);

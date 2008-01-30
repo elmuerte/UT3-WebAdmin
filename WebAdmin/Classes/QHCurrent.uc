@@ -474,6 +474,7 @@ function handleCurrentChange(WebAdminQuery q)
  	webadmin.dataStoreCache.loadGameTypes();
 
  	currentGameType = q.request.getVariable("gametype");
+ 	/*
  	if (currentGameType != "")
  	{
  		q.session.putString("current.gametype", currentGameType);
@@ -481,6 +482,7 @@ function handleCurrentChange(WebAdminQuery q)
  	else {
  		currentGameType = q.session.getString("current.gametype", "");
  	}
+ 	*/
 
  	if (currentGameType == "")
  	{
@@ -488,7 +490,7 @@ function handleCurrentChange(WebAdminQuery q)
  		curmap = string(webadmin.WorldInfo.GetPackageName());
  	}
  	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
- 	if (idx > -1)
+ 	if (idx > INDEX_NONE)
  	{
  		currentGameType = webadmin.dataStoreCache.gametypes[idx].GameMode;
  		if (curmap == "")
@@ -545,6 +547,19 @@ function handleCurrentChange(WebAdminQuery q)
  	}
  	q.response.subst("maps", substvar);
 
+ 	if (currentGameType != "")
+ 	{
+ 		webadmin.dataStoreCache.loadMutators();
+ 		for (i = 0; i < webadmin.dataStoreCache.mutatorGroups.length; i++)
+ 		{
+ 			`log(webadmin.dataStoreCache.mutatorGroups[i].GroupName);
+ 			for (idx = 0; idx < webadmin.dataStoreCache.mutatorGroups[i].mutators.length; idx++)
+ 			{
+ 				`log("    "$webadmin.dataStoreCache.mutatorGroups[i].mutators[idx].ClassName@webadmin.dataStoreCache.mutatorGroups[i].mutators[idx].FriendlyName);
+ 			}
+ 		}
+ 	}
+
 	webadmin.sendPage(q, "current_change.html");
 }
 
@@ -555,6 +570,7 @@ function handleCurrentChangeData(WebAdminQuery q)
 	local int i;
 
 	currentGameType = q.request.getVariable("gametype");
+	/*
  	if (currentGameType != "")
  	{
  		q.session.putString("current.gametype", currentGameType);
@@ -562,12 +578,13 @@ function handleCurrentChangeData(WebAdminQuery q)
  	else {
  		currentGameType = q.session.getString("current.gametype", "");
  	}
+ 	*/
 
 	if (currentGameType != "")
  	{
  		webadmin.dataStoreCache.loadGameTypes();
  		i = webadmin.dataStoreCache.resolveGameType(currentGameType);
-	 	if (i > -1)
+	 	if (i > INDEX_NONE)
  		{
  			curmap = webadmin.dataStoreCache.gametypes[i].DefaultMap;
  		}

@@ -24,8 +24,33 @@ struct GameTypeMaps
 };
 var array<GameTypeMaps> gameTypeMapCache;
 
+struct MutatorGroup
+{
+	var string GroupName;
+	var array<UTUIDataProvider_Mutator> mutators;
+};
+/**
+ * List of mutators grouped by group
+ */
+var array<MutatorGroup> mutatorGroups;
+
+struct GameTypeMutators
+{
+	var string gametype;
+	var array<MutatorGroup> mutatorGroups;
+};
+/**
+ * Cache of the mutators available for a specific gametype
+ */
+var array<GameTypeMutators> gameTypeMutatorCache;
+
 function cleanup()
 {
+	gametypes.remove(0, gametypes.length);
+	maps.remove(0, maps.length);
+	gameTypeMapCache.remove(0, gameTypeMapCache.length);
+	mutatorGroups.remove(0, mutatorGroups.length);
+	gameTypeMutatorCache.remove(0, gameTypeMutatorCache.length);
 }
 
 function array<UTUIDataProvider_GameModeInfo> getGameTypes(optional string sorton = "FriendlyName")
@@ -79,7 +104,7 @@ function int resolveGameType(coerce string classname)
 			return idx;
 		}
 	}
-	return -1;
+	return INDEX_NONE;
 }
 
 function loadGameTypes()
@@ -160,20 +185,20 @@ function array<UTUIDataProvider_MapInfo> getMaps(optional string gametype = "", 
 	}
 	else {
 		idx = resolveGameType(gametype);
-		if (idx == -1)
+		if (idx == INDEX_NONE)
 		{
 			`Log("gametype not found "$gametype);
 			return result;
 		}
 		j = gameTypeMapCache.find('gametype', gametypes[idx].GameMode);
-		if (j == -1)
+		if (j == INDEX_NONE)
 		{
 			ParseStringIntoArray(Caps(gametypes[idx].Prefixes), prefixes, "|", true);
 			for (i = 0; i < maps.length; i++)
 			{
 				prefix = maps[i].MapName;
 				prefix = Caps(Left(prefix, InStr(prefix, "-")));
-				if (prefixes.find(prefix) > -1)
+				if (prefixes.find(prefix) > INDEX_NONE)
 				{
 					workset.AddItem(maps[i]);
 				}
@@ -265,5 +290,150 @@ static function bool compareMap(UTUIDataProvider_MapInfo g1, UTUIDataProvider_Ma
 	else if (sorton ~= "NumPlayers")
 	{
 		return g1.NumPlayers > g2.NumPlayers;
+	}
+}
+
+function array<MutatorGroup> getMutators(optional string gametype = "", optional string sorton = "FriendlyName")
+{
+	local array<MutatorGroup> result, workset;
+	local int i, j, idx;
+
+	if (maps.Length == 0)
+	{
+		loadMutators();
+	}
+
+	if (gametype == "")
+	{
+		workset = mutatorGroups;
+	}
+	else {
+		idx = resolveGameType(gametype);
+		if (idx == INDEX_NONE)
+		{
+			`Log("gametype not found "$gametype);
+			return result;
+		}
+		j = gameTypeMutatorCache.find('gametype', gametypes[idx].GameMode);
+		if (j == INDEX_NONE)
+		{
+			// filter mutators
+			/*
+			ParseStringIntoArray(Caps(gametypes[idx].Prefixes), prefixes, "|", true);
+			for (i = 0; i < maps.length; i++)
+			{
+				prefix = maps[i].MapName;
+				prefix = Caps(Left(prefix, InStr(prefix, "-")));
+				if (prefixes.find(prefix) > INDEX_NONE)
+				{
+					workset.AddItem(maps[i]);
+				}
+			}
+			*/
+			gameTypeMutatorCache.add(1);
+			gameTypeMutatorCache[gameTypeMutatorCache.length-1].gametype = gametypes[idx].GameMode;
+			gameTypeMutatorCache[gameTypeMutatorCache.length-1].mutatorGroups = workset;
+		}
+		else {
+			workset = gameTypeMutatorCache[j].mutatorGroups;
+		}
+	}
+
+	if (sorton ~= "FriendlyName")
+	{
+		return workset;
+	}
+
+	return workset;
+	// TODO: implement sorting
+	/*
+	for (i = 0; i < workset.length; i++)
+	{
+		for (j = 0; j < result.length; j++)
+		{
+			if (compareMap(result[j], workset[i], sorton))
+			{
+				result.Insert(j, 1);
+				result[j] =  workset[i];
+				break;
+			}
+		}
+		if (j == result.length)
+		{
+			result.AddItem(workset[i]);
+		}
+	}
+	return result;
+	*/
+}
+
+function loadMutators()
+{
+	local array<UTUIResourceDataProvider> ProviderList;
+	local UTUIDataProvider_Mutator item;
+	local int i, j, groupid;
+	local array<string> groups;
+	local string group;
+
+	if (mutatorGroups.Length > 0)
+	{
+		return;
+	}
+
+	class'UTUIDataStore_MenuItems'.static.GetAllResourceDataProviders(class'UTUIDataProvider_Mutator', ProviderList);
+	for (i = 0; i < ProviderList.length; i++)
+	{
+		item = UTUIDataProvider_Mutator(ProviderList[i]);
+
+		ParseStringIntoArray(item.GroupNames, groups, "|", true);
+		foreach groups(group)
+		{
+			groupid = mutatorGroups.find('GroupName', group);
+			if (groupid == INDEX_NONE)
+			{
+				for (groupid = 0; groupid < mutatorGroups.length; groupid++)
+				{
+					if (mutatorGroups[groupid].GroupName > group)
+					{
+						break;
+					}
+				}
+				mutatorGroups.Insert(groupid, 1);
+				mutatorGroups[groupid].GroupName = Caps(group);
+			}
+			for (j = 0; j < mutatorGroups[groupid].mutators.length; j++)
+			{
+				if (compareMutator(mutatorGroups[groupid].mutators[j], item, "FriendlyName"))
+				{
+					mutatorGroups[groupid].mutators.Insert(j, 1);
+					mutatorGroups[groupid].mutators[j] =  item;
+					break;
+				}
+			}
+			if (j == mutatorGroups[groupid].mutators.length)
+			{
+				mutatorGroups[groupid].mutators.AddItem(item);
+			}
+		}
+	}
+}
+
+static function bool compareMutator(UTUIDataProvider_Mutator m1, UTUIDataProvider_Mutator m2, string sorton)
+{
+	if (sorton ~= "ClassName")
+	{
+		return m1.ClassName > m2.ClassName;
+	}
+	else if (sorton ~= "FriendlyName")
+	{
+		return m1.FriendlyName > m2.FriendlyName;
+	}
+	else if (sorton ~= "Description")
+	{
+		return m1.Description > m2.Description;
+	}
+	else if (sorton ~= "GroupNames")
+	{
+		return m1.GroupNames > m2.GroupNames;
 	}
 }

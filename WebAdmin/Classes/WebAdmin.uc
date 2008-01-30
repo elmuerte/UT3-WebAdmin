@@ -148,7 +148,7 @@ function init()
 	WebServer.GetLocalIP(ipaddr);
 	serverIp = WebServer.IpAddrToString(ipaddr);
 	i = InStr(serverIp, ":");
-	if (i > -1)
+	if (i > INDEX_NONE)
 	{
 		serverIp = left(serverIp, i);
 	}
@@ -218,7 +218,7 @@ protected function initQueryHandlers()
  */
 function addQueryHandler(IQueryHandler qh)
 {
-	if (handlers.find(qh) != -1)
+	if (handlers.find(qh) != INDEX_NONE)
 	{
 		return;
 	}
@@ -343,7 +343,7 @@ protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookie
 	foreach cookieParts(entry)
 	{
 		pos = InStr(entry, "=");
-		if (pos > -1)
+		if (pos > INDEX_NONE)
 		{
 			kvp.key = Left(entry, pos);
 			kvp.key -= " ";
@@ -363,7 +363,7 @@ protected function bool getSession(out WebAdminQuery q)
 	local int idx;
 
 	idx = q.cookies.Find('key', "sessionid");
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		sessionId = q.cookies[idx].value;
 	}
@@ -423,7 +423,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	}
 
 	idx = q.cookies.Find('key', "authcred");
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		rememberCookie = q.cookies[idx].value;
 	}
@@ -561,7 +561,7 @@ function pageAbout(WebAdminQuery q)
 	q.response.Subst("webadmin.address", serverIp$":"$WebServer.ListenPort);
 	if (bHttpAuth) q.response.Subst("webadmin.authmethod", "HTTP Authentication");
 	else q.response.Subst("webadmin.authmethod", "Login form");
-	if (q.cookies.Find('key', "authcred") > -1) q.response.Subst("client.remember", "True");
+	if (q.cookies.Find('key', "authcred") > INDEX_NONE) q.response.Subst("client.remember", "True");
 	else q.response.Subst("client.remember", "False");
 	q.response.Subst("client.sessionid", q.session.getId());
 	sendPage(q, "about.html");

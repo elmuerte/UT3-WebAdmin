@@ -46,7 +46,7 @@ function Object getObject(string key)
 {
 	local int idx;
 	idx = objects.Find('key', key);
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		return objects[idx].value;
 	}
@@ -57,7 +57,7 @@ function putObject(string key, Object value)
 {
 	local int idx;
 	idx = objects.Find('key', key);
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		objects[idx].value = value;
 		return;
@@ -71,7 +71,7 @@ function removeObject(string key)
 {
 	local int idx;
 	idx = objects.Find('key', key);
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		objects.remove(idx, 1);
 		return;
@@ -82,7 +82,7 @@ function string getString(string key, optional string defValue = "")
 {
 	local int idx;
 	idx = strings.Find('key', key);
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		return strings[idx].value;
 	}
@@ -93,7 +93,7 @@ function putString(string key, string value)
 {
 	local int idx;
 	idx = strings.Find('key', key);
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		strings[idx].value = value;
 		return;
@@ -107,7 +107,7 @@ function removeString(string key)
 {
 	local int idx;
 	idx = strings.Find('key', key);
-	if (idx > -1)
+	if (idx > INDEX_NONE)
 	{
 		strings.remove(idx, 1);
 		return;

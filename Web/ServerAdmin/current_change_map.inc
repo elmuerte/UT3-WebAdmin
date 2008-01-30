@@ -1,1 +1,1 @@
-<option value="<%map.mapname%>" <%option.selected%>><%map.mapname%> (<%map.friendlyname%>)</option>
+<option value="<%map.mapname%>" <%map.selected%>><%map.mapname%> (<%map.friendlyname%>)</option>
