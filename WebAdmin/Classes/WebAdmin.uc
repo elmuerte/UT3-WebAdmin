@@ -523,6 +523,17 @@ function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional stri
 }
 
 /**
+ * Create a generic information message.
+ */
+function pageGenericInfo(WebAdminQuery q, coerce string msg, optional string title = "Information")
+{
+	q.response.Subst("page.title", title);
+	q.response.Subst("page.description", "");
+	q.response.Subst("message", msg);
+	sendPage(q, "message.html");
+}
+
+/**
  * Produces the authentication page.
  */
 function pageAuthentication(WebAdminQuery q, string errorMsg)

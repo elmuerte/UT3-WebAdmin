@@ -52,6 +52,7 @@
         <include name="WebAdmin/**" />
         <exclude name="**/*_old/**" />
         <exclude name="**/*.user" />
+        <exclude name="**/*.cmd" />
       </fileset>
     </copy>
     <mkdir dir="dist" />

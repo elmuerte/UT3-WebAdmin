@@ -296,9 +296,9 @@ static function bool compareMap(UTUIDataProvider_MapInfo g1, UTUIDataProvider_Ma
 function array<MutatorGroup> getMutators(optional string gametype = "", optional string sorton = "FriendlyName")
 {
 	local array<MutatorGroup> result, workset;
-	local int i, j, idx;
+	local int j, idx;
 
-	if (maps.Length == 0)
+	if (mutatorGroups.Length == 0)
 	{
 		loadMutators();
 	}
@@ -312,24 +312,13 @@ function array<MutatorGroup> getMutators(optional string gametype = "", optional
 		if (idx == INDEX_NONE)
 		{
 			`Log("gametype not found "$gametype);
+			result.length = 0;
 			return result;
 		}
 		j = gameTypeMutatorCache.find('gametype', gametypes[idx].GameMode);
 		if (j == INDEX_NONE)
 		{
-			// filter mutators
-			/*
-			ParseStringIntoArray(Caps(gametypes[idx].Prefixes), prefixes, "|", true);
-			for (i = 0; i < maps.length; i++)
-			{
-				prefix = maps[i].MapName;
-				prefix = Caps(Left(prefix, InStr(prefix, "-")));
-				if (prefixes.find(prefix) > INDEX_NONE)
-				{
-					workset.AddItem(maps[i]);
-				}
-			}
-			*/
+			workset = filterMutators(mutatorGroups, gametypes[idx].GameMode);
 			gameTypeMutatorCache.add(1);
 			gameTypeMutatorCache[gameTypeMutatorCache.length-1].gametype = gametypes[idx].GameMode;
 			gameTypeMutatorCache[gameTypeMutatorCache.length-1].mutatorGroups = workset;
@@ -365,6 +354,57 @@ function array<MutatorGroup> getMutators(optional string gametype = "", optional
 	}
 	return result;
 	*/
+}
+
+/**
+ * Filter the source mutator group list on the provided gametype
+ */
+static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, string gametype)
+{
+	local int i, j, k;
+	local array<MutatorGroup> result;
+	local MutatorGroup group;
+	local class<UTGame> GameModeClass;
+
+	// Why is this needed?
+	gametype = Repl(gametype, "UTGameContent.", "UTGame.");
+	gametype = Repl(gametype, "_Content", "");
+
+	for (i = 0; i < source.length; i++)
+	{
+		group.GroupName = source[i].groupname;
+		group.mutators.length = 0;
+		for (j = 0; j < source[i].mutators.length; j++)
+		{
+			if (source[i].mutators[j].SupportedGameTypes.length > 0)
+			{
+				k = source[i].mutators[j].SupportedGameTypes.Find(gametype);
+				if (k != INDEX_NONE)
+				{
+					group.mutators.AddItem(source[i].mutators[j]);
+				}
+			}
+			else {
+				if (GameModeClass == none)
+				{
+					GameModeClass = class<UTGame>(FindObject(gametype, class'class'));
+				}
+				if(GameModeClass != none)
+				{
+					group.mutators.AddItem(source[i].mutators[j]);
+				}
+				else
+				{
+					`Log("DataStoreCache::filterMutators() - Unable to find game class: "$gametype);
+ 				}
+			}
+		}
+		if (group.mutators.length > 0)
+		{
+			result.AddItem(group);
+		}
+	}
+	return result;
 }
 
 function loadMutators()

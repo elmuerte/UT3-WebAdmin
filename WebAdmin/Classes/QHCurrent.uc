@@ -23,6 +23,12 @@ var config int ChatRefresh;
  */
 var config bool bConsoleEnabled;
 
+/**
+ * Options in this list are not allowed to be set in the "change game" page.
+ * They will removed from the url.
+ */
+var config array<string> denyUrlOptions;
+
 var string cssVisible;
 var string cssHidden;
 
@@ -103,7 +109,7 @@ function handleCurrent(WebAdminQuery q)
 	local int idx;
 
 	q.response.subst("game.name", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameName));
-	q.response.subst("game.type", ""$webadmin.WorldInfo.Game.class);
+	q.response.subst("game.type", webadmin.WorldInfo.Game.class.getPackageName()$"."$webadmin.WorldInfo.Game.class);
 
 	q.response.subst("map.title", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Title));
 	q.response.subst("map.author", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Author));
@@ -466,28 +472,76 @@ function handleConsole(WebAdminQuery q)
 function handleCurrentChange(WebAdminQuery q)
 {
 	local UTUIDataProvider_GameModeInfo gametype;
-	local string currentGameType, curmap;
-	local string substvar;
-	local int idx, i;
+	local string currentGameType, curmap, curmiscurl;
+	local array<string> currentMutators;
+	local string substvar, substvar2, substvar3;
+	local int idx, i, j, k;
 	local array<UTUIDataProvider_MapInfo> maps;
+	local array<MutatorGroup> mutators;
+	local mutator mut;
 
  	webadmin.dataStoreCache.loadGameTypes();
 
  	currentGameType = q.request.getVariable("gametype");
- 	/*
- 	if (currentGameType != "")
+ 	curmap = q.request.getVariable("map");
+ 	curmiscurl = q.request.getVariable("urlextra", "");
+
+ 	idx = int(q.request.getVariable("mutatorGroupCount", "0"));
+ 	for (i = 0; i < idx; i++)
  	{
- 		q.session.putString("current.gametype", currentGameType);
+ 		substvar = q.request.getVariable("mutgroup"$i, "");
+ 		if (len(substvar) > 0)
+ 		{
+ 			if (currentMutators.find(substvar) == INDEX_NONE)
+ 			{
+ 				currentMutators.addItem(substvar);
+ 			}
+ 		}
  	}
- 	else {
- 		currentGameType = q.session.getString("current.gametype", "");
+
+ 	if (q.request.getVariable("action") ~= "change" || q.request.getVariable("action") ~= "change game")
+ 	{
+ 		substvar = curmap;
+ 		if (len(currentGameType) > 0) substvar $= "?game="$currentGameType;
+ 		if (currentMutators.length > 0)
+ 		{
+ 			JoinArray(currentMutators, substvar2, ",");
+ 			substvar $= "?mutator="$substvar2;
+ 		}
+ 		if (len(curmiscurl) > 0) substvar $= "?"$curmiscurl;
+
+ 		for (i = 0; i < denyUrlOptions.length; i++)
+ 		{
+ 			idx = InStr(substvar, "?"$denyUrlOptions[i]);
+ 			if (idx != INDEX_NONE)
+ 			{
+ 				j = InStr(mid(substvar, idx+1), "?");
+ 				if (j == INDEX_NONE)
+ 				{
+ 					substvar = Left(substvar, idx);
+ 				}
+ 				else {
+ 					substvar = Left(substvar, idx)$Mid(substvar, idx+j+1);
+ 				}
+ 			}
+ 		}
+
+ 		webadmin.pageGenericInfo(q, "<p>Chaning the current game with the following url:<br /><input type=\"text\" readonly=\"readonly\" value=\""$class'WebAdminUtils'.static.HTMLEscape(substvar)$"\" size=\"80\" class=\"monospace\"/></p><p>Please wait, this could take a little while.", "Changing game");
+ 		webadmin.WorldInfo.ServerTravel(substvar);
+ 		return;
  	}
- 	*/
 
  	if (currentGameType == "")
  	{
  		currentGameType = string(webadmin.WorldInfo.Game.class);
  		curmap = string(webadmin.WorldInfo.GetPackageName());
+		mut = webadmin.WorldInfo.Game.BaseMutator;
+		while (mut != none)
+		{
+			substvar = mut.class.getPackageName()$"."$mut.class;
+			currentMutators.addItem(substvar);
+			mut = mut.NextMutator;
+		}
  	}
  	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
  	if (idx > INDEX_NONE)
@@ -547,20 +601,95 @@ function handleCurrentChange(WebAdminQuery q)
  	}
  	q.response.subst("maps", substvar);
 
+	substvar = "";
  	if (currentGameType != "")
  	{
- 		webadmin.dataStoreCache.loadMutators();
- 		for (i = 0; i < webadmin.dataStoreCache.mutatorGroups.length; i++)
+ 		mutators = webadmin.dataStoreCache.getMutators(currentGameType);
+ 		idx = 0;
+ 		for (i = 0; i < mutators.length; i++)
  		{
- 			`log(webadmin.dataStoreCache.mutatorGroups[i].GroupName);
- 			for (idx = 0; idx < webadmin.dataStoreCache.mutatorGroups[i].mutators.length; idx++)
+ 			if (mutators[i].mutators.Length == 1)
  			{
- 				`log("    "$webadmin.dataStoreCache.mutatorGroups[i].mutators[idx].ClassName@webadmin.dataStoreCache.mutatorGroups[i].mutators[idx].FriendlyName);
+ 				q.response.subst("mutator.formtype", "checkbox");
+ 				q.response.subst("mutator.groupid", "mutgroup"$i);
+ 				q.response.subst("mutator.classname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[0].ClassName));
+ 				q.response.subst("mutator.id", "mutfield"$(++idx));
+ 				q.response.subst("mutator.friendlyname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[0].FriendlyName));
+ 				q.response.subst("mutator.description", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[0].Description));
+ 				if (currentMutators.find(mutators[i].mutators[0].ClassName) != INDEX_NONE)
+ 				{
+ 					q.response.subst("mutator.selected", "checked=\"checked\"");
+		 		}
+ 				else {
+		 			q.response.subst("mutator.selected", "");
+ 				}
+ 				substvar3 $= webadmin.include(q, "current_change_mutator.inc");
  			}
+ 			else {
+ 				substvar2 = "";
+ 				k = INDEX_NONE;
+
+	 			for (j = 0; j < mutators[i].mutators.Length; j++)
+ 				{
+ 					q.response.subst("mutator.formtype", "radio");
+	 				q.response.subst("mutator.groupid", "mutgroup"$i);
+ 					q.response.subst("mutator.classname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[j].ClassName));
+ 					q.response.subst("mutator.id", "mutfield"$(++idx));
+ 					q.response.subst("mutator.friendlyname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[j].FriendlyName));
+ 					q.response.subst("mutator.description", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[j].Description));
+					if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
+ 					{
+ 						k = j;
+ 						q.response.subst("mutator.selected", "checked=\"checked\"");
+			 		}
+ 					else {
+			 			q.response.subst("mutator.selected", "");
+ 					}
+	 				substvar2 $= webadmin.include(q, "current_change_mutator.inc");
+ 				}
+
+ 				q.response.subst("mutator.formtype", "radio");
+	 			q.response.subst("mutator.groupid", "mutgroup"$i);
+ 				q.response.subst("mutator.classname", "");
+ 				q.response.subst("mutator.id", "mutfield"$(++idx));
+ 				q.response.subst("mutator.friendlyname", "none");
+ 				q.response.subst("mutator.description", "");
+ 				if (k == INDEX_NONE)
+ 				{
+ 					q.response.subst("mutator.selected", "checked=\"checked\"");
+			 	}
+ 				else {
+			 		q.response.subst("mutator.selected", "");
+ 				}
+ 				substvar2 = webadmin.include(q, "current_change_mutator.inc")$substvar2;
+
+ 				q.response.subst("group.id", "mutgroup"$i);
+ 				q.response.subst("group.name", Locs(mutators[i].GroupName));
+ 				q.response.subst("group.mutators", substvar2);
+	 			substvar $= webadmin.include(q, "current_change_mutator_group.inc");
+	 		}
+ 		}
+ 		if (len(substvar3) > 0)
+ 		{
+ 			q.response.subst("group.id", "mutgroup0");
+	 		q.response.subst("group.name", "");
+ 			q.response.subst("group.mutators", substvar3);
+ 			substvar = webadmin.include(q, "current_change_mutator_nogroup.inc")$substvar;
  		}
  	}
+ 	q.response.subst("mutators", substvar);
+ 	q.response.subst("mutator.groups", mutators.Length);
+
+	q.response.subst("urlextra", curmiscurl);
+	Joinarray(denyUrlOptions, substvar, ", ", true);
+	q.response.subst("urlextra.deny", substvar);
 
 	webadmin.sendPage(q, "current_change.html");
+}
+
+function procCurrentChange(WebAdminQuery q, string currentGameType, string curmap, array<string>currentMutators,
+	out string maps, out string mutators, out int mutatorGroups)
+{
 }
 
 function handleCurrentChangeData(WebAdminQuery q)
@@ -570,15 +699,6 @@ function handleCurrentChangeData(WebAdminQuery q)
 	local int i;
 
 	currentGameType = q.request.getVariable("gametype");
-	/*
- 	if (currentGameType != "")
- 	{
- 		q.session.putString("current.gametype", currentGameType);
- 	}
- 	else {
- 		currentGameType = q.session.getString("current.gametype", "");
- 	}
- 	*/
 
 	if (currentGameType != "")
  	{

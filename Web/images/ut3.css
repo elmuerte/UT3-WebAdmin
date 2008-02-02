@@ -287,3 +287,14 @@ TABLE.grid TD {
 .monospace {
 	font-family: monospace;
 }
+
+.mutatorGroup {
+	display: inline;
+	vertical-align: top;
+	margin-bottom: 0em;
+}
+
+.mutatorGroup DIV.padding {
+	width: 200px;
+	height: 1px;
+}
