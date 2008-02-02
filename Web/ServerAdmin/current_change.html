@@ -46,7 +46,7 @@
 
 <script type="text/javascript">
 $('#gametype').change(function() {
-    $('#throbber').show();
+    $('#throbber').fadeIn();
     $.ajax({
         type: "POST",
         url: '<%page.fulluri%>/data',
@@ -57,15 +57,17 @@ $('#gametype').change(function() {
 });
 
 function mapListUpdate(data, textStatus) {
+    if (data.length == 0) {
+        alert("Network error during updating.");
+    }
     jdata = $('<div>'+data+'</div>');
     $('#mutators fieldset').fadeOut('fast', function() {
         $(this).remove();
     });
     $('#map').fadeOut('fast', function() {
         $('#map option').remove();
-        x = jdata.find('#map');
-        $(this).append(x.contents().clone());
-        $(this).fadeIn('fast');
+        x = jdata.children('#map'); //FIXME: doesn't work in MSIE?
+        $('#map').append(x.contents().clone()).fadeIn('fast');
         
         x = jdata.children('#mutators');
         $('#mutators').append(x.contents().clone()).fadeIn('fast');
@@ -82,7 +84,7 @@ function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
         document.location = '<%page.fulluri%>';
     }
     else {
-        alert("Error "+XMLHttpRequest.status+" while updating. "+errorThrown);
+        alert("Network error during updating.");
     }
 }
 
@@ -117,8 +119,9 @@ function updateSelection(elm, isChecked) {
 }
 
 $('#btnupdate').remove();
-$('#gametype').after(' <img src="/images/throbber.gif" alt="loading..." id="throbber" />');
+$('#gametype').after(' <div id="throbber"><span>Loading...</span></div>');
 $('#throbber').hide();
+
 </script>
 
 </div>

@@ -25,8 +25,8 @@
       <fileset dir="${ut3dir}/Web"/>
     </copy>
     
-    <mkdir dir="build/UTGame/Script"/>
-    <copy todir="build/UTGame/Script">
+    <mkdir dir="build/UTGame/CookedPC"/>
+    <copy todir="build/UTGame/CookedPC">
       <fileset dir="${ut3dir}/UTGame/Script">
         <include name="WebAdmin.u" />
       </fileset>
@@ -56,7 +56,7 @@
       </fileset>
     </copy>
     <mkdir dir="dist" />
-    <zip destfile="dist/WebAdmin-${distfile.tstamp}.zip" basedir="build" />
+    <zip destfile="dist/WebAdmin_dev-${distfile.tstamp}.zip" basedir="build" />
   </target>
   
 </project>
