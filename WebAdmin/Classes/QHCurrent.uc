@@ -474,10 +474,8 @@ function handleCurrentChange(WebAdminQuery q)
 	local UTUIDataProvider_GameModeInfo gametype;
 	local string currentGameType, curmap, curmiscurl;
 	local array<string> currentMutators;
-	local string substvar, substvar2, substvar3;
-	local int idx, i, j, k;
-	local array<UTUIDataProvider_MapInfo> maps;
-	local array<MutatorGroup> mutators;
+	local string substvar, substvar2;
+	local int idx, i, j;
 	local mutator mut;
 
  	webadmin.dataStoreCache.loadGameTypes();
@@ -578,7 +576,27 @@ function handleCurrentChange(WebAdminQuery q)
  	}
  	q.response.subst("gametypes", substvar);
 
-	substvar = "";
+	procCurrentChange(q, currentGameType, curmap, currentMutators, substvar, substvar2, idx);
+	q.response.subst("maps", substvar);
+	q.response.subst("mutators", substvar2);
+	q.response.subst("mutator.groups", idx);
+
+	q.response.subst("urlextra", curmiscurl);
+	Joinarray(denyUrlOptions, substvar, ", ", true);
+	q.response.subst("urlextra.deny", substvar);
+
+	webadmin.sendPage(q, "current_change.html");
+}
+
+function procCurrentChange(WebAdminQuery q, string currentGameType, string curmap, array<string> currentMutators,
+	out string outMaps, out string outMutators, out int outMutatorGroups)
+{
+	local string substvar2, substvar3;
+	local int idx, i, j, k;
+	local array<UTUIDataProvider_MapInfo> maps;
+	local array<MutatorGroup> mutators;
+
+	outMaps = "";
  	if (currentGameType != "")
  	{
  		maps = webadmin.dataStoreCache.getMaps(currentGameType);
@@ -596,12 +614,11 @@ function handleCurrentChange(WebAdminQuery q)
  			else {
  				q.response.subst("map.selected", "");
 	 		}
- 			substvar $= webadmin.include(q, "current_change_map.inc");
+ 			outMaps $= webadmin.include(q, "current_change_map.inc");
  		}
  	}
- 	q.response.subst("maps", substvar);
 
-	substvar = "";
+	outMutators = "";
  	if (currentGameType != "")
  	{
  		mutators = webadmin.dataStoreCache.getMutators(currentGameType);
@@ -666,7 +683,7 @@ function handleCurrentChange(WebAdminQuery q)
  				q.response.subst("group.id", "mutgroup"$i);
  				q.response.subst("group.name", Locs(mutators[i].GroupName));
  				q.response.subst("group.mutators", substvar2);
-	 			substvar $= webadmin.include(q, "current_change_mutator_group.inc");
+	 			outMutators $= webadmin.include(q, "current_change_mutator_group.inc");
 	 		}
  		}
  		if (len(substvar3) > 0)
@@ -674,58 +691,48 @@ function handleCurrentChange(WebAdminQuery q)
  			q.response.subst("group.id", "mutgroup0");
 	 		q.response.subst("group.name", "");
  			q.response.subst("group.mutators", substvar3);
- 			substvar = webadmin.include(q, "current_change_mutator_nogroup.inc")$substvar;
+ 			outMutators = webadmin.include(q, "current_change_mutator_nogroup.inc")$outMutators;
  		}
  	}
- 	q.response.subst("mutators", substvar);
- 	q.response.subst("mutator.groups", mutators.Length);
-
-	q.response.subst("urlextra", curmiscurl);
-	Joinarray(denyUrlOptions, substvar, ", ", true);
-	q.response.subst("urlextra.deny", substvar);
-
-	webadmin.sendPage(q, "current_change.html");
-}
-
-function procCurrentChange(WebAdminQuery q, string currentGameType, string curmap, array<string>currentMutators,
-	out string maps, out string mutators, out int mutatorGroups)
-{
+ 	outMutatorGroups = mutators.Length;
 }
 
 function handleCurrentChangeData(WebAdminQuery q)
 {
 	local string currentGameType, curmap;
-	local array<UTUIDataProvider_MapInfo> maps;
-	local int i;
+	local array<string> currentMutators;
+	local string substMaps, substMutators;
+	local int idx;
 
 	currentGameType = q.request.getVariable("gametype");
+	curmap = "";
+	currentMutators.length = 0;
 
-	if (currentGameType != "")
+	webadmin.dataStoreCache.loadGameTypes();
+	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
+ 	if (idx > INDEX_NONE)
  	{
- 		webadmin.dataStoreCache.loadGameTypes();
- 		i = webadmin.dataStoreCache.resolveGameType(currentGameType);
-	 	if (i > INDEX_NONE)
- 		{
- 			curmap = webadmin.dataStoreCache.gametypes[i].DefaultMap;
- 		}
- 		maps = webadmin.dataStoreCache.getMaps(currentGameType);
- 		for (i = 0; i < maps.length; i++)
- 		{
-			q.response.subst("map.mapname", class'WebAdminUtils'.static.HTMLEscape(maps[i].MapName));
- 			q.response.subst("map.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].FriendlyName)));
- 			q.response.subst("map.mapid", string(maps[i].MapID));
- 			q.response.subst("map.numplayers", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].NumPlayers)));
- 			q.response.subst("map.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].Description)));
-	 		if (curmap ~= maps[i].MapName)
- 			{
- 				q.response.subst("map.selected", "selected=\"selected\"");
-	 		}
- 			else {
- 				q.response.subst("map.selected", "");
-	 		}
- 			q.response.SendText(webadmin.include(q, "current_change_map.inc"));
- 		}
+ 		currentGameType = webadmin.dataStoreCache.gametypes[idx].GameMode;
+ 		curmap = webadmin.dataStoreCache.gametypes[idx].DefaultMap;
  	}
+ 	else {
+ 		currentGameType = "";
+ 	}
+
+	procCurrentChange(q, currentGameType, curmap, currentMutators, substMaps, substMutators, idx);
+	//q.response.SendText("<result>");
+
+	q.response.SendText("<select id=\"map\">");
+	q.response.SendText(substMaps);
+	q.response.SendText("</select>");
+
+	q.response.SendText("<div id=\"mutators\">");
+	q.response.SendText(substMutators);
+	q.response.SendText("</div>");
+
+	q.response.SendText("<input type=\"hidden\" id=\"mutatorGroupCount\" value=\""$idx$"\" />");
+
+	//q.response.SendText("</result>");
 }
 
 defaultproperties

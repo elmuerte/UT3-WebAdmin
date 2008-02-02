@@ -387,7 +387,7 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 			else {
 				if (GameModeClass == none)
 				{
-					GameModeClass = class<UTGame>(FindObject(gametype, class'class'));
+					GameModeClass = class<UTGame>(DynamicLoadObject(gametype, class'class'));
 				}
 				if(GameModeClass != none)
 				{

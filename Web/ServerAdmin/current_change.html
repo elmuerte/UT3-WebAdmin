@@ -23,7 +23,7 @@
 </dl>
 </fieldset>
 
-<fieldset>
+<fieldset id="mutators">
 <legend>Mutators</legend>
 <%mutators%>
 <input type="hidden" name="mutatorGroupCount" value="<%mutator.groups%>" />
@@ -57,18 +57,32 @@ $('#gametype').change(function() {
 });
 
 function mapListUpdate(data, textStatus) {
-    $('#throbber').hide();
+    jdata = $('<div>'+data+'</div>');
+    $('#mutators fieldset').fadeOut('fast', function() {
+        $(this).remove();
+    });
     $('#map').fadeOut('fast', function() {
         $('#map option').remove();
-        $(this).append(data);
+        x = jdata.find('#map');
+        $(this).append(x.contents().clone());
         $(this).fadeIn('fast');
-    });    
+        
+        x = jdata.children('#mutators');
+        $('#mutators').append(x.contents().clone()).fadeIn('fast');
+        
+        x = jdata.children('#mutatorGroupCount');
+        $('input[name="mutatorGroupCount"]').val(x.val());
+    });
+    $('#throbber').hide();
 }
 
 function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
     $('#throbber').hide();
     if (XMLHttpRequest.status == 403) {
         document.location = '<%page.fulluri%>';
+    }
+    else {
+        alert("Error "+XMLHttpRequest.status+" while updating. "+errorThrown);
     }
 }
 
