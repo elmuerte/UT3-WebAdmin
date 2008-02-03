@@ -34,6 +34,11 @@ struct MutatorGroup
  */
 var array<MutatorGroup> mutatorGroups;
 
+/**
+ * Simple list of all mutators
+ */
+var array<UTUIDataProvider_Mutator> mutators;
+
 struct GameTypeMutators
 {
 	var string gametype;
@@ -419,6 +424,8 @@ function loadMutators()
 	{
 		return;
 	}
+	mutators.Remove(0, mutators.length);
+	gameTypeMutatorCache.Remove(0, gameTypeMutatorCache.length);
 
 	class'UTUIDataStore_MenuItems'.static.GetAllResourceDataProviders(class'UTUIDataProvider_Mutator', ProviderList);
 	for (i = 0; i < ProviderList.length; i++)
@@ -454,6 +461,20 @@ function loadMutators()
 			{
 				mutatorGroups[groupid].mutators.AddItem(item);
 			}
+		}
+
+		for (j = 0; j < mutators.length; j++)
+		{
+			if (compareMutator(mutators[j], item, "FriendlyName"))
+			{
+				mutators.Insert(j, 1);
+				mutators[j] =  item;
+				break;
+			}
+		}
+		if (j == mutators.length)
+		{
+			mutators.AddItem(item);
 		}
 	}
 }

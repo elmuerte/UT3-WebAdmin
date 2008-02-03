@@ -25,6 +25,7 @@ static final function String HTMLEscape(coerce string inp)
 {
 	inp = Repl(inp, "&", "&amp;");
 	inp = Repl(inp, "<", "&lt;");
+	inp = Repl(inp, "\"", "&quot;");
 	return Repl(inp, ">", "&gt;");
 }
 

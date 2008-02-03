@@ -29,7 +29,11 @@ function bool handleQuery(WebAdminQuery q)
 		case "/policy/bans":
 			handleBans(q);
 			return true;
+		case "/settings/gametypes":
+			handleSettingsGametypes(q);
+			return true;
 	}
+	return false;
 }
 
 function bool unhandledQuery(WebAdminQuery q);
@@ -39,7 +43,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
 	menu.addMenu("/policy/bans", "Bans", self, "Change ban records.");
 	menu.addMenu("/settings", "Settings", self);
-	menu.addMenu("/settings/gametypes", "Gametypes", self);
+	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -195,4 +199,66 @@ function handleBans(WebAdminQuery q)
 
 	q.response.subst("bans", bans);
 	webadmin.sendPage(q, "policy_bans.html");
+}
+
+function handleSettingsGametypes(WebAdminQuery q)
+{
+	local string currentGameType, substvar;
+	local UTUIDataProvider_GameModeInfo editGametype, gametype;
+	local int idx;
+	local class<UTGameSettingsCommon> settingsClass;
+	local UTGameSettingsCommon settings;
+
+	currentGameType = q.request.getVariable("gametype");
+	if (currentGameType == "")
+ 	{
+ 		currentGameType = string(webadmin.WorldInfo.Game.class);
+ 	}
+ 	webadmin.dataStoreCache.loadGameTypes();
+ 	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
+ 	if (idx > INDEX_NONE)
+ 	{
+ 		editGametype = webadmin.dataStoreCache.gametypes[idx];
+ 		currentGameType = editGametype.GameMode;
+ 	}
+ 	else {
+ 		editGametype = none;
+ 		currentGameType = "";
+ 	}
+
+ 	substvar = "";
+ 	foreach webadmin.dataStoreCache.gametypes(gametype)
+ 	{
+ 		if (gametype.bIsCampaign)
+ 		{
+ 			continue;
+ 		}
+ 		q.response.subst("gametype.gamemode", class'WebAdminUtils'.static.HTMLEscape(gametype.GameMode));
+ 		q.response.subst("gametype.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.defaultmap", class'WebAdminUtils'.static.HTMLEscape(gametype.DefaultMap));
+ 		q.response.subst("gametype.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+ 		if (currentGameType ~= gametype.GameMode)
+ 		{
+ 			q.response.subst("gametype.selected", "selected=\"selected\"");
+ 		}
+ 		else {
+ 			q.response.subst("gametype.selected", "");
+ 		}
+ 		substvar $= webadmin.include(q, "current_change_gametype.inc");
+ 	}
+ 	q.response.subst("gametypes", substvar);
+
+	`log(editGametype.GameSettingsClass);
+	if (len(editGametype.GameSettingsClass) > 0)
+	{
+		//settingsClass = class<UTGameSettingsCommon>(DynamicLoadObject(editGametype.GameSettingsClass, class'class'));
+		settingsClass = class<UTGameSettingsCommon>(FindObject(editGametype.GameSettingsClass, class'class'));
+		if (settingsClass != none)
+		{
+			settings = new settingsClass;
+		}
+	}
+	`log("settings = "$settings);
+
+ 	webadmin.sendPage(q, "default_settings_gametypes.html");
 }

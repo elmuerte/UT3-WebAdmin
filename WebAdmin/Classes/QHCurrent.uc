@@ -97,6 +97,7 @@ function bool handleQuery(WebAdminQuery q)
 			handleCurrentChangeData(q);
 			return true;
 	}
+	return false;
 }
 
 // not used here
