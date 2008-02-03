@@ -20,6 +20,12 @@
   </target>
 
   <target name="-dist-copy-files">
+    <copy todir="build">
+        <fileset dir="${basedir}">
+            <include name="*.URL" />
+        </fileset>
+    </copy>
+  
     <mkdir dir="build/Web"/>
     <copy todir="build/Web">
       <fileset dir="${ut3dir}/Web"/>

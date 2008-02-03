@@ -38,6 +38,8 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
 	menu.addMenu("/policy/bans", "Bans", self, "Change ban records.");
+	menu.addMenu("/settings", "Settings", self);
+	menu.addMenu("/settings/gametypes", "Gametypes", self);
 }
 
 function handleIPPolicy(WebAdminQuery q)
