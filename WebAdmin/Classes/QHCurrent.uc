@@ -107,6 +107,8 @@ function handleCurrent(WebAdminQuery q)
 	local string players;
 	local PlayerReplicationInfo pri;
 	local int idx;
+	local mutator mut;
+	local string tmp;
 
 	q.response.subst("game.name", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameName));
 	q.response.subst("game.type", webadmin.WorldInfo.Game.class.getPackageName()$"."$webadmin.WorldInfo.Game.class);
@@ -114,6 +116,16 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("map.title", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Title));
 	q.response.subst("map.author", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Author));
 	q.response.subst("map.name", webadmin.WorldInfo.GetPackageName());
+
+	mut = webadmin.WorldInfo.Game.BaseMutator;
+	tmp = "";
+	while (mut != none)
+	{
+		if (len(tmp) > 0) tmp $= ", ";
+		tmp $= mut.class.getPackageName()$"."$mut.class;
+		mut = mut.NextMutator;
+	}
+	q.response.subst("mutators", tmp);
 
 	q.response.subst("rules.timelimit", webadmin.WorldInfo.Game.TimeLimit);
 	q.response.subst("rules.goalscore", webadmin.WorldInfo.Game.GoalScore);
@@ -133,7 +145,8 @@ function handleCurrent(WebAdminQuery q)
 	buildSortedPRI(q.request.getVariable("sortby", "score"), q.request.getVariable("reverse", "true") ~= "true");
 	foreach sortedPRI(pri, idx)
 	{
-		q.response.subst("evenodd", idx % 2);
+		if (int(idx % 2) == 0) q.response.subst("evenodd", "even");
+		else q.response.subst("evenodd", "odd");
 		substPri(q, pri);
 		players $= webadmin.include(q, "current_player_row.inc");
 	}
@@ -268,14 +281,15 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.ping", pri.ping);
 	q.response.subst("player.lives", pri.numlives);
 	q.response.subst("player.ranking", pri.playerranking);
-	q.response.subst("player.teamid", pri.TeamID);
 	if (pri.Team != none)
 	{
+		q.response.subst("player.teamid", pri.Team.TeamIndex);
 		q.response.subst("player.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.GetHUDColor()));
 		q.response.subst("player.teamcolor2", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.GetTextColor()));
 		q.response.subst("player.teamname", class'WebAdminUtils'.static.HTMLEscape(pri.Team.GetHumanReadableName()));
 	}
 	else {
+		q.response.subst("player.teamid", "");
 		q.response.subst("player.teamcolor", "transparent");
 		q.response.subst("player.teamcolor2", "transparent");
 		q.response.subst("player.teamname", "");
@@ -342,7 +356,9 @@ function handleCurrentPlayers(WebAdminQuery q)
 			continue;
 		}
 
-		q.response.subst("evenodd", idx % 2);
+		if (int(idx % 2) == 0) q.response.subst("evenodd", "even");
+		else q.response.subst("evenodd", "odd");
+
 		substPri(q, pri);
 		IP = PC.GetPlayerNetworkAddress();
 		IP = Left(IP, InStr(IP, ":"));
@@ -701,7 +717,7 @@ function handleCurrentChangeData(WebAdminQuery q)
 {
 	local string currentGameType, curmap;
 	local array<string> currentMutators;
-	local string substMaps, substMutators;
+	local string substMaps, substMutators, tmp;
 	local int idx;
 
 	currentGameType = q.request.getVariable("gametype");
@@ -717,6 +733,18 @@ function handleCurrentChangeData(WebAdminQuery q)
  	}
  	else {
  		currentGameType = "";
+ 	}
+
+ 	for (idx = 0; idx < int(q.request.getVariable("mutatorGroupCount", "0")); idx++)
+ 	{
+ 		tmp = q.request.getVariable("mutgroup"$idx, "");
+ 		if (len(tmp) > 0)
+ 		{
+ 			if (currentMutators.find(tmp) == INDEX_NONE)
+ 			{
+ 				currentMutators.addItem(tmp);
+ 			}
+ 		}
  	}
 
 	procCurrentChange(q, currentGameType, curmap, currentMutators, substMaps, substMutators, idx);

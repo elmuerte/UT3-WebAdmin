@@ -5,6 +5,7 @@
 <p><%message%></p>
 
 <table id="players" class="grid">
+<thead>
 <tr>
     <th>&nbsp;</th>
     <th><a href="<%page.fulluri%>?sortby=name&reverse=<%reverse.name%>" class="<%sorted.name%>">Player name</a></th>
@@ -14,8 +15,23 @@
     <th>Admin</th>
     <th></th>
 </tr>
+</thead>
+<tbody>
 <%players%>
+</tbody>
 </table>
+
+<script type="text/javascript">
+$(document).ready(function(){      
+    $("#players th a").each(function(){
+        jthis = $(this);
+        jthis.before(jthis.html());
+        jthis.remove();
+    });
+    $("#players th").wrapInner("<span></span>");
+    $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra']});
+});
+</script>
 
 </div>
 

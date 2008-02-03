@@ -47,10 +47,15 @@
 <script type="text/javascript">
 $('#gametype').change(function() {
     $('#throbber').fadeIn();
+    requestData = {ajax: 1, gametype: $('#gametype').val()};
+    requestData.mutatorGroupCount = $('input[name="mutatorGroupCount"]').val();
+    $('input[name^="mutgroup"]:checked').each(function() {
+        requestData[this.name] = this.value;
+    });
     $.ajax({
         type: "POST",
         url: '<%page.fulluri%>/data',
-        data: {ajax: 1, gametype: $('#gametype').val()},
+        data: requestData,
         success: mapListUpdate,
         error: ajaxError
     });
@@ -67,7 +72,9 @@ function mapListUpdate(data, textStatus) {
     $('#map').fadeOut('fast', function() {
         $('#map option').remove();
         x = jdata.children('#map'); //FIXME: doesn't work in MSIE?
-        $('#map').append(x.contents().clone()).fadeIn('fast');
+        if ($.browser.msie) x = x.contents();
+        else x = x.contents().clone();
+        $('#map').append(x).fadeIn('fast');
         
         x = jdata.children('#mutators');
         $('#mutators').append(x.contents().clone()).fadeIn('fast');
@@ -84,7 +91,9 @@ function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
         document.location = '<%page.fulluri%>';
     }
     else {
-        alert("Network error during updating.");
+        if (confirm("Network error during updating. Try again?")) {
+            $('#gametype').change();
+        }
     }
 }
 

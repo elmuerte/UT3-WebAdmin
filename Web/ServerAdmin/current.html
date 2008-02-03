@@ -22,6 +22,8 @@
     <dd><%game.name%><br /><code><%game.type%></code></dd>
     <dt>Map</dt>
     <dd><code><%map.name%></code><br /><%map.title%></dd>
+    <dt>Mutators</dt>
+    <dd><code><%mutators%></code></dd>
 </dl>
 
 </td>
@@ -47,6 +49,7 @@
 
 <h3>Players</h3>
 <table id="players" class="grid">
+<thead>
 <tr>
     <th>&nbsp;</th>
     <th><a href="<%page.fulluri%>?sortby=name&reverse=<%reverse.name%>" class="<%sorted.name%>">Player name</a></th>
@@ -58,8 +61,23 @@
     <th>Bot</th>
     <th>Admin</th>
 </tr>
+</thead>
+<tbody>
 <%players%>
+</tbody>
 </table>
+
+<script type="text/javascript">
+$(document).ready(function(){      
+    $("#players th a").each(function(){
+        jthis = $(this);
+        jthis.before(jthis.html());
+        jthis.remove();
+    });
+    $("#players th").wrapInner("<span></span>");
+    $("#players").tablesorter({sortList:[[3,0]], widgets: ['zebra']});
+});
+</script>
 
 </div>
 

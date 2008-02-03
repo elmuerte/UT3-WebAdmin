@@ -272,8 +272,39 @@ TABLE.grid TD {
 	vertical-align: middle;
 }
 
-.row1 {
-	background-color: silver;
+TR.odd {
+	background-color: #edd;
+}
+
+TH.header, TH.headerSortUp, TH.headerSortDown {
+    padding-left: 0em;
+    padding-right: 0em;
+}
+
+.header SPAN {
+	background-repeat: no-repeat;
+	background-position: right;
+	padding-left: 0.4em;
+	padding-right: 16px;
+	cursor: pointer;
+}
+
+.headerSortUp SPAN {
+	background-image: url(sort-asc.png);
+	background-repeat: no-repeat;
+	background-position: right;
+	padding-left: 0.4em;
+	padding-right: 16px;
+	cursor: pointer;
+}
+
+.headerSortDown SPAN {
+	background-image: url(sort-desc.png);
+	background-repeat: no-repeat;
+	background-position: right;
+	padding-left: 0.4em;
+	padding-right: 16px;
+	cursor: pointer;
 }
 
 .right {
