@@ -207,7 +207,10 @@ function handleSettingsGametypes(WebAdminQuery q)
 	local UTUIDataProvider_GameModeInfo editGametype, gametype;
 	local int idx;
 	local class<UTGameSettingsCommon> settingsClass;
+	local class<GameInfo> gi;
 	local UTGameSettingsCommon settings;
+	local SettingsPropertyPropertyMetaData prop;
+	local LocalizedStringSettingMetaData locprop;
 
 	currentGameType = q.request.getVariable("gametype");
 	if (currentGameType == "")
@@ -249,16 +252,37 @@ function handleSettingsGametypes(WebAdminQuery q)
  	q.response.subst("gametypes", substvar);
 
 	`log(editGametype.GameSettingsClass);
-	if (len(editGametype.GameSettingsClass) > 0)
+	if (len(editGametype.GameMode) > 0)
 	{
-		//settingsClass = class<UTGameSettingsCommon>(DynamicLoadObject(editGametype.GameSettingsClass, class'class'));
-		settingsClass = class<UTGameSettingsCommon>(FindObject(editGametype.GameSettingsClass, class'class'));
+		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
+		if (gi != none)
+		{
+			settingsClass = class<UTGameSettingsCommon>(gi.default.OnlineGameSettingsClass);
+		}
 		if (settingsClass != none)
 		{
 			settings = new settingsClass;
 		}
 	}
+	`log("");
 	`log("settings = "$settings);
+
+	if (settings != none)
+	{
+		for (idx = 0; idx < settings.PropertyMappings.length; idx++)
+		{
+			prop = settings.PropertyMappings[idx];
+			`log(prop.Id@prop.Name@prop.ColumnHeaderText);
+			`log("  "$settings.GetPropertyAsString(prop.id));
+			`log("  "$prop.MappingType);
+		}
+		for (idx = 0; idx < settings.LocalizedSettingsMappings.length; idx++)
+		{
+			locprop = settings.LocalizedSettingsMappings[idx];
+			`log(locprop.Id@locprop.Name@locprop.ColumnHeaderText);
+			`log("  "$settings.GetPropertyAsString(locprop.id));
+		}
+	}
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");
 }
