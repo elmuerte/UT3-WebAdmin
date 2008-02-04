@@ -5,5 +5,21 @@ Copyright 2008 Epic Games, Inc.
 <a href="<%webadmin.path%>/about">About the UT3 WebAdmin</a>
 </div>
 
+<script type="text/javascript">
+$(document).ready(function(){
+  if (jQuery.browser.msie && parseFloat(jQuery.browser.version) < 7) {
+    // fix "buttons" to work properly in MSIE<7
+    $('button').each(function() {
+      this.realBtnName = this.name;
+      this.name = '';
+      $(this).click(function() {
+        this.name = this.realBtnName;
+        this.form.submit();
+      });
+    });
+  } /* end if */
+});
+</script>
+
 </body>
 </html>

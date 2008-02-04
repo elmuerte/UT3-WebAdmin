@@ -29,6 +29,17 @@ var config bool bConsoleEnabled;
  */
 var config array<string> denyUrlOptions;
 
+/**
+ * Lists of console commands that are not allowed to be executed.
+ */
+var config array<string> denyConsoleCommands;
+
+/**
+ * if true use the hack to access some special admin commands lick "kickban ...",
+ * "restartlevel". If false these commands would not be available
+ */
+var config bool bAdminConsoleCommandsHack;
+
 var string cssVisible;
 var string cssHidden;
 
@@ -328,7 +339,6 @@ function handleCurrentPlayers(WebAdminQuery q)
 				q.response.subst("message", "No human player associated with this player.");
 			}
 			else {
-				//`Log("Action = "$q.request.getVariable("action"));
 				if (action ~= "banip" || action ~= "ban ip")
 				{
 					banByIP(PC);
@@ -469,14 +479,106 @@ function procChatData(WebAdminQuery q, optional int startFrom, optional string s
 
 function handleConsole(WebAdminQuery q)
 {
-	local string cmd, result;
+	local string cmd, args, result;
+	local int i;
+	local bool denied;
+	local Admin adminuser;
+
 	cmd = q.request.getVariable("command");
 	if (len(cmd) > 0)
 	{
-		result = webadmin.WorldInfo.Game.ConsoleCommand(cmd, false);
-		q.response.subst("console.command", class'WebAdminUtils'.static.HTMLEscape(cmd));
-		q.response.subst("console.results", class'WebAdminUtils'.static.HTMLEscape(result));
-		q.response.subst("console.visible", cssVisible);
+		denied = false;
+		for (i = 0; i < denyConsoleCommands.length; i++)
+		{
+			if (denyConsoleCommands[i] ~= cmd || InStr(cmd$" ", denyConsoleCommands[i]$" ") == 0)
+			{
+				denied = true;
+				break;
+			}
+		}
+
+		if (!denied)
+		{
+			if (bAdminConsoleCommandsHack)
+			{
+				// hack to blend in some admin exec commands
+				adminuser = admin(q.user.getPC());
+				if (adminuser != none)
+				{
+					i = InStr(cmd, " ");
+					if (i != INDEX_NONE)
+					{
+						result = Left(cmd, i);
+						args = Mid(cmd, i+1);
+					}
+					else {
+						result = cmd;
+						args = "";
+					}
+					if (result ~= "KickBan")
+					{
+						adminuser.KickBan(args);
+						denied = true;
+					}
+					else if (result ~= "Kick")
+					{
+						adminuser.Kick(args);
+						denied = true;
+					}
+					else if (result ~= "PlayerList")
+					{
+						adminuser.PlayerList();
+						denied = true;
+					}
+					else if (result ~= "RestartMap")
+					{
+						adminuser.RestartMap();
+						denied = true;
+					}
+					else if (result ~= "switch")
+					{
+						adminuser.switch(args);
+						denied = true;
+					}
+					else if (result ~= "SloMo")
+					{
+						adminuser.CheatManager.SloMo(float(args));
+						denied = true;
+					}
+					else if (result ~= "SetJumpZ")
+					{
+						adminuser.CheatManager.SetJumpZ(float(args));
+						denied = true;
+					}
+					else if (result ~= "SetGravity")
+					{
+						adminuser.CheatManager.SetGravity(float(args));
+						denied = true;
+					}
+					else if (result ~= "SetSpeed")
+					{
+						adminuser.CheatManager.SetSpeed(float(args));
+						denied = true;
+					}
+				}
+			}
+
+			if (!denied)
+			{
+				result = webadmin.WorldInfo.Game.ConsoleCommand(cmd, false);
+			}
+			else {
+				result = "";
+			}
+			q.response.subst("console.command", class'WebAdminUtils'.static.HTMLEscape(cmd));
+			q.response.subst("console.results", class'WebAdminUtils'.static.HTMLEscape(result));
+			q.response.subst("console.visible", cssVisible);
+		}
+		else {
+			q.response.subst("console.command", class'WebAdminUtils'.static.HTMLEscape(cmd));
+			q.response.subst("console.results", class'WebAdminUtils'.static.HTMLEscape("Execution of this command has been disabled."));
+			q.response.subst("console.visible", cssVisible);
+		}
 	}
 	else {
 		q.response.subst("console.command", "");

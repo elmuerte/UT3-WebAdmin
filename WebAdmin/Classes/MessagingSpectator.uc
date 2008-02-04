@@ -27,6 +27,12 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 auto state NotPlaying
 {}
 
+reliable client function ClientGameEnded(Actor EndGameFocus, bool bIsWinner)
+{}
+
+function GameHasEnded(optional Actor EndGameFocus, optional bool bIsWinner)
+{}
+
 function InitPlayerReplicationInfo()
 {
 	Super.InitPlayerReplicationInfo();
@@ -35,4 +41,9 @@ function InitPlayerReplicationInfo()
 	PlayerReplicationInfo.bOnlySpectator = true;
 	PlayerReplicationInfo.bOutOfLives = true;
 	PlayerReplicationInfo.bWaitingPlayer = false;
+}
+
+defaultproperties
+{
+	CameraClass=None
 }

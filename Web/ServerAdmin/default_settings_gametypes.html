@@ -1,0 +1,19 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<fieldset>
+<legend>Gametype selection</legend>
+<form method="POST" action="<%page.fulluri%>">
+    <select id="gametype" name="gametype">
+    <%gametypes%>
+    </select>
+    <button type="submit" name="action" value="select" id="btnselect">edit gametype</button>
+</form>
+</fieldset>
+
+
+</div>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->
