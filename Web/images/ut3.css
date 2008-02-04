@@ -5,7 +5,7 @@ BODY {
 	color: #000000;
 	padding: 0 0 0 235px;
 	margin: 0;
-	background-image: url(background.gif);
+	background-image: url(background.png);
 	background-repeat: repeat-y;
 	background-position: 0 0;
 }
@@ -165,9 +165,9 @@ TH A {
 
 #menu {
 	background: #520000;
-	background-image: url(background.gif);
+	background-image: url(background.png);
 	background-repeat: repeat-y;
-	background-position: 0 0;
+	background-position: 0 -255px;
 	color: #ffffff;
 	width: 200px;
 	padding-left: 25px;
