@@ -5,7 +5,7 @@
     <format property="distfile.tstamp" pattern="yyyy-MM-dd" />
   </tstamp>
 
-  <target name="clean" description="Clean ...">
+  <target name="clean" description="Clean the distribution and build directories">
     <delete dir="build" />
     <delete dir="dist" />
     <delete file="${ut3dir}/UTGame/Script/WebAdmin.u" />
