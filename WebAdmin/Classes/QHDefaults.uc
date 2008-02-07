@@ -42,8 +42,8 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
 	menu.addMenu("/policy/bans", "Bans", self, "Change ban records.");
-	menu.addMenu("/settings", "Settings", self);
-	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
+	//menu.addMenu("/settings", "Settings", self);
+	//menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -283,6 +283,10 @@ function handleSettingsGametypes(WebAdminQuery q)
 			`log("  "$settings.GetPropertyAsString(locprop.id));
 		}
 	}
+	`log("TEST= "$gi.GetSpecialValue('MaxSpectators'));
+	`log("TEST= "$gi.GetSpecialValue('GameDifficulty'));
+	`log("TEST= "$gi.GetSpecialValue('GameName'));
+	`log("TEST= "$webadmin.GetSpecialValue('startpage'));
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");
 }
