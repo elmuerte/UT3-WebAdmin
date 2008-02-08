@@ -583,5 +583,5 @@ defaultproperties
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
-	version="0.2"
+	version="0.3"
 }
