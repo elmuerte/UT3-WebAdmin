@@ -423,7 +423,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	}
 
 	idx = q.cookies.Find('key', "authcred");
-	if (idx > INDEX_NONE)
+	if (idx != INDEX_NONE)
 	{
 		rememberCookie = q.cookies[idx].value;
 	}
@@ -443,8 +443,14 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	{
 		username = q.request.DecodeBase64(rememberCookie);
 		idx = InStr(username, Chr(10));
-		password = Mid(username, idx+1);
-		username = Left(username, idx);
+		if (idx != INDEX_NONE)
+		{
+			password = Mid(username, idx+1);
+			username = Left(username, idx);
+		}
+		else {
+			username = "";
+		}
 	}
 
 	if (len(username) == 0 || len(password) == 0)
@@ -474,7 +480,9 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		if (len(rememberCookie) > 0)
 		{
 			// unset cookie
-			q.response.headers.AddItem("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
+			// for some reason the server crashes when this string is send directly to AddItem
+			rememberCookie = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
+			q.response.headers.AddItem(rememberCookie);
 			errorMsg = "Authentication cookie does not contain correct information.";
 			rememberCookie = "";
 		}

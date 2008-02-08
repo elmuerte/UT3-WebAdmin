@@ -14,6 +14,7 @@
 $(document).ready(function(){
     $('#chatmessage').focus();
     setTimeout('getMessages()', <%chat.refresh%>);
+    $('#chat').after('<div><input id="autoupdatechat" type="checkbox" checked="checked" value="true" /><label for="autoupdatechat">Auto update chat log</label></div>');
 });
 
 $('#chatform').submit(function() {
@@ -29,22 +30,32 @@ $('#chatform').submit(function() {
 });
 
 function getMessages() {
-    $.ajax({
-        type: "POST",
-        url: '<%page.fulluri%>/data',
-        data: {ajax: 1},
-        success: chatMessage,
-        error: ajaxError
-    });
+    if ($('#autoupdatechat:checked').size() > 0) {
+        $.ajax({
+            type: "POST",
+            url: '<%page.fulluri%>/data',
+            data: {ajax: 1},
+            success: chatMessage,
+            error: ajaxError
+        });
+    }
     setTimeout('getMessages()', <%chat.refresh%>);
 }
 
 function chatMessage(data, textStatus) {
+    if (data == '') return;
     cnt = $('.chatmessage').size()-1;
     $('#chatlog').append(data);
     x = $('.chatmessage:gt('+cnt+')');
     x.hide();
     x.fadeIn("fast");
+    
+    cnt = $('.chatmessage').size();
+    oldmsgs = cnt-50;
+    $('.chatmessage:lt('+oldmsgs+')').remove();
+    
+    chtpos = $('#chatmessage').offset();
+    window.scrollTo(0, chtpos.top);
 }
 
 function ajaxError(XMLHttpRequest, textStatus, errorThrown) {

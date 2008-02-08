@@ -9,7 +9,7 @@ Copyright 2008 Epic Games, Inc.
 $(document).ready(function(){
   if (jQuery.browser.msie && parseFloat(jQuery.browser.version) < 7) {
     // fix "buttons" to work properly in MSIE<7
-    $('button').each(function() {
+    $('button[name!=""]').each(function() {
       this.realBtnName = this.name;
       this.name = '';
       $(this).click(function() {
