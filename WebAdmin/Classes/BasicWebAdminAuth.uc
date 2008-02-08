@@ -23,6 +23,7 @@ var config string RequireUsername;
 
 function init(WorldInfo wi)
 {
+    `Log("RequireUsername = "$RequireUsername);
 	worldinfo = wi;
 	ac = worldinfo.Game.AccessControl;
 }
@@ -43,6 +44,11 @@ function IWebAdminUser authenticate(string username, string password, out string
 		errorMsg = "No AccessControl instance.";
 		return none;
 	}
+	if (Len(RequireUsername) > 0 && RequireUsername != username)
+    {
+        errorMsg = "Invalid credentials.";
+        return none;
+    }
 	if (ac.ValidLogin(username, password))
 	{
 		user = worldinfo.spawn(class'BasicWebAdminUser');
@@ -63,7 +69,7 @@ function bool logout(IWebAdminUser user)
 
 function bool validate(string username, string password, out string errorMsg)
 {
-    if (RequireUsername != "" && RequireUsername != username)
+    if (Len(RequireUsername) > 0 && RequireUsername != username)
     {
         errorMsg = "Invalid credentials.";
         return false;
