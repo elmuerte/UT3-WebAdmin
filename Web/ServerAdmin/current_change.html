@@ -71,7 +71,7 @@ function mapListUpdate(data, textStatus) {
     });
     $('#map').fadeOut('fast', function() {
         $('#map option').remove();
-        x = jdata.children('#map'); //FIXME: doesn't work in MSIE?
+        x = jdata.children('#map'); 
         if ($.browser.msie) x = x.contents();
         else x = x.contents().clone();
         $('#map').append(x).fadeIn('fast');

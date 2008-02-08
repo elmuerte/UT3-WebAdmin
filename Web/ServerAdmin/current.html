@@ -68,7 +68,9 @@
 </table>
 
 <script type="text/javascript">
-$(document).ready(function(){      
+$(document).ready(function(){
+     // bug in sortedtable causes a javascript error when the table is empty.
+    if ($("#players td").size() <= 0) return;
     $("#players th a").each(function(){
         jthis = $(this);
         jthis.before(jthis.html());
