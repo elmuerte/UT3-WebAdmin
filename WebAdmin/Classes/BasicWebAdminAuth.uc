@@ -23,7 +23,6 @@ var config string RequireUsername;
 
 function init(WorldInfo wi)
 {
-    `Log("RequireUsername = "$RequireUsername);
 	worldinfo = wi;
 	ac = worldinfo.Game.AccessControl;
 }
