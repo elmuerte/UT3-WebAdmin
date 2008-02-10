@@ -23,7 +23,30 @@
     <dt>Remote Address</dt>
     <dd><%client.address%></dd>        
 </dl>
+
+<dl id="webadmininfo">
+    <dt>UT3 WebAdmin Information</dt>
+    <dd><a href="http://ut3webadmin.elmuerte.com">Homepage</a></dd>
+    <dd><a href="http://ut3webadmin.elmuerte.com/bugtracker">Bug tracker</a></dd>
+</dl>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#webadmininfo').append('<dd id="versioncheck"><button title="Retrieve information about the latest version of the UT3 WebAdmin.">Version check</button></dd>');
+    $('#versioncheck button').click(function(){
+        $('#versioncheck').remove();
+        $(document).append('<script type="text/javascript" src="http://ut3webadmin.elmuerte.com/releases.php?versioncheck=js"><'+'/script>');     
+    });
+});
+function versionUpdate(versionData) {
+    if (!versionData.version) {
+        $('#versioncheck').append('<em>Error retrieving version information</em>');
+        return;
+    }
+    $('#webadmininfo').append('<dt>Latest version</dt><dd><em>v'+versionData.version+' &ndash; '+versionData.date+'</em> <br /><a href="'+versionData.url+'">Download</a></dd>');
+}
+</script>
 
 <!-- #include file="navigation.inc" -->
 <!-- #include file="footer.inc" -->
