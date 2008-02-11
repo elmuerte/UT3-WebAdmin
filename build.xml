@@ -8,14 +8,15 @@
   <target name="clean" description="Clean the distribution and build directories">
     <delete dir="build" />
     <delete dir="dist" />
-    <delete file="${ut3dir}/UTGame/Script/WebAdmin.u" />
+    <delete file="${ut3dir}/UTGame/CookedPC/Script/WebAdmin.u" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
     <exec executable="${ut3dir}/Development/Src/WebAdmin/settimestamp.cmd" dir="${ut3dir}/Development/Src/WebAdmin" />
-    <exec executable="${ut3dir}/binaries/utgame.com" dir="${ut3dir}/binaries">
+    <exec executable="ut3.cmd" dir="${ut3dir}/binaries/" failonerror="true" resolveexecutable="true">
       <arg value="make" />
       <arg value="-unattended" />
+      <arg value="-nohomedir" />
     </exec>
   </target>
 
@@ -33,7 +34,7 @@
     
     <mkdir dir="build/UTGame/CookedPC"/>
     <copy todir="build/UTGame/CookedPC">
-      <fileset dir="${ut3dir}/UTGame/Script">
+      <fileset dir="${ut3dir}/UTGame/CookedPC/Script">
         <include name="WebAdmin.u" />
       </fileset>
     </copy>

@@ -7,6 +7,8 @@
  */
 class QHDefaults extends Object implements(IQueryHandler) config(WebAdmin);
 
+`include(WebAdmin/WebAdmin.uci)
+
 var WebAdmin webadmin;
 
 function init(WebAdmin webapp)

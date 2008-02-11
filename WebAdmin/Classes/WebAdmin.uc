@@ -9,8 +9,7 @@
  */
 class WebAdmin extends WebApplication dependsOn(IQueryHandler) config(WebAdmin);
 
-`define WITH_BASE64ENC
-
+`include(WebAdmin/WebAdmin.uci)
 `include(WebAdmin/timestamp.uci)
 
 /**
