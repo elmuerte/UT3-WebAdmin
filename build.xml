@@ -34,7 +34,7 @@
     
     <mkdir dir="build/UTGame/CookedPC"/>
     <copy todir="build/UTGame/CookedPC">
-      <fileset dir="${ut3dir}/UTGame/CookedPC/Script">
+      <fileset dir="${ut3dir}/UTGame/CookedPC">
         <include name="WebAdmin.u" />
       </fileset>
     </copy>

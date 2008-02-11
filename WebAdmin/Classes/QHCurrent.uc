@@ -8,6 +8,8 @@
  */
 class QHCurrent extends Object implements(IQueryHandler) config(WebAdmin);
 
+`include(WebAdmin/WebAdmin.uci)
+
 var WebAdmin webadmin;
 
 /**
@@ -347,6 +349,12 @@ function handleCurrentPlayers(WebAdminQuery q)
 				{
 					banByID(PC);
 				}
+				`if(WITH_BANCDHASH)
+				else if (action ~= "banhash" || action ~= "ban client hash")
+				{
+					banByHash(PC);
+				}
+				`endif
 				if (!webadmin.WorldInfo.Game.AccessControl.KickPlayer(PC, webadmin.WorldInfo.Game.AccessControl.DefaultKickReason))
 				{
 					q.response.subst("message", "Unable to kick the player "$PRI.PlayerName$". Logged in admins can not be kicked.");
@@ -375,7 +383,9 @@ function handleCurrentPlayers(WebAdminQuery q)
 		IP = Left(IP, InStr(IP, ":"));
 		q.response.subst("player.ip", IP);
 		q.response.subst("player.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(pri.UniqueId));
-
+		`if(WITH_BANCDHASH)
+		q.response.subst("player.hashresponse", PC.HashResponseCache);
+		`endif
 		players $= webadmin.include(q, "current_players_row.inc");
 	}
 	q.response.subst("sorted."$q.request.getVariable("sortby", "name"), "sorted");
@@ -411,6 +421,20 @@ protected function banByID(PlayerController PC)
 		webadmin.WorldInfo.Game.AccessControl.SaveConfig();
 	}
 }
+
+`if(WITH_BANCDHASH)
+protected function banByHash(PlayerController PC)
+{
+	local BannedHashInfo NewBanHashInfo;
+	if (PC.HashResponseCache != "" && PC.HashResponseCache != "0" && !webadmin.WorldInfo.Game.AccessControl.IsHashBanned(PC.HashResponseCache))
+	{
+		NewBanHashInfo.PlayerName = PC.PlayerReplicationInfo.PlayerName;
+		NewBanHashInfo.BannedHash = PC.HashResponseCache;
+		webadmin.WorldInfo.Game.AccessControl.BannedHashes.AddItem(NewBanHashInfo);
+		webadmin.WorldInfo.Game.AccessControl.SaveConfig();
+	}
+}
+`endif
 
 function handleCurrentChat(WebAdminQuery q)
 {

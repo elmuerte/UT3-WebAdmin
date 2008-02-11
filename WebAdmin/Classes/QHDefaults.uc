@@ -31,6 +31,9 @@ function bool handleQuery(WebAdminQuery q)
 		case "/policy/bans":
 			handleBans(q);
 			return true;
+		case "/policy/hashbans":
+			handleHashBans(q);
+			return true;
 		case "/settings/gametypes":
 			handleSettingsGametypes(q);
 			return true;
@@ -43,7 +46,8 @@ function bool unhandledQuery(WebAdminQuery q);
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
-	menu.addMenu("/policy/bans", "Bans", self, "Change ban records.");
+	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These record ban a single online account.");
+	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
 	//menu.addMenu("/settings", "Settings", self);
 	//menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
 }
@@ -202,6 +206,51 @@ function handleBans(WebAdminQuery q)
 	q.response.subst("bans", bans);
 	webadmin.sendPage(q, "policy_bans.html");
 }
+
+function handleHashBans(WebAdminQuery q)
+{
+	local string bans, action;
+	local int i;
+	local BannedHashInfo NewBanInfo;
+
+	action = q.request.getVariable("action");
+	if (action ~= "delete")
+	{
+		i = int(q.request.getVariable("banid"));
+		if (i > -1 && i < webadmin.worldinfo.game.accesscontrol.BannedHashes.Length)
+		{
+			webadmin.worldinfo.game.accesscontrol.BannedHashes.Remove(i, 1);
+			webadmin.worldinfo.game.accesscontrol.SaveConfig();
+		}
+	}
+	else if (action ~= "add")
+	{
+		action = q.request.getVariable("hashresponse");
+		action -= " ";
+		if (action == "0")
+		{
+			q.response.subst("message", "<code>"$action$"</code> is not a valid client hash");
+		}
+		else {
+			NewBanInfo.BannedHash = action;
+			NewBanInfo.playername = q.request.getVariable("playername");
+			webadmin.worldinfo.game.accesscontrol.BannedHashes.AddItem(NewBanInfo);
+			webadmin.worldinfo.game.accesscontrol.SaveConfig();
+		}
+	}
+
+	for (i = 0; i < webadmin.worldinfo.game.accesscontrol.BannedHashes.Length; i++)
+	{
+		q.response.subst("ban.banid", ""$i);
+		q.response.subst("ban.hash", webadmin.worldinfo.game.accesscontrol.BannedHashes[i].BannedHash);
+		q.response.subst("ban.playername", class'WebAdminUtils'.static.HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedHashes[i].PlayerName));
+		bans $= webadmin.include(q, "policy_hashbans_row.inc");
+	}
+
+	q.response.subst("bans", bans);
+	webadmin.sendPage(q, "policy_hashbans.html");
+}
+
 
 function handleSettingsGametypes(WebAdminQuery q)
 {

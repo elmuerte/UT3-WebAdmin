@@ -1,0 +1,34 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<p><%message%></p>
+
+<table class="grid">
+<tr>
+    <th>Player name</th>
+    <th>Client Hash</th>
+    <th></th>
+</tr>
+<%bans%>
+</table>
+
+<fieldset id="addban">
+<legend>Add a new ban</legend>
+<form method="POST" action="<%page.fulluri%>">
+<input type="hidden" name="action" value="add" />
+<dl>
+    <dt><label for="hashresponse">Client hash</label></dt>
+    <dd><input type="text" name="hashresponse" id="hashresponse" class="monospace" /></dd>
+    <dt><label for="playername">Player name</label></dt>
+    <dd><input type="text" name="playername" id="playername" /></dd>
+    <dd><button type="submit">Add ban</button></dd>
+</dl>
+</form>
+</fieldset>
+
+
+</div>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->
