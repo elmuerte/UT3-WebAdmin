@@ -8,7 +8,7 @@
   <target name="clean" description="Clean the distribution and build directories">
     <delete dir="build" />
     <delete dir="dist" />
-    <delete file="${ut3dir}/UTGame/CookedPC/Script/WebAdmin.u" />
+    <delete file="${ut3dir}/UTGame/CookedPC/WebAdmin.u" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
