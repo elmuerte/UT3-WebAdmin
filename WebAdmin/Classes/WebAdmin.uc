@@ -572,9 +572,10 @@ function pageAbout(WebAdminQuery q)
 	q.response.Subst("page.title", "About");
 	q.response.Subst("page.description", "Various information about the UT3 WebAdmin");
 	q.response.Subst("build.timestamp", timestamp);
-	q.response.Subst("build.version", version);
+	q.response.Subst("build.version", version);	
 	q.response.Subst("engine.version", worldinfo.EngineVersion);
 	q.response.Subst("engine.netversion", worldinfo.MinNetVersion);
+	q.response.Subst("game.version", Localize("UTUIFrontEnd", "VersionText", "utgame"));
 	q.response.Subst("client.address", q.request.RemoteAddr);
 	q.response.Subst("webadmin.address", serverIp$":"$WebServer.ListenPort);
 	if (bHttpAuth) q.response.Subst("webadmin.authmethod", "HTTP Authentication");
