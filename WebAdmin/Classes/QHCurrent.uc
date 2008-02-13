@@ -8,7 +8,7 @@
  */
 class QHCurrent extends Object implements(IQueryHandler) config(WebAdmin);
 
-`include(WebAdmin/WebAdmin.uci)
+`include(WebAdmin.uci)
 
 var WebAdmin webadmin;
 

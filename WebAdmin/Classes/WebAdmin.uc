@@ -9,8 +9,8 @@
  */
 class WebAdmin extends WebApplication dependsOn(IQueryHandler) config(WebAdmin);
 
-`include(WebAdmin/WebAdmin.uci)
-`include(WebAdmin/timestamp.uci)
+`include(WebAdmin.uci)
+`include(timestamp.uci)
 
 /**
  * The menu handler

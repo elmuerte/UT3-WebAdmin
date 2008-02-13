@@ -1,2 +1,2 @@
 @echo off
-echo `define TIMESTAMP "%DATE% %TIME%" > %~dp0\timestamp.uci
+echo `define TIMESTAMP "%DATE% %TIME%" > "%~dp0timestamp.uci"

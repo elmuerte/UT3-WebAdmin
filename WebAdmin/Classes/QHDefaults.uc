@@ -7,9 +7,11 @@
  */
 class QHDefaults extends Object implements(IQueryHandler) config(WebAdmin);
 
-`include(WebAdmin/WebAdmin.uci)
+`include(WebAdmin.uci)
 
 var WebAdmin webadmin;
+
+var SettingsRenderer settingsRenderer;
 
 function init(WebAdmin webapp)
 {
@@ -19,6 +21,7 @@ function init(WebAdmin webapp)
 function cleanup()
 {
 	webadmin = none;
+	settingsRenderer = none;
 }
 
 function bool handleQuery(WebAdminQuery q)
@@ -48,8 +51,8 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
 	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These record ban a single online account.");
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
-	//menu.addMenu("/settings", "Settings", self);
-	//menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
+	menu.addMenu("/settings", "Settings", self);
+	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -257,9 +260,9 @@ function handleSettingsGametypes(WebAdminQuery q)
 	local string currentGameType, substvar;
 	local UTUIDataProvider_GameModeInfo editGametype, gametype;
 	local int idx;
-	local class<UTGameSettingsCommon> settingsClass;
+	local class<Settings> settingsClass;
 	local class<GameInfo> gi;
-	local UTGameSettingsCommon settings;
+	local Settings settings;
 	local SettingsPropertyPropertyMetaData prop;
 	local LocalizedStringSettingMetaData locprop;
 
@@ -308,18 +311,18 @@ function handleSettingsGametypes(WebAdminQuery q)
 		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
 		if (gi != none)
 		{
-			settingsClass = class<UTGameSettingsCommon>(gi.default.OnlineGameSettingsClass);
+			settingsClass = gi.default.OnlineGameSettingsClass;
 		}
 		if (settingsClass != none)
 		{
 			settings = new settingsClass;
 		}
 	}
-	`log("");
 	`log("settings = "$settings);
 
 	if (settings != none)
 	{
+		/*
 		for (idx = 0; idx < settings.PropertyMappings.length; idx++)
 		{
 			prop = settings.PropertyMappings[idx];
@@ -333,11 +336,15 @@ function handleSettingsGametypes(WebAdminQuery q)
 			`log(locprop.Id@locprop.Name@locprop.ColumnHeaderText);
 			`log("  "$settings.GetPropertyAsString(locprop.id));
 		}
+		*/
+
+		if (settingsRenderer == none)
+		{
+			settingsRenderer = new class'SettingsRenderer';
+			settingsRenderer.init(webadmin.path);
+		}
+		settingsRenderer.render(settings, q.request, q.response);
 	}
-	`log("TEST= "$gi.GetSpecialValue('MaxSpectators'));
-	`log("TEST= "$gi.GetSpecialValue('GameDifficulty'));
-	`log("TEST= "$gi.GetSpecialValue('GameName'));
-	`log("TEST= "$webadmin.GetSpecialValue('startpage'));
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");
 }
