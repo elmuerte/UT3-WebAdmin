@@ -1,6 +1,8 @@
 <project name="UT3WebAdmin" default="build">
 
-  <dirname property="ut3dir" file="${basedir}"/>
+  <property file="build.properties"/>
+  <property name="ut3dir.user" value="${user.home}/Documents/My Games/Unreal Tournament 3"/>
+
   <tstamp>
     <format property="distfile.tstamp" pattern="yyyy-MM-dd" />
   </tstamp>
@@ -8,15 +10,13 @@
   <target name="clean" description="Clean the distribution and build directories">
     <delete dir="build" />
     <delete dir="dist" />
-    <delete file="${ut3dir}/UTGame/CookedPC/WebAdmin.u" />
+    <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
-    <exec executable="${ut3dir}/Development/Src/WebAdmin/settimestamp.cmd" dir="${ut3dir}/Development/Src/WebAdmin" />
-    <exec executable="ut3.com" dir="${ut3dir}/binaries/" failonerror="true" resolveexecutable="true">
+    <exec executable="settimestamp.cmd" dir="${basedir}/WebAdmin" failonerror="true" resolveexecutable="true" />
+    <exec executable="ut3.cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" >
       <arg value="make" />
-      <arg value="-unattended" />
-      <arg value="-nohomedir" />
     </exec>
   </target>
 
@@ -29,19 +29,19 @@
   
     <mkdir dir="build/Web"/>
     <copy todir="build/Web">
-      <fileset dir="${ut3dir}/Web"/>
+      <fileset dir="Web"/>
     </copy>
     
     <mkdir dir="build/UTGame/CookedPC"/>
     <copy todir="build/UTGame/CookedPC">
-      <fileset dir="${ut3dir}/UTGame/CookedPC">
+      <fileset dir="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script">
         <include name="WebAdmin.u" />
       </fileset>
     </copy>
 
     <mkdir dir="build/UTGame/Config"/>
     <copy todir="build/UTGame/Config">
-      <fileset dir="${ut3dir}/UTGame/Config">
+      <fileset dir="Config">
         <include name="DefaultWebAdmin.ini" />
       </fileset>
     </copy>
@@ -55,7 +55,7 @@
   <target name="dist-dev" depends="clean,build,-dist-copy-files" description="Build a developer release package">
     <mkdir dir="build/Development/Src"/>
     <copy todir="build/Development/Src">
-      <fileset dir="${ut3dir}/Development/Src">
+      <fileset dir="${basedir}">
         <include name="WebAdmin/**" />
         <exclude name="**/*_old/**" />
         <exclude name="**/*.user" />
