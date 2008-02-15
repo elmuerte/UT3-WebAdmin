@@ -15,8 +15,11 @@
 
   <target name="build" description="Build the UT3 WebAdmin">
     <exec executable="settimestamp.cmd" dir="${basedir}/WebAdmin" failonerror="true" resolveexecutable="true" />
-    <exec executable="ut3.cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" >
+    <exec executable="cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" vmlauncher="false">
+      <arg value="/C" />
+      <arg value="ut3.com" />
       <arg value="make" />
+      <arg value="-unattended" />
     </exec>
   </target>
 
