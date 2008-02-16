@@ -246,6 +246,14 @@ function Query(WebRequest Request, WebResponse Response)
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
 
+	if (InStr(Request.GetHeader("accept-encoding")$",", "gzip,")  != INDEX_NONE)
+	{
+		response.Subst("client.gzip", ".gz");
+	}
+	else {
+		response.Subst("client.gzip", "");
+	}
+
 	currentQuery.request = Request;
 	currentQuery.response = Response;
 	parseCookies(Request.GetHeader("cookie", ""), currentQuery.cookies);

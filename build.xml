@@ -12,6 +12,7 @@
     <delete dir="dist" />
     <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
     <delete file="Web/images/jquery.js" />
+    <delete file="Web/images/jquery.js.gz" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
@@ -29,6 +30,7 @@
       <fileset dir="Web/jQuery-Src" includes="**/jquery-1.2.3.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.tablesorter.js" />
     </concat>
+    <gzip src="Web/images/jquery.js" destfile="Web/images/jquery.js.gz"/>
   </target>
   
   <target name="jquery_compress">
@@ -42,6 +44,7 @@
       <arg value="${tmp.jquery}" />      
     </java>
     <delete file="${tmp.jquery}" />
+    <gzip src="Web/images/jquery.js" destfile="Web/images/jquery.js.gz"/>
   </target>
 
   <target name="-dist-copy-files">
