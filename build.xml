@@ -11,6 +11,7 @@
     <delete dir="build" />
     <delete dir="dist" />
     <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
+    <delete file="Web/images/jquery.js" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
@@ -22,6 +23,26 @@
       <arg value="-unattended" />
     </exec>
   </target>
+  
+  <target name="build_jquery" description="Construct the jQuery file(s)">
+    <concat destfile="Web/images/jquery.js" force="no">
+      <fileset dir="Web/jQuery-Src" includes="**/jquery-1.2.3.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/jquery.tablesorter.js" />
+    </concat>
+  </target>
+  
+  <target name="jquery_compress">
+    <delete file="Web/images/jquery.js" />
+    <ant target="build_jquery" />
+    <property name="tmp.jquery" value="Web/images/jquery.tmp.js" />
+    <move file="Web/images/jquery.js" tofile="${tmp.jquery}"/>
+    <java classname="com.yahoo.platform.yui.compressor.YUICompressor" classpath="lib/yuicompressor-2.3.5.jar">
+      <arg value="-o" />
+      <arg value="Web/images/jquery.js" />
+      <arg value="${tmp.jquery}" />      
+    </java>
+    <delete file="${tmp.jquery}" />
+  </target>
 
   <target name="-dist-copy-files">
     <copy todir="build">
@@ -32,7 +53,9 @@
   
     <mkdir dir="build/Web"/>
     <copy todir="build/Web">
-      <fileset dir="Web"/>
+      <fileset dir="Web">
+        <exclude name="jQuery-Src/**" />
+      </fileset>
     </copy>
     
     <mkdir dir="build/UTGame/CookedPC"/>
@@ -50,12 +73,12 @@
     </copy>
   </target>
 
-  <target name="dist" depends="clean,build,-dist-copy-files" description="Build a release package">
+  <target name="dist" depends="clean,build,jquery_compress,-dist-copy-files" description="Build a release package">
     <mkdir dir="dist" />
     <zip destfile="dist/WebAdmin-${distfile.tstamp}.zip" basedir="build" />
   </target>
 
-  <target name="dist-dev" depends="clean,build,-dist-copy-files" description="Build a developer release package">
+  <target name="dist-dev" depends="clean,build,jquery_compress,-dist-copy-files" description="Build a developer release package">
     <mkdir dir="build/Development/Src"/>
     <copy todir="build/Development/Src">
       <fileset dir="${basedir}">

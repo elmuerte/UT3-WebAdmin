@@ -260,7 +260,7 @@ protected function string renderRaw(int settingId, optional string namePostF = "
 	curResponse.subst("setting.text", getSettingText(settingId));
 	curResponse.subst("setting.value", curSettings.GetPropertyAsString(settingId));
 
-	switch()
+	/*switch()
 	{
 		case SDT_Int32:
 		case SDT_Int64:
@@ -270,5 +270,5 @@ protected function string renderRaw(int settingId, optional string namePostF = "
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "float.inc");
 		default:
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "string.inc");
-	}
+	}*/
 }
