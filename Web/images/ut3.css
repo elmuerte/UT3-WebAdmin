@@ -291,7 +291,8 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 }
 
 .headerSortUp SPAN {
-	background-image: url(sort.png);
+	background-image: url(sort.png) !important;
+	background-image: url(sort.gif);
 	background-repeat: no-repeat;
 	background-position: right 1px;
 	padding-left: 0.4em;
@@ -300,7 +301,8 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 }
 
 .headerSortDown SPAN {
-	background-image: url(sort.png);
+	background-image: url(sort.png) !important;
+	background-image: url(sort.gif);
 	background-repeat: no-repeat;
 	background-position: right -49px;
 	padding-left: 0.4em;

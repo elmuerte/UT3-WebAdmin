@@ -1,1 +1,1 @@
-<option value="<%setting.option.id%>" <%setting.option.selected%>><%setting.option.name%></option>
+<option value="<%setting.option.value%>" <%setting.option.selected%>><%setting.option.text%></option>

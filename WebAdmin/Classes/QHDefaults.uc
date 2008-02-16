@@ -263,8 +263,8 @@ function handleSettingsGametypes(WebAdminQuery q)
 	local class<Settings> settingsClass;
 	local class<GameInfo> gi;
 	local Settings settings;
-	local SettingsPropertyPropertyMetaData prop;
-	local LocalizedStringSettingMetaData locprop;
+//	local SettingsPropertyPropertyMetaData prop;
+//	local LocalizedStringSettingMetaData locprop;
 
 	currentGameType = q.request.getVariable("gametype");
 	if (currentGameType == "")
