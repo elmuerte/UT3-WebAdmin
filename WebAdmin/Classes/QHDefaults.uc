@@ -1,5 +1,9 @@
 /**
- * Query Handler for chaning the default settings
+ * Query Handler for changing the default settings. It will try to find settings
+ * handles for all gametypes and mutators. Custom gametypes have to implement a
+ * subclass of the Settings class as name it: <GameTypeClass>Settings.
+ * for example the gametype: FooBarQuuxGame has a settings class
+ * FooBarQuuxGameSettings. See "UTTeamGameSettings" for an example implementation.
  *
  * Copyright 2008 Epic Games, Inc. All Rights Reserved
  *
@@ -49,8 +53,17 @@ function bool handleQuery(WebAdminQuery q)
 		case "/policy/hashbans":
 			handleHashBans(q);
 			return true;
+		case "/settings":
+			q.response.Redirect(WebAdmin.Path$"/settings/general");
+			return true;
+		case "/settings/general":
+			handleSettingsGeneral(q);
+			return true;
 		case "/settings/gametypes":
 			handleSettingsGametypes(q);
+			return true;
+		case "/settings/mutators":
+			handleSettingsMutators(q);
 			return true;
 	}
 	return false;
@@ -64,7 +77,9 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These record ban a single online account.");
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
 	menu.addMenu("/settings", "Settings", self);
-	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.");
+	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affact all game types.", 0);
+	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.", 10);
+	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -280,14 +295,11 @@ function class<Settings> getSettingsClass(class forClass)
 		return none;
 	}
 
-	`log("getSettingsClass - "$forClass);
 	className = string(forClass);
-	`Log("looking up config class for "$className);
 	idx = settingsClasses.find('className', className);
 	if (idx == INDEX_NONE)
 	{
 		className = forClass.getPackageName()$"."$string(forClass);
-		`Log("looking up config class for "$className);
 		idx = settingsClasses.find('className', className);
 	}
 	if (idx != INDEX_NONE)
@@ -314,6 +326,10 @@ function class<Settings> getSettingsClass(class forClass)
 	}
 	// not in the same package, try the find the object (only works when it was loaded)
 	result = class<Settings>(FindObject(string(forClass)$"Settings", class'class'));
+	if (result == none)
+	{
+		`Log("Settings class "$settingsClass$" for class "$forClass$" not found (auto detection).",,'WebAdmin');
+	}
 	return result;
 }
 
@@ -396,4 +412,14 @@ function handleSettingsGametypes(WebAdminQuery q)
 	}
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");
+}
+
+function handleSettingsGeneral(WebAdminQuery q)
+{
+	WebAdmin.pageGenericError(q, "Not yet implemented");
+}
+
+function handleSettingsMutators(WebAdminQuery q)
+{
+	WebAdmin.pageGenericError(q, "Not yet implemented");
 }

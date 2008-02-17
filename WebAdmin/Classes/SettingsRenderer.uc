@@ -18,6 +18,16 @@ var protected string prefix;
  */
 var protected string path;
 
+struct SortedSetting
+{
+	var string txt;
+	/** index of this item in one of the whole lists */
+	var int idx;
+	/** if true it's a localized setting rather than a property */
+	var bool isLocalized;
+};
+var protected array<SortedSetting> sorted;
+
 var protected Settings curSettings;
 var protected WebResponse curResponse;
 
@@ -36,12 +46,85 @@ function cleanup()
 function render(Settings settings, WebResponse response, optional string substName = "settings")
 {
 	local string result, entry;
-	local int idx;
+	local int i, j;
 	local EPropertyValueMappingType mtype;
+	local SortedSetting sortset;
 
 	curSettings = settings;
 	curResponse = response;
 
+	sorted.length = 0; // clear old
+	for (i = 0; i < settings.LocalizedSettingsMappings.length; i++)
+	{
+		sortset.idx = i;
+		sortset.isLocalized = true;
+		sortset.txt = getLocalizedSettingText(settings.LocalizedSettingsMappings[i].Id);
+		for (j = 0; j < sorted.length; j++)
+		{
+			if (Caps(sorted[j].txt) > Caps(sortset.txt))
+			{
+				sorted.Insert(j, 1);
+				sorted[j] = sortset;
+				break;
+			}
+		}
+		if (j == sorted.length)
+		{
+			sorted[j] = sortset;
+		}
+	}
+	for (i = 0; i < settings.PropertyMappings.length; i++)
+	{
+		sortset.idx = i;
+		sortset.isLocalized = false;
+		sortset.txt = getSettingText(settings.PropertyMappings[i].Id);
+		for (j = 0; j < sorted.length; j++)
+		{
+			if (Caps(sorted[j].txt) > Caps(sortset.txt))
+			{
+				sorted.Insert(j, 1);
+				sorted[j] = sortset;
+				break;
+			}
+		}
+		if (j == sorted.length)
+		{
+			sorted[j] = sortset;
+		}
+	}
+
+	for (i = 0; i < sorted.length; i++)
+	{
+		if (sorted[i].isLocalized)
+		{
+			entry = renderLocalizedSetting(settings.LocalizedSettingsMappings[sorted[i].idx].Id);
+		}
+		else {
+			j = sorted[i].idx;
+			settings.GetPropertyMappingType(settings.PropertyMappings[j].Id, mtype);
+			switch (mtype)
+			{
+				case PVMT_PredefinedValues:
+					entry = renderPredefinedValues(settings.PropertyMappings[j].Id, j);
+					break;
+				case PVMT_Ranged:
+					entry = renderRanged(settings.PropertyMappings[j].Id);
+					break;
+				case PVMT_IdMapped:
+					entry = renderIdMapped(settings.PropertyMappings[j].Id, j);
+					break;
+				default:
+					entry = renderRaw(settings.PropertyMappings[j].Id);
+			}
+		}
+		if (len(entry) > 0)
+		{
+			curResponse.subst("setting.html", entry);
+			result $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "entry.inc");
+		}
+	}
+
+/*
 	for (idx = 0; idx < settings.LocalizedSettingsMappings.length; idx++)
 	{
 		entry = renderLocalizedSetting(settings.LocalizedSettingsMappings[idx].Id);
@@ -75,13 +158,22 @@ function render(Settings settings, WebResponse response, optional string substNa
 			result $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "entry.inc");
 		}
 	}
+*/
 
 	curResponse.subst(substName, result);
 }
 
+protected function string getLocalizedSettingText(int settingId)
+{
+	local string val;
+	val = curSettings.GetStringSettingColumnHeader(settingId);
+	if (len(val) > 0) return val;
+	return string(curSettings.GetStringSettingName(settingId));
+}
+
 protected function string renderLocalizedSetting(int settingId)
 {
-	local string options, settingtext;
+	local string options;
 	local array<IdToStringMapping> values;
 	local int selectedValue;
 	local int i;
@@ -89,12 +181,7 @@ protected function string renderLocalizedSetting(int settingId)
 	curResponse.subst("setting.type", "localizedSetting");
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetStringSettingName(settingId));
-	settingtext = curSettings.GetStringSettingColumnHeader(settingId);
-	if (len(settingtext) == 0)
-	{
-		settingtext = string(curSettings.GetStringSettingName(settingId));
-	}
-	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(settingtext));
+	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getLocalizedSettingText(settingId)));
 
 	curSettings.GetStringSettingValue(settingId, selectedValue);
 	curSettings.GetStringSettingValueNames(settingId, values);
