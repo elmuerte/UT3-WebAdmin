@@ -9,6 +9,18 @@ class QHDefaults extends Object implements(IQueryHandler) config(WebAdmin);
 
 `include(WebAdmin.uci)
 
+struct ClassSettingsMapping
+{
+	var string className;
+	var string settingsClass;
+};
+/**
+ * Mapping for classname to settings class. Will be used to resolve classnames
+ * for Settings classes that provide configuration possibilities for gametypes/
+ * mutators when it can not be automatically found.
+ */
+var config array<ClassSettingsMapping> SettingsClasses;
+
 var WebAdmin webadmin;
 
 var SettingsRenderer settingsRenderer;
@@ -254,6 +266,56 @@ function handleHashBans(WebAdminQuery q)
 	webadmin.sendPage(q, "policy_hashbans.html");
 }
 
+/**
+ * Try to find the settings class for the provided class
+ */
+function class<Settings> getSettingsClass(class forClass)
+{
+	local string className, settingsClass;
+	local class<Settings> result;
+	local int idx;
+
+	if (forClass == none)
+	{
+		return none;
+	}
+
+	`log("getSettingsClass - "$forClass);
+	className = string(forClass);
+	`Log("looking up config class for "$className);
+	idx = settingsClasses.find('className', className);
+	if (idx == INDEX_NONE)
+	{
+		className = forClass.getPackageName()$"."$string(forClass);
+		`Log("looking up config class for "$className);
+		idx = settingsClasses.find('className', className);
+	}
+	if (idx != INDEX_NONE)
+	{
+		result = class<Settings>(DynamicLoadObject(settingsClasses[idx].settingsClass, class'Class'));
+		if (result == none)
+		{
+			`Log("Unable to load settings class "$settingsClasses[idx].settingsClass$" for the class "$settingsClasses[idx].className,,'WebAdmin');
+		}
+		else {
+			return result;
+		}
+	}
+	// try to find it automatically
+	settingsClass = string(forClass.GetPackageName());
+	// rewrite standard game classes to WebAdmin
+	if (settingsClass != "UTGame") settingsClass = "WebAdmin";
+	else if (settingsClass != "UTGameContent") settingsClass = "WebAdmin";
+	settingsClass $= "."$string(forClass)$"Settings";
+	result = class<Settings>(DynamicLoadObject(settingsClass, class'class', true));
+	if (result != none)
+	{
+		return result;
+	}
+	// not in the same package, try the find the object (only works when it was loaded)
+	result = class<Settings>(FindObject(string(forClass)$"Settings", class'class'));
+	return result;
+}
 
 function handleSettingsGametypes(WebAdminQuery q)
 {
@@ -263,8 +325,6 @@ function handleSettingsGametypes(WebAdminQuery q)
 	local class<Settings> settingsClass;
 	local class<GameInfo> gi;
 	local Settings settings;
-//	local SettingsPropertyPropertyMetaData prop;
-//	local LocalizedStringSettingMetaData locprop;
 
 	currentGameType = q.request.getVariable("gametype");
 	if (currentGameType == "")
@@ -296,6 +356,7 @@ function handleSettingsGametypes(WebAdminQuery q)
  		q.response.subst("gametype.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
  		if (currentGameType ~= gametype.GameMode)
  		{
+ 			q.response.subst("editgametype", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
  			q.response.subst("gametype.selected", "selected=\"selected\"");
  		}
  		else {
@@ -305,45 +366,33 @@ function handleSettingsGametypes(WebAdminQuery q)
  	}
  	q.response.subst("gametypes", substvar);
 
-	`log(editGametype.GameSettingsClass);
 	if (len(editGametype.GameMode) > 0)
 	{
 		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
 		if (gi != none)
 		{
-			settingsClass = gi.default.OnlineGameSettingsClass;
+			settingsClass = getSettingsClass(gi);
 		}
 		if (settingsClass != none)
 		{
+			// change this somewhere?
 			settings = new settingsClass;
+			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_INIT_CMD});
 		}
 	}
-	`log("settings = "$settings);
 
 	if (settings != none)
 	{
-		/*
-		for (idx = 0; idx < settings.PropertyMappings.length; idx++)
-		{
-			prop = settings.PropertyMappings[idx];
-			`log(prop.Id@prop.Name@prop.ColumnHeaderText);
-			`log("  "$settings.GetPropertyAsString(prop.id));
-			`log("  "$prop.MappingType);
-		}
-		for (idx = 0; idx < settings.LocalizedSettingsMappings.length; idx++)
-		{
-			locprop = settings.LocalizedSettingsMappings[idx];
-			`log(locprop.Id@locprop.Name@locprop.ColumnHeaderText);
-			`log("  "$settings.GetPropertyAsString(locprop.id));
-		}
-		*/
-
+		// TODO: save the settings if command is issued
 		if (settingsRenderer == none)
 		{
 			settingsRenderer = new class'SettingsRenderer';
 			settingsRenderer.init(webadmin.path);
 		}
-		settingsRenderer.render(settings, q.request, q.response);
+		settingsRenderer.render(settings, q.response);
+	}
+	else {
+		q.response.subst("message", "Unable to create a settings instace for this gametype");
 	}
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");

@@ -10,12 +10,12 @@
   <target name="clean" description="Clean the distribution and build directories">
     <delete dir="build" />
     <delete dir="dist" />
-    <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
     <delete file="Web/images/jquery.js" />
     <delete file="Web/images/jquery.js.gz" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
+    <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
     <exec executable="settimestamp.cmd" dir="${basedir}/WebAdmin" failonerror="true" resolveexecutable="true" />
     <exec executable="cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" vmlauncher="false">
       <arg value="/C" />

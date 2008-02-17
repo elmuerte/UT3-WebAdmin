@@ -19,7 +19,6 @@ var protected string prefix;
 var protected string path;
 
 var protected Settings curSettings;
-var protected WebRequest curRequest;
 var protected WebResponse curResponse;
 
 function init(string basePath, optional string filePrefix="settings_")
@@ -31,18 +30,16 @@ function init(string basePath, optional string filePrefix="settings_")
 function cleanup()
 {
 	curSettings = none;
-	curRequest = none;
 	curResponse = none;
 }
 
-function render(Settings settings, WebRequest request, WebResponse response, optional string substName = "settings")
+function render(Settings settings, WebResponse response, optional string substName = "settings")
 {
 	local string result, entry;
 	local int idx;
 	local EPropertyValueMappingType mtype;
 
 	curSettings = settings;
-	curRequest = request;
 	curResponse = response;
 
 	for (idx = 0; idx < settings.LocalizedSettingsMappings.length; idx++)
@@ -97,14 +94,14 @@ protected function string renderLocalizedSetting(int settingId)
 	{
 		settingtext = string(curSettings.GetStringSettingName(settingId));
 	}
-	curResponse.subst("setting.text", settingtext);
+	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(settingtext));
 
 	curSettings.GetStringSettingValue(settingId, selectedValue);
 	curSettings.GetStringSettingValueNames(settingId, values);
 	for (i = 0; i < values.Length; i++)
 	{
 		curResponse.subst("setting.option.value", values[i].id);
-		curResponse.subst("setting.option.text", values[i].name);
+		curResponse.subst("setting.option.text", class'WebAdminUtils'.static.HTMLEscape(values[i].name));
 		if (values[i].id == selectedValue)
 		{
 			curResponse.subst("setting.option.selected", "selected=\"selected\"");
@@ -139,7 +136,7 @@ protected function string renderPredefinedValues(int settingId, int idx)
 	curResponse.subst("setting.type", "predefinedValues");
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId));
-	curResponse.subst("setting.text", getSettingText(settingId));
+	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getSettingText(settingId)));
 
 	selectedValue = curSettings.GetPropertyAsString(settingId);
 	values = curSettings.PropertyMappings[idx].PredefinedValues;
@@ -163,8 +160,8 @@ protected function string renderPredefinedValues(int settingId, int idx)
 				break;
 			case SDT_String:
 				svalue = curSettings.GetSettingsDataString(values[i]);
-				curResponse.subst("setting.option.value", svalue);
-				curResponse.subst("setting.option.text", svalue);
+				curResponse.subst("setting.option.value", class'WebAdminUtils'.static.HTMLEscape(svalue));
+				curResponse.subst("setting.option.text", class'WebAdminUtils'.static.HTMLEscape(svalue));
 				break;
 			default:
 				`Log("Unsupported data type",,'WebAdmin');
@@ -199,20 +196,20 @@ protected function string renderRanged(int settingId)
 	curResponse.subst("setting.type", "ranged");
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId));
-	curResponse.subst("setting.text", getSettingText(settingId));
+	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getSettingText(settingId)));
 
 	curSettings.GetRangedPropertyValue(settingId, value);
 	curSettings.GetPropertyRange(settingId, min, max, incr, asInt);
 
 	if (asInt != 1)
 	{
-		curResponse.subst("setting.value", string(min));
+		curResponse.subst("setting.value", string(value));
 		curResponse.subst("setting.minval", string(min));
 		curResponse.subst("setting.maxval", string(max));
 		curResponse.subst("setting.increment", string(incr));
 	}
 	else {
-		curResponse.subst("setting.value", string(int(min)));
+		curResponse.subst("setting.value", string(int(value)));
 		curResponse.subst("setting.minval", string(int(min)));
 		curResponse.subst("setting.maxval", string(int(max)));
 		curResponse.subst("setting.increment", string(int(incr)));
@@ -231,14 +228,14 @@ protected function string renderIdMapped(int settingId, int idx)
 	curResponse.subst("setting.type", "idMapped");
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId));
-	curResponse.subst("setting.text", getSettingText(settingId));
+	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getSettingText(settingId)));
 
 	curSettings.GetIntProperty(settingId, selectedValue);
 	values = curSettings.PropertyMappings[idx].ValueMappings;
 	for (i = 0; i < values.Length; i++)
 	{
 		curResponse.subst("setting.option.value", values[i].id);
-		curResponse.subst("setting.option.text", values[i].name);
+		curResponse.subst("setting.option.text", class'WebAdminUtils'.static.HTMLEscape(values[i].name));
 		if (values[i].id == selectedValue)
 		{
 			curResponse.subst("setting.option.selected", "selected=\"selected\"");
@@ -257,11 +254,13 @@ protected function string renderRaw(int settingId, optional string namePostF = "
 	curResponse.subst("setting.type", "raw");
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId)$namePostF);
-	curResponse.subst("setting.text", getSettingText(settingId));
-	curResponse.subst("setting.value", curSettings.GetPropertyAsString(settingId));
+	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getSettingText(settingId)));
+	curResponse.subst("setting.value", class'WebAdminUtils'.static.HTMLEscape(curSettings.GetPropertyAsString(settingId)));
 
 	switch(curSettings.GetPropertyType(settingId))
 	{
+		case SDT_Empty:
+			return  "";
 		case SDT_Int32:
 		case SDT_Int64:
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "int.inc");
