@@ -9,8 +9,6 @@ class UTGameSettings extends WebAdminSettings abstract;
 
 var const class<UTGame> UTGameClass;
 
-var databinding int GoalScore;
-
 function init()
 {
 	if (UTGameClass == none) return;

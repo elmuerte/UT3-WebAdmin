@@ -96,6 +96,7 @@ function init()
 	{
 		QueryHandlers[0] = "WebAdmin.QHCurrent";
 		QueryHandlers[1] = "WebAdmin.QHDefaults";
+		SaveConfig();
 	}
 
 	dataStoreCache = new(Self) class'DataStoreCache';

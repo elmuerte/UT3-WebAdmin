@@ -13,13 +13,15 @@
 </fieldset>
 
 <fieldset>
-<legend>Settings for <em><%editgametype%></em></legend>
+<legend>Settings for <em><%editgametype.name%></em></legend>
 <form method="POST" action="<%page.fulluri%>">
+<input type="hidden" name="gametype" value="<%editgametype.class%>" />
 <p><%message%></p>
 
 <dl>
 <%settings%>
 </dl>
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
 </form>
 </fieldset>
 

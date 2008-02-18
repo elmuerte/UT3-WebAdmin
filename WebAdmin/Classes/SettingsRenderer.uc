@@ -114,7 +114,7 @@ function render(Settings settings, WebResponse response, optional string substNa
 					entry = renderIdMapped(settings.PropertyMappings[j].Id, j);
 					break;
 				default:
-					entry = renderRaw(settings.PropertyMappings[j].Id);
+					entry = renderRaw(settings.PropertyMappings[j].Id, j);
 			}
 		}
 		if (len(entry) > 0)
@@ -266,7 +266,7 @@ protected function string renderPredefinedValues(int settingId, int idx)
 	curResponse.subst("setting.options", options);
 
 	part1 = curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
-	part2 = renderRaw(settingId, "_raw");
+	part2 = renderRaw(settingId, idx, "_raw");
 
 	curResponse.subst("mutlisetting.predef", part1);
 	curResponse.subst("mutlisetting.raw", part2);
@@ -336,25 +336,68 @@ protected function string renderIdMapped(int settingId, int idx)
 	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
 }
 
-protected function string renderRaw(int settingId, optional string namePostF = "")
+protected function string renderRaw(int settingId, int idx, optional string namePostF = "")
 {
+	local float min, max;
 	curResponse.subst("setting.type", "raw");
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId)$namePostF);
 	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getSettingText(settingId)));
 	curResponse.subst("setting.value", class'WebAdminUtils'.static.HTMLEscape(curSettings.GetPropertyAsString(settingId)));
 
+	min = curSettings.PropertyMappings[idx].MinVal;
+	max = curSettings.PropertyMappings[idx].MaxVal;
 	switch(curSettings.GetPropertyType(settingId))
 	{
 		case SDT_Empty:
 			return  "";
 		case SDT_Int32:
 		case SDT_Int64:
+			if (max != 0)
+			{
+				curResponse.subst("setting.maxval", int(max));
+				curResponse.subst("setting.minval", int(min));
+			}
+			else {
+				curResponse.subst("setting.maxval", "NaN");
+				curResponse.subst("setting.minval", "NaN");
+			}
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "int.inc");
 		case SDT_Double:
 		case SDT_Float:
+			if (max != 0)
+			{
+				curResponse.subst("setting.maxval", max);
+				curResponse.subst("setting.minval", min);
+			}
+			else {
+				curResponse.subst("setting.maxval", "NaN");
+				curResponse.subst("setting.minval", "NaN");
+			}
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "float.inc");
 		default:
-			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "string.inc");
+			if (max != 0)
+			{
+				curResponse.subst("setting.maxval", max);
+				curResponse.subst("setting.minval", min);
+			}
+			else {
+				curResponse.subst("setting.maxval", "NaN");
+				curResponse.subst("setting.minval", "NaN");
+			}
+			if (max > 0 && max > min)
+			{
+				curResponse.subst("setting.maxlength", int(max));
+			}
+			else {
+				curResponse.subst("setting.maxlength", "");
+			}
+			if (max > 256)
+			{
+				return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "textarea.inc");
+			}
+			else {
+				return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "string.inc");
+			}
 	}
 }

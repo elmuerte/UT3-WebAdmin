@@ -25,12 +25,22 @@ struct ClassSettingsMapping
  */
 var config array<ClassSettingsMapping> SettingsClasses;
 
+/**
+ * Settings class used for the general, server wide, settings
+ */
+var config string GeneralSettingsClass;
+
 var WebAdmin webadmin;
 
 var SettingsRenderer settingsRenderer;
 
 function init(WebAdmin webapp)
 {
+	if (Len(GeneralSettingsClass) == 0)
+	{
+		GeneralSettingsClass = "WebAdmin.GeneralSettings";
+		SaveConfig();
+	}
 	webadmin = webapp;
 }
 
@@ -372,7 +382,8 @@ function handleSettingsGametypes(WebAdminQuery q)
  		q.response.subst("gametype.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
  		if (currentGameType ~= gametype.GameMode)
  		{
- 			q.response.subst("editgametype", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 			q.response.subst("editgametype.name", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 			q.response.subst("editgametype.class", class'WebAdminUtils'.static.HTMLEscape(gametype.GameMode));
  			q.response.subst("gametype.selected", "selected=\"selected\"");
  		}
  		else {
@@ -391,7 +402,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		}
 		if (settingsClass != none)
 		{
-			// change this somewhere?
+			// save this somewhere?
 			settings = new settingsClass;
 			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_INIT_CMD});
 		}
@@ -399,7 +410,11 @@ function handleSettingsGametypes(WebAdminQuery q)
 
 	if (settings != none)
 	{
-		// TODO: save the settings if command is issued
+		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
+		{
+			applySettings(settings, q.request);
+			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_SAVE_CMD});
+		}
 		if (settingsRenderer == none)
 		{
 			settingsRenderer = new class'SettingsRenderer';
@@ -414,9 +429,69 @@ function handleSettingsGametypes(WebAdminQuery q)
  	webadmin.sendPage(q, "default_settings_gametypes.html");
 }
 
+/**
+ * Apply the settings received from the response to the settings instance
+ */
+function applySettings(Settings settings, WebRequest request, optional string prefix = "settings.")
+{
+	local int i, idx;
+	local name sname;
+	local string val;
+
+	for (i = 0; i < settings.LocalizedSettingsMappings.Length; i++)
+	{
+		idx = settings.LocalizedSettingsMappings[i].Id;
+		sname = settings.GetStringSettingName(idx);
+		if (request.GetVariableCount(prefix$sname) > 0)
+		{
+			val = request.GetVariable(prefix$sname);
+			settings.SetStringSettingValue(idx, int(val), false);
+		}
+	}
+	for (i = 0; i < settings.PropertyMappings.Length; i++)
+	{
+		idx = settings.PropertyMappings[i].Id;
+		sname = settings.GetPropertyName(idx);
+		if (request.GetVariableCount(prefix$sname) > 0)
+		{
+			val = request.GetVariable(prefix$sname);
+			settings.SetPropertyFromStringByName(sname, val);
+		}
+	}
+}
+
 function handleSettingsGeneral(WebAdminQuery q)
 {
-	WebAdmin.pageGenericError(q, "Not yet implemented");
+	local class<Settings> settingsClass;
+	local Settings settings;
+
+	settingsClass = class<Settings>(DynamicLoadObject(GeneralSettingsClass, class'class'));
+	if (settingsClass != none)
+	{
+		// save this somewhere?
+		settings = new settingsClass;
+		settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_INIT_CMD});
+	}
+
+	if (settings != none)
+	{
+		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
+		{
+			applySettings(settings, q.request);
+			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_SAVE_CMD});
+		}
+		if (settingsRenderer == none)
+		{
+			settingsRenderer = new class'SettingsRenderer';
+			settingsRenderer.init(webadmin.path);
+		}
+		settingsRenderer.render(settings, q.response);
+	}
+	else {
+		`Log("Failed to load the general settings class "$GeneralSettingsClass,,'WebAdmin');
+	}
+
+ 	webadmin.sendPage(q, "default_settings_general.html");
 }
 
 function handleSettingsMutators(WebAdminQuery q)

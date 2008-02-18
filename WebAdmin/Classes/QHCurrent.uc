@@ -53,6 +53,7 @@ function init(WebAdmin webapp)
 	if (len(webapp.startpage) == 0)
 	{
 		webapp.startpage = "/current";
+		webapp.SaveConfig();
 	}
 	if (ChatRefresh < 500) ChatRefresh = 5000;
 }
