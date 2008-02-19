@@ -1,1 +1,1 @@
-<textarea id="settings_<%setting.name%>" name="settings.<%setting.name%>"><%setting.value%></textarea>
+<textarea id="<%setting.formname%>" name="<%setting.formname%>" rows="4" cols="60"><%setting.value%></textarea>

@@ -2,7 +2,18 @@
 `define WITH_BANCDHASH 1
 
 // used by the WebAdmin to pass commands to the Settings subclasses using the
-// SetSpecialValue() function.
-`define SETTINGS_COMMAND 'WebAdmin'
-`define SETTINGS_INIT_CMD "init"
-`define SETTINGS_SAVE_CMD "save"
+// SetSpecialValue(), GetSpecialValue() function.
+`define WEBADMIN_CMD WebAdmin_
+// initialize the settings data
+`define WA_INIT_SETTINGS '`{WEBADMIN_CMD}init'
+// save the settings data
+`define WA_SAVE_SETTINGS '`{WEBADMIN_CMD}save'
+
+
+// the following stuff might change
+// request a comma separated list of properties that have custom rendering
+`define WA_RENDER_LIST '`{WEBADMIN_CMD}render_list'
+// response that rendering will be completely handled by this class
+`define WA_RENDER_ALL "*"
+// command to issue rendering of a given element (will be used for both set and get)
+`define WA_RENDER_ITEM '`{WEBADMIN_CMD}render'

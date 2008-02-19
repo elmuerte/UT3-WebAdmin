@@ -1,3 +1,3 @@
-<select id="settings_<%setting.name%>" name="settings.<%setting.name%>">
+<select id="<%setting.formname%>" name="<%setting.formname%>">
 <%setting.options%>
 </select>

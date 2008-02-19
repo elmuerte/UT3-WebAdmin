@@ -15,19 +15,13 @@ class WebAdminSettings extends Settings abstract;
 
 function SetSpecialValue(name PropertyName, string NewValue)
 {
-	if (PropertyName == `{SETTINGS_COMMAND})
+	if (PropertyName == `{WA_INIT_SETTINGS})
 	{
-		if (NewValue ~= `{SETTINGS_INIT_CMD})
-		{
-			init();
-		}
-		else if (NewValue ~= `{SETTINGS_SAVE_CMD})
-		{
-			save();
-		}
-		else {
-			`Log("Unknown command for WebAdminSettings: "$NewValue,,'WebAdmin');
-		}
+		init();
+	}
+	else if (PropertyName == `{WA_SAVE_SETTINGS})
+	{
+		save();
 	}
 }
 

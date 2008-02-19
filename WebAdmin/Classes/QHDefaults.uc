@@ -89,7 +89,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings", "Settings", self);
 	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affact all game types.", 0);
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.", 10);
-	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
+	//menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -404,7 +404,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		{
 			// save this somewhere?
 			settings = new settingsClass;
-			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_INIT_CMD});
+			settings.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
 		}
 	}
 
@@ -413,7 +413,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
 			applySettings(settings, q.request);
-			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_SAVE_CMD});
+			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 		}
 		if (settingsRenderer == none)
 		{
@@ -432,7 +432,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 /**
  * Apply the settings received from the response to the settings instance
  */
-function applySettings(Settings settings, WebRequest request, optional string prefix = "settings.")
+function applySettings(Settings settings, WebRequest request, optional string prefix = "settings_")
 {
 	local int i, idx;
 	local name sname;
@@ -470,7 +470,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 	{
 		// save this somewhere?
 		settings = new settingsClass;
-		settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_INIT_CMD});
+		settings.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
 	}
 
 	if (settings != none)
@@ -478,7 +478,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
 			applySettings(settings, q.request);
-			settings.SetSpecialValue(`{SETTINGS_COMMAND}, `{SETTINGS_SAVE_CMD});
+			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 		}
 		if (settingsRenderer == none)
 		{
