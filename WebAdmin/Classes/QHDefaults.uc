@@ -87,7 +87,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These record ban a single online account.");
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
 	menu.addMenu("/settings", "Settings", self);
-	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affact all game types.", 0);
+	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types.", 0);
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.", 10);
 	//menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
 }
