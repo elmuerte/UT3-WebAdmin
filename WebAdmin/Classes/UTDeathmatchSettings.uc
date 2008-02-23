@@ -7,12 +7,6 @@
  */
 class UTDeathmatchSettings extends UTGameSettings;
 
-function save()
-{
-	saveInternal();
-	UTGameClass.static.StaticSaveConfig();
-}
-
 defaultproperties
 {
 	UTGameClass=class'UTDeathmatch'

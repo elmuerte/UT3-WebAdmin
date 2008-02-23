@@ -17,8 +17,8 @@ function init()
 
 protected function saveInternal()
 {
-	super.saveInternal();
 	GetIntPropertyByName('NumRounds', UTDuelGameClass.default.NumRounds);
+	super.saveInternal();
 }
 
 defaultproperties

@@ -24,11 +24,11 @@ function init()
 protected function saveInternal()
 {
 	local int retval;
-	super.saveInternal();
 	if (GetIntPropertyByName('bAllowNonTeamChat', retval))
  	{
  		UTTeamGameClass.default.bAllowNonTeamChat = (retval != 0);
  	}
+ 	super.saveInternal();
 }
 
 defaultproperties

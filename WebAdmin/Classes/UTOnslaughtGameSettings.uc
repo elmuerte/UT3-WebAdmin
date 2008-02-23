@@ -18,11 +18,11 @@ function init()
 protected function saveInternal()
 {
 	local int retval;
-	super.saveInternal();
 	if (GetIntPropertyByName('bSwapSidesAfterReset', retval))
 	{
 		UTOnslaughtGameClass.default.bSwapSidesAfterReset = (retval != 0);
 	}
+	super.saveInternal();
 }
 
 defaultproperties

@@ -413,6 +413,10 @@ function handleSettingsGametypes(WebAdminQuery q)
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
 			applySettings(settings, q.request);
+			if (UTGame(WebAdmin.WorldInfo.Game) != none)
+			{	// this prevents some saving of variables at a level change
+				UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
+			}
 			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 		}
 		if (settingsRenderer == none)
@@ -478,6 +482,10 @@ function handleSettingsGeneral(WebAdminQuery q)
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
 			applySettings(settings, q.request);
+			if (UTGame(WebAdmin.WorldInfo.Game) != none)
+			{	// this prevents some saving of variables at a level change
+				UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
+			}
 			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 		}
 		if (settingsRenderer == none)

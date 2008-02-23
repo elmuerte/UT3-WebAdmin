@@ -26,6 +26,12 @@ function init()
  	SetIntPropertyByName('ClientProcessingTimeout', UTGameClass.default.ClientProcessingTimeout);
 }
 
+function save()
+{
+	saveInternal();
+	UTGameClass.static.StaticSaveConfig();
+}
+
 protected function saveInternal()
 {
 	local int retval;
@@ -72,7 +78,7 @@ defaultproperties
 	PropertyMappings[4]=(Id=4,Name="bWarmupRound",ColumnHeaderText="Warmup round",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes")))
 	PropertyMappings[5]=(Id=5,Name="WarmupTime",ColumnHeaderText="Warmup time",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=30)
 
-	PropertyMappings[6]=(Id=6,Name="bForceMidGameMenuAtStart",ColumnHeaderText="Force MidGameMenu at Start",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes")))
+	PropertyMappings[6]=(Id=6,name="bForceMidGameMenuAtStart",ColumnHeaderText="Force MidGameMenu at Start",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes")))
 	PropertyMappings[7]=(Id=7,Name="VoteDuration",ColumnHeaderText="Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
 	PropertyMappings[8]=(Id=8,Name="ResetTimeDelay",ColumnHeaderText="New Round Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
 	PropertyMappings[9]=(Id=9,Name="MaxCustomChars",ColumnHeaderText="Maximum Custom Characters",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1)
