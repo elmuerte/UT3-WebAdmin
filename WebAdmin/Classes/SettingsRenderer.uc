@@ -8,6 +8,8 @@
  */
 class SettingsRenderer extends Object dependsOn(Settings);
 
+`include(WebAdmin.uci)
+
 /**
  * Prefix of all include files.
  */
@@ -126,7 +128,7 @@ function render(Settings settings, WebResponse response, optional string substNa
 			curResponse.subst("setting.id", string(settings.PropertyMappings[j].Id));
 			curResponse.subst("setting.name", curSettings.GetPropertyName(settings.PropertyMappings[j].Id));
 			curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settings.PropertyMappings[j].Id));
-			curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getSettingText(settings.PropertyMappings[j].Id)));
+			curResponse.subst("setting.text", `HTMLEscape(getSettingText(settings.PropertyMappings[j].Id)));
 			switch (mtype)
 			{
 				case PVMT_PredefinedValues:
@@ -171,14 +173,14 @@ protected function string renderLocalizedSetting(int settingId)
 	curResponse.subst("setting.id", string(settingId));
 	curResponse.subst("setting.name", curSettings.GetStringSettingName(settingId));
 	curResponse.subst("setting.formname", namePrefix$curSettings.GetStringSettingName(settingId));
-	curResponse.subst("setting.text", class'WebAdminUtils'.static.HTMLEscape(getLocalizedSettingText(settingId)));
+	curResponse.subst("setting.text", `HTMLEscape(getLocalizedSettingText(settingId)));
 
 	curSettings.GetStringSettingValue(settingId, selectedValue);
 	curSettings.GetStringSettingValueNames(settingId, values);
 	for (i = 0; i < values.Length; i++)
 	{
 		curResponse.subst("setting.option.value", values[i].id);
-		curResponse.subst("setting.option.text", class'WebAdminUtils'.static.HTMLEscape(values[i].name));
+		curResponse.subst("setting.option.text", `HTMLEscape(values[i].name));
 		if (values[i].id == selectedValue)
 		{
 			curResponse.subst("setting.option.selected", "selected=\"selected\"");
@@ -234,8 +236,8 @@ protected function string renderPredefinedValues(int settingId, int idx)
 				break;
 			case SDT_String:
 				svalue = curSettings.GetSettingsDataString(values[i]);
-				curResponse.subst("setting.option.value", class'WebAdminUtils'.static.HTMLEscape(svalue));
-				curResponse.subst("setting.option.text", class'WebAdminUtils'.static.HTMLEscape(svalue));
+				curResponse.subst("setting.option.value", `HTMLEscape(svalue));
+				curResponse.subst("setting.option.text", `HTMLEscape(svalue));
 				break;
 			default:
 				`Log("Unsupported data type",,'WebAdmin');
@@ -304,7 +306,7 @@ protected function string renderIdMapped(int settingId, int idx)
 	for (i = 0; i < values.Length; i++)
 	{
 		curResponse.subst("setting.option.value", values[i].id);
-		curResponse.subst("setting.option.text", class'WebAdminUtils'.static.HTMLEscape(values[i].name));
+		curResponse.subst("setting.option.text", `HTMLEscape(values[i].name));
 		if (values[i].id == selectedValue)
 		{
 			curResponse.subst("setting.option.selected", "selected=\"selected\"");
@@ -322,7 +324,7 @@ protected function string renderRaw(int settingId, int idx)
 {
 	local float min, max;
 	curResponse.subst("setting.type", "raw");
-	curResponse.subst("setting.value", class'WebAdminUtils'.static.HTMLEscape(curSettings.GetPropertyAsString(settingId)));
+	curResponse.subst("setting.value", `HTMLEscape(curSettings.GetPropertyAsString(settingId)));
 
 	min = curSettings.PropertyMappings[idx].MinVal;
 	max = curSettings.PropertyMappings[idx].MaxVal;

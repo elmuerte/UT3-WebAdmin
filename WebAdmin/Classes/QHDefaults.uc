@@ -165,8 +165,8 @@ function handleIPPolicy(WebAdminQuery q)
 		policy = webadmin.worldinfo.game.accesscontrol.IPPolicies[i];
 		idx = InStr(policy, ",");
 		if (idx == INDEX_NONE) idx = InStr(policy, ";");
-		q.response.subst("policy.ipmask", class'WebAdminUtils'.static.HTMLEscape(Mid(policy, idx+1)));
-		q.response.subst("policy.policy", class'WebAdminUtils'.static.HTMLEscape(Left(policy, idx)));
+		q.response.subst("policy.ipmask", `HTMLEscape(Mid(policy, idx+1)));
+		q.response.subst("policy.policy", `HTMLEscape(Left(policy, idx)));
 		q.response.subst("policy.selected."$Caps(Left(policy, idx)), "selected=\"selected\"");
 		policies $= webadmin.include(q, "policy_row.inc");
 		q.response.subst("policy.selected."$Caps(Left(policy, idx)), "");
@@ -228,8 +228,8 @@ function handleBans(WebAdminQuery q)
 		q.response.subst("ban.banid", ""$i);
 		unid = webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo[i].BannedID;
 		q.response.subst("ban.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(unid));
-		q.response.subst("ban.playername", class'WebAdminUtils'.static.HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo[i].PlayerName));
-		q.response.subst("ban.timestamp", class'WebAdminUtils'.static.HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo[i].TimeStamp));
+		q.response.subst("ban.playername", `HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo[i].PlayerName));
+		q.response.subst("ban.timestamp", `HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo[i].TimeStamp));
 		bans $= webadmin.include(q, "policy_bans_row.inc");
 	}
 
@@ -283,7 +283,7 @@ function handleHashBans(WebAdminQuery q)
 	{
 		q.response.subst("ban.banid", ""$i);
 		q.response.subst("ban.hash", webadmin.worldinfo.game.accesscontrol.BannedHashes[i].BannedHash);
-		q.response.subst("ban.playername", class'WebAdminUtils'.static.HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedHashes[i].PlayerName));
+		q.response.subst("ban.playername", `HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedHashes[i].PlayerName));
 		bans $= webadmin.include(q, "policy_hashbans_row.inc");
 	}
 
@@ -376,14 +376,14 @@ function handleSettingsGametypes(WebAdminQuery q)
  		{
  			continue;
  		}
- 		q.response.subst("gametype.gamemode", class'WebAdminUtils'.static.HTMLEscape(gametype.GameMode));
- 		q.response.subst("gametype.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
- 		q.response.subst("gametype.defaultmap", class'WebAdminUtils'.static.HTMLEscape(gametype.DefaultMap));
- 		q.response.subst("gametype.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+ 		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
+ 		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
+ 		q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
  		if (currentGameType ~= gametype.GameMode)
  		{
- 			q.response.subst("editgametype.name", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
- 			q.response.subst("editgametype.class", class'WebAdminUtils'.static.HTMLEscape(gametype.GameMode));
+ 			q.response.subst("editgametype.name", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 			q.response.subst("editgametype.class", `HTMLEscape(gametype.GameMode));
  			q.response.subst("gametype.selected", "selected=\"selected\"");
  		}
  		else {

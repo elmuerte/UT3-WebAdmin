@@ -1,5 +1,10 @@
+// Swicthes used for conditional compilation
 `define WITH_BASE64ENC 1
 `define WITH_BANCDHASH 1
+
+
+`define HTMLEscape(str) class'WebAdminUtils'.static.HTMLEscape(`str)
+
 
 // used by the WebAdmin to pass commands to the Settings subclasses using the
 // SetSpecialValue(), GetSpecialValue() function.

@@ -125,11 +125,11 @@ function handleCurrent(WebAdminQuery q)
 	local mutator mut;
 	local string tmp;
 
-	q.response.subst("game.name", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameName));
+	q.response.subst("game.name", `HTMLEscape(webadmin.WorldInfo.Game.GameName));
 	q.response.subst("game.type", webadmin.WorldInfo.Game.class.getPackageName()$"."$webadmin.WorldInfo.Game.class);
 
-	q.response.subst("map.title", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Title));
-	q.response.subst("map.author", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Author));
+	q.response.subst("map.title", `HTMLEscape(webadmin.WorldInfo.Title));
+	q.response.subst("map.author", `HTMLEscape(webadmin.WorldInfo.Author));
 	q.response.subst("map.name", webadmin.WorldInfo.GetPackageName());
 
 	mut = webadmin.WorldInfo.Game.BaseMutator;
@@ -152,10 +152,10 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("time.elapsed", webadmin.WorldInfo.Game.GameReplicationInfo.ElapsedTime);
 	q.response.subst("time.remaining", webadmin.WorldInfo.Game.GameReplicationInfo.RemainingTime);
 
-	q.response.subst("server.name", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.ServerName));
-	q.response.subst("server.admin.name", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.AdminName));
-	q.response.subst("server.admin.email", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.AdminEmail));
-	q.response.subst("server.motd", class'WebAdminUtils'.static.HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.MessageOfTheDay));
+	q.response.subst("server.name", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.ServerName));
+	q.response.subst("server.admin.name", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.AdminName));
+	q.response.subst("server.admin.email", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.AdminEmail));
+	q.response.subst("server.motd", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.MessageOfTheDay));
 
 	buildSortedPRI(q.request.getVariable("sortby", "score"), q.request.getVariable("reverse", "true") ~= "true");
 	foreach sortedPRI(pri, idx)
@@ -284,13 +284,13 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.playerid", pri.PlayerID);
 	if (len(pri.PlayerName) == 0)
 	{
-		q.response.subst("player.name", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerAlias));
+		q.response.subst("player.name", `HTMLEscape(pri.PlayerAlias));
 	}
 	else {
-		q.response.subst("player.name", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerName));
+		q.response.subst("player.name", `HTMLEscape(pri.PlayerName));
 	}
-	q.response.subst("player.playername", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerName));
-	q.response.subst("player.playeralias", class'WebAdminUtils'.static.HTMLEscape(pri.PlayerAlias));
+	q.response.subst("player.playername", `HTMLEscape(pri.PlayerName));
+	q.response.subst("player.playeralias", `HTMLEscape(pri.PlayerAlias));
 	q.response.subst("player.score", int(pri.score));
 	q.response.subst("player.deaths", int(pri.deaths));
 	q.response.subst("player.ping", pri.ping);
@@ -301,7 +301,7 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 		q.response.subst("player.teamid", pri.Team.TeamIndex);
 		q.response.subst("player.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.GetHUDColor()));
 		q.response.subst("player.teamcolor2", class'WebAdminUtils'.static.ColorToHTMLColor(pri.Team.GetTextColor()));
-		q.response.subst("player.teamname", class'WebAdminUtils'.static.HTMLEscape(pri.Team.GetHumanReadableName()));
+		q.response.subst("player.teamname", `HTMLEscape(pri.Team.GetHumanReadableName()));
 	}
 	else {
 		q.response.subst("player.teamid", "");
@@ -476,8 +476,8 @@ function procChatData(WebAdminQuery q, optional int startFrom, optional string s
 			template = "current_chat_notice.inc";
 		}
 
-		q.response.subst("msg.username", class'WebAdminUtils'.static.HTMLEscape(entry.senderName));
-		q.response.subst("msg.text", class'WebAdminUtils'.static.HTMLEscape(entry.message));
+		q.response.subst("msg.username", `HTMLEscape(entry.senderName));
+		q.response.subst("msg.text", `HTMLEscape(entry.message));
 		if (entry.sender != none && entry.sender.Team != none)
 		{
 			q.response.subst("msg.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(entry.sender.Team.TeamColor));
@@ -595,13 +595,13 @@ function handleConsole(WebAdminQuery q)
 			else {
 				result = "";
 			}
-			q.response.subst("console.command", class'WebAdminUtils'.static.HTMLEscape(cmd));
-			q.response.subst("console.results", class'WebAdminUtils'.static.HTMLEscape(result));
+			q.response.subst("console.command", `HTMLEscape(cmd));
+			q.response.subst("console.results", `HTMLEscape(result));
 			q.response.subst("console.visible", cssVisible);
 		}
 		else {
-			q.response.subst("console.command", class'WebAdminUtils'.static.HTMLEscape(cmd));
-			q.response.subst("console.results", class'WebAdminUtils'.static.HTMLEscape("Execution of this command has been disabled."));
+			q.response.subst("console.command", `HTMLEscape(cmd));
+			q.response.subst("console.results", `HTMLEscape("Execution of this command has been disabled."));
 			q.response.subst("console.visible", cssVisible);
 		}
 	}
@@ -668,7 +668,7 @@ function handleCurrentChange(WebAdminQuery q)
  			}
  		}
 
- 		webadmin.pageGenericInfo(q, "<p>Chaning the current game with the following url:<br /><input type=\"text\" readonly=\"readonly\" value=\""$class'WebAdminUtils'.static.HTMLEscape(substvar)$"\" size=\"80\" class=\"monospace\"/></p><p>Please wait, this could take a little while.", "Changing game");
+ 		webadmin.pageGenericInfo(q, "<p>Chaning the current game with the following url:<br /><input type=\"text\" readonly=\"readonly\" value=\""$`HTMLEscape(substvar)$"\" size=\"80\" class=\"monospace\"/></p><p>Please wait, this could take a little while.", "Changing game");
  		webadmin.WorldInfo.ServerTravel(substvar);
  		return;
  	}
@@ -705,10 +705,10 @@ function handleCurrentChange(WebAdminQuery q)
  		{
  			continue;
  		}
- 		q.response.subst("gametype.gamemode", class'WebAdminUtils'.static.HTMLEscape(gametype.GameMode));
- 		q.response.subst("gametype.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
- 		q.response.subst("gametype.defaultmap", class'WebAdminUtils'.static.HTMLEscape(gametype.DefaultMap));
- 		q.response.subst("gametype.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+ 		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
+ 		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
+ 		q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
  		if (currentGameType ~= gametype.GameMode)
  		{
  			q.response.subst("gametype.selected", "selected=\"selected\"");
@@ -746,11 +746,11 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  		maps = webadmin.dataStoreCache.getMaps(currentGameType);
  		for (i = 0; i < maps.length; i++)
  		{
-			q.response.subst("map.mapname", class'WebAdminUtils'.static.HTMLEscape(maps[i].MapName));
- 			q.response.subst("map.friendlyname", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].FriendlyName)));
+			q.response.subst("map.mapname", `HTMLEscape(maps[i].MapName));
+ 			q.response.subst("map.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].FriendlyName)));
  			q.response.subst("map.mapid", string(maps[i].MapID));
- 			q.response.subst("map.numplayers", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].NumPlayers)));
- 			q.response.subst("map.description", class'WebAdminUtils'.static.HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].Description)));
+ 			q.response.subst("map.numplayers", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].NumPlayers)));
+ 			q.response.subst("map.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].Description)));
 	 		if (curmap ~= maps[i].MapName)
  			{
  				q.response.subst("map.selected", "selected=\"selected\"");
@@ -773,10 +773,10 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  			{
  				q.response.subst("mutator.formtype", "checkbox");
  				q.response.subst("mutator.groupid", "mutgroup"$i);
- 				q.response.subst("mutator.classname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[0].ClassName));
+ 				q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[0].ClassName));
  				q.response.subst("mutator.id", "mutfield"$(++idx));
- 				q.response.subst("mutator.friendlyname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[0].FriendlyName));
- 				q.response.subst("mutator.description", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[0].Description));
+ 				q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[0].FriendlyName));
+ 				q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[0].Description));
  				if (currentMutators.find(mutators[i].mutators[0].ClassName) != INDEX_NONE)
  				{
  					q.response.subst("mutator.selected", "checked=\"checked\"");
@@ -794,10 +794,10 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  				{
  					q.response.subst("mutator.formtype", "radio");
 	 				q.response.subst("mutator.groupid", "mutgroup"$i);
- 					q.response.subst("mutator.classname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[j].ClassName));
+ 					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
  					q.response.subst("mutator.id", "mutfield"$(++idx));
- 					q.response.subst("mutator.friendlyname", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[j].FriendlyName));
- 					q.response.subst("mutator.description", class'WebAdminUtils'.static.HTMLEscape(mutators[i].mutators[j].Description));
+ 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[j].FriendlyName));
+ 					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
 					if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
  					{
  						k = j;
