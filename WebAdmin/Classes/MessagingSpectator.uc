@@ -35,8 +35,9 @@ function GameHasEnded(optional Actor EndGameFocus, optional bool bIsWinner)
 
 function InitPlayerReplicationInfo()
 {
-	Super.InitPlayerReplicationInfo();
-	PlayerReplicationInfo.PlayerName="WebAdmin";
+	super.InitPlayerReplicationInfo();
+	PlayerReplicationInfo.bIsInactive = true;
+	PlayerReplicationInfo.PlayerName = "WebAdmin";
 	PlayerReplicationInfo.bIsSpectator = true;
 	PlayerReplicationInfo.bOnlySpectator = true;
 	PlayerReplicationInfo.bOutOfLives = true;
