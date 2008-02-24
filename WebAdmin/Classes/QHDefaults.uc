@@ -511,6 +511,41 @@ function handleSettingsGeneral(WebAdminQuery q)
 
 function handleSettingsPasswords(WebAdminQuery q)
 {
+	local string action, pw1, pw2;
+	action = q.request.getVariable("action");
+	if (action ~= "gamepassword")
+	{
+		pw1 = q.request.getVariable("gamepw1");
+		pw2 = q.request.getVariable("gamepw2");
+		if (pw1 != pw2)
+		{
+			webadmin.addMessage(q, "Game password and confirmation do not match", MT_Error);
+		}
+		else {
+			webadmin.WorldInfo.Game.AccessControl.SetGamePassword(pw1);
+			webadmin.WorldInfo.Game.AccessControl.SaveConfig();
+			webadmin.addMessage(q, "Game password updated");
+		}
+	}
+	else if (action ~= "adminpassword")
+	{
+		pw1 = q.request.getVariable("adminpw1");
+		pw2 = q.request.getVariable("adminpw2");
+		if (pw1 != pw2)
+		{
+			webadmin.addMessage(q, "Admin password and confirmation do not match", MT_Error);
+		}
+		else if (len(pw1) == 0)
+		{
+			webadmin.addMessage(q, "Admin password can not be empty", MT_Error);
+		}
+		else {
+			webadmin.WorldInfo.Game.AccessControl.SetAdminPassword(pw1);
+			webadmin.WorldInfo.Game.AccessControl.SaveConfig();
+			webadmin.addMessage(q, "Admin password updated");
+		}
+	}
+	q.response.subst("has.gamepassword", webadmin.WorldInfo.Game.AccessControl.RequiresPassword());
 	webadmin.sendPage(q, "default_settings_password.html");
 }
 

@@ -289,10 +289,15 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 	else if (request.URI == "/logout")
 	{
-		if (auth.logout(currentQuery.user)) {
+		if (auth.logout(currentQuery.user))
+		{
 			sessions.destroy(currentQuery.session);
 			Response.AddHeader("Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0");
 			Response.AddHeader("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
+			if (bHttpAuth)
+			{
+				Response.AddHeader("Set-Cookie: forceAuthentication=true; Path="$path$"/");
+			}
 			Response.Redirect(path$"/");
 			return;
 		}
@@ -445,8 +450,14 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	// 2: try to authenticate
 	if (len(q.request.Username) > 0 && len(q.request.Password) > 0)
 	{
-		username = q.request.Username;
-		password = q.request.Password;
+		if (bHttpAuth && q.cookies.Find('key', "forceAuthentication") != INDEX_NONE)
+		{
+			q.Response.AddHeader("Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0");
+		}
+		else {
+			username = q.request.Username;
+			password = q.request.Password;
+		}
 	}
 	else if (len(rememberCookie) > 0)
 	{

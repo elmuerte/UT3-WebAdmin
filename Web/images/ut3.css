@@ -99,6 +99,11 @@ TH A {
 	color: white;
 }
 
+P {
+    margin: 0;
+    margin-bottom: 0.5em;
+}
+
 #header {
 	background-image: url(header.gif);
 	background-repeat: no-repeat;
