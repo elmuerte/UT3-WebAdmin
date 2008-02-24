@@ -25,6 +25,13 @@ struct ClassSettingsMapping
  */
 var config array<ClassSettingsMapping> SettingsClasses;
 
+struct ClassSettingsCacheEntry
+{
+	var string cls;
+	var class<Settings> settingsCls;
+};
+var array<ClassSettingsCacheEntry> classSettingsCache;
+
 /**
  * Settings class used for the general, server wide, settings
  */
@@ -93,7 +100,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types.", 0);
 	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.", 0);
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.", 10);
-	//menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
+	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -295,19 +302,45 @@ function handleHashBans(WebAdminQuery q)
 	webadmin.sendPage(q, "policy_hashbans.html");
 }
 
+function class<Settings> getSettingsClassEx(string forClass, optional bool bSilent=false)
+{
+	local class<Object> cls;
+	local int idx;
+
+	if (len(forClass) == 0) return none;
+
+	idx = classSettingsCache.find('cls', Locs(forClass));
+	if (idx != INDEX_NONE)
+	{
+		return classSettingsCache[idx].settingsCls;
+	}
+	cls = class<Object>(DynamicLoadObject(forClass, class'class', true));
+	if (cls == none) return none;
+	return getSettingsClass(cls, bSilent);
+}
+
 /**
  * Try to find the settings class for the provided class
  */
-function class<Settings> getSettingsClass(class forClass)
+function class<Settings> getSettingsClass(class forClass, optional bool bSilent=false)
 {
 	local string className, settingsClass;
 	local class<Settings> result;
 	local int idx;
+	local ClassSettingsCacheEntry cacheEntry;
 
 	if (forClass == none)
 	{
 		return none;
 	}
+
+	idx = classSettingsCache.find('cls', Locs(forClass));
+	if (idx != INDEX_NONE)
+	{
+		return classSettingsCache[idx].settingsCls;
+	}
+
+	cacheEntry.cls = Locs(forClass);
 
 	className = string(forClass);
 	idx = settingsClasses.find('className', className);
@@ -324,6 +357,8 @@ function class<Settings> getSettingsClass(class forClass)
 			`Log("Unable to load settings class "$settingsClasses[idx].settingsClass$" for the class "$settingsClasses[idx].className,,'WebAdmin');
 		}
 		else {
+			cacheEntry.settingsCls = result;
+			classSettingsCache.addItem(cacheEntry);
 			return result;
 		}
 	}
@@ -336,14 +371,22 @@ function class<Settings> getSettingsClass(class forClass)
 	result = class<Settings>(DynamicLoadObject(settingsClass, class'class', true));
 	if (result != none)
 	{
+		cacheEntry.settingsCls = result;
+		classSettingsCache.addItem(cacheEntry);
 		return result;
 	}
 	// not in the same package, try the find the object (only works when it was loaded)
 	result = class<Settings>(FindObject(string(forClass)$"Settings", class'class'));
 	if (result == none)
 	{
-		`Log("Settings class "$settingsClass$" for class "$forClass$" not found (auto detection).",,'WebAdmin');
+		if (!bSilent)
+		{
+			`Log("Settings class "$settingsClass$" for class "$forClass$" not found (auto detection).",,'WebAdmin');
+		}
 	}
+	// even cache a none result
+	cacheEntry.settingsCls = result;
+	classSettingsCache.addItem(cacheEntry);
 	return result;
 }
 
@@ -380,6 +423,10 @@ function handleSettingsGametypes(WebAdminQuery q)
  		{
  			continue;
  		}
+ 		if (getSettingsClassEx(gametype.GameMode) == none)
+ 		{
+ 			continue;
+ 		}
  		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
  		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
  		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
@@ -397,7 +444,7 @@ function handleSettingsGametypes(WebAdminQuery q)
  	}
  	q.response.subst("gametypes", substvar);
 
-	if (len(editGametype.GameMode) > 0)
+	if ((editGametype != none) && len(editGametype.GameMode) > 0)
 	{
 		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
 		if (gi != none)
@@ -431,7 +478,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		}
 		settingsRenderer.render(settings, q.response);
 	}
-	else {
+	else if (editGametype != none) {
 		webadmin.addMessage(q, "Unable to load a settings information for this game type.", MT_Warning);
 	}
 
@@ -551,5 +598,91 @@ function handleSettingsPasswords(WebAdminQuery q)
 
 function handleSettingsMutators(WebAdminQuery q)
 {
-	WebAdmin.pageGenericError(q, "Not yet implemented");
+	local UTUIDataProvider_Mutator mutator, editMutator;
+	local string currentMutator, substvar;
+	local class<Mutator> mut;
+	local class<Settings> settingsClass;
+	local Settings settings;
+	local int idx;
+
+	currentMutator = q.request.getVariable("mutator");
+ 	webadmin.dataStoreCache.loadMutators();
+ 	for (idx = 0; idx < webadmin.dataStoreCache.mutators.length; idx++)
+ 	{
+ 		if (webadmin.dataStoreCache.mutators[idx].ClassName ~= currentMutator)
+ 		{
+ 			break;
+ 		}
+ 	}
+	if (idx >= webadmin.dataStoreCache.mutators.length) idx = INDEX_NONE;
+ 	if (idx > INDEX_NONE)
+ 	{
+ 		editMutator = webadmin.dataStoreCache.mutators[idx];
+ 		currentMutator = editMutator.ClassName;
+ 	}
+ 	else {
+ 		editMutator = none;
+ 		currentMutator = "";
+ 	}
+
+ 	substvar = "";
+ 	foreach webadmin.dataStoreCache.mutators(mutator)
+ 	{
+ 		if (getSettingsClassEx(mutator.ClassName, true) == none)
+ 		{
+ 			continue;
+ 		}
+ 		q.response.subst("mutator.classname", `HTMLEscape(mutator.ClassName));
+ 		q.response.subst("mutator.friendlyname", `HTMLEscape(mutator.FriendlyName));
+ 		q.response.subst("mutator.description", `HTMLEscape(mutator.Description));
+
+ 		if (currentMutator ~= mutator.ClassName)
+ 		{
+ 			q.response.subst("editmutator.name", `HTMLEscape(mutator.FriendlyName));
+ 			q.response.subst("editmutator.class", `HTMLEscape(mutator.ClassName));
+ 			q.response.subst("mutator.selected", "selected=\"selected\"");
+ 		}
+ 		else {
+ 			q.response.subst("mutator.selected", "");
+ 		}
+ 		substvar $= webadmin.include(q, "default_settings_mutators_select.inc");
+ 	}
+ 	q.response.subst("mutators", substvar);
+
+ 	if ((editMutator != none) && len(editMutator.ClassName) > 0)
+	{
+		mut = class<Mutator>(DynamicLoadObject(editMutator.ClassName, class'class'));
+		if (mut != none)
+		{
+			settingsClass = getSettingsClass(mut);
+		}
+		if (settingsClass != none)
+		{
+			// save this somewhere?
+			settings = new settingsClass;
+			settings.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
+		}
+	}
+
+	if (settings != none)
+	{
+		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
+		{
+			applySettings(settings, q.request);
+			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
+			webadmin.addMessage(q, "Settings saved.");
+		}
+		if (settingsRenderer == none)
+		{
+			settingsRenderer = new class'SettingsRenderer';
+			settingsRenderer.init(webadmin.path);
+		}
+		settingsRenderer.render(settings, q.response);
+		q.response.subst("settings", webadmin.include(q, "default_settings_mutators_select.inc"));
+	}
+	else if (editMutator != none) {
+		webadmin.addMessage(q, "Unable to load a settings information for this mutator.", MT_Warning);
+	}
+
+	webadmin.sendPage(q, "default_settings_mutators.html");
 }
