@@ -354,3 +354,30 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 #throbber SPAN {
 	display: none;
 }
+
+DIV.message {
+	border: 1px solid gray;
+	padding: 1em;
+	padding-left: 3.2em;
+	margin: 1em;
+	background-repeat: no-repeat;
+	background-position: 0.7em 0.65em;
+}
+
+#messages .error {
+	border-color: red;
+	background-color: #fee;
+	background-image: url(error.gif);
+}
+
+#messages .warn {
+	border-color: gold;
+	background-color: #ffe;
+	background-image: url(warning.gif);
+}
+
+#messages .info {
+	border-color: #BBBCFF;
+	background-color: #eef;
+	background-image: url(information.gif);
+}

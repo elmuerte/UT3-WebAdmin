@@ -423,7 +423,8 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 			// not really needed
 			if (!auth.validate(q.request.Username, q.request.Password, errorMsg))
 			{
-				pageAuthentication(q, errorMsg);
+				addMessage(q, errorMsg, MT_Error);
+				pageAuthentication(q);
 				return false;
 			}
 		}
@@ -471,17 +472,19 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 
 	if (len(username) == 0 || len(password) == 0)
 	{
-		pageAuthentication(q, "");
+		pageAuthentication(q);
 		return false;
 	}
 
 	// check data
 	if (checkToken && (len(token) == 0 || token != q.session.getString("AuthFormToken")))
 	{
-		pageAuthentication(q, "Invalid form data.");
+		addMessage(q, "Invalid form data.", MT_Error);
+		pageAuthentication(q);
 		return false;
 	}
 	q.user = auth.authenticate(username, password, errorMsg);
+	addMessage(q, errorMsg, MT_Error);
 
 	if (q.user == none)
 	{
@@ -491,10 +494,10 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 			// for some reason the server crashes when this string is send directly to AddItem
 			rememberCookie = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
 			q.response.headers.AddItem(rememberCookie);
-			errorMsg = "Authentication cookie does not contain correct information.";
+			addMessage(q, "Authentication cookie does not contain correct information.", MT_Error);
 			rememberCookie = "";
 		}
-		pageAuthentication(q, errorMsg);
+		pageAuthentication(q);
 		return false;
 	}
 	q.session.putObject("IWebAdminUser", q.user);
@@ -510,6 +513,27 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	return true;
 }
 
+function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT_Information)
+{
+	local WebAdminMessages msgs;
+	if (len(msg) == 0) return;
+	msgs = WebAdminMessages(q.session.getObject("WebAdmin.Messages"));
+	if (msgs == none)
+	{
+		msgs = new class'WebAdminMessages';
+		q.session.putObject("WebAdmin.Messages", msgs);
+	}
+	msgs.addMessage(msg, type);
+}
+
+function string renderMessages(WebAdminQuery q)
+{
+	local WebAdminMessages msgs;
+	msgs = WebAdminMessages(q.session.getObject("WebAdmin.Messages"));
+	if (msgs == none) return "";
+	return msgs.renderMessages(self, q);
+}
+
 /**
  * Include the specified file.
  */
@@ -523,6 +547,7 @@ function string include(WebAdminQuery q, string file)
  */
 function sendPage(WebAdminQuery q, string file)
 {
+	q.response.Subst("messages", renderMessages(q));
 	q.response.IncludeUHTM(Path $ "/" $ file);
 	q.response.ClearSubst();
 }
@@ -534,8 +559,8 @@ function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional stri
 {
 	q.response.Subst("page.title", title);
 	q.response.Subst("page.description", "");
-	q.response.Subst("message", errorMsg);
-	sendPage(q, "error.html");
+	addMessage(q, errorMsg, MT_Error);
+	sendPage(q, "message.html");
 }
 
 /**
@@ -545,14 +570,14 @@ function pageGenericInfo(WebAdminQuery q, coerce string msg, optional string tit
 {
 	q.response.Subst("page.title", title);
 	q.response.Subst("page.description", "");
-	q.response.Subst("message", msg);
+	addMessage(q, msg);
 	sendPage(q, "message.html");
 }
 
 /**
  * Produces the authentication page.
  */
-function pageAuthentication(WebAdminQuery q, string errorMsg)
+function pageAuthentication(WebAdminQuery q)
 {
 	local string token;
 	if (q.request.getVariable("ajax") == "1")
@@ -571,7 +596,6 @@ function pageAuthentication(WebAdminQuery q, string errorMsg)
 	q.session.putString("AuthFormToken", token);
 	q.response.Subst("page.title", "Login");
 	q.response.Subst("page.description", "Log in using the administrator username and password. Cookies must be enabled for this site.");
-	q.response.Subst("message", errorMsg);
 	q.response.Subst("token", token);
 	sendPage(q, "login.html");
 }

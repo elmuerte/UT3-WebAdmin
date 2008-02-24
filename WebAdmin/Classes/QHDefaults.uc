@@ -69,6 +69,9 @@ function bool handleQuery(WebAdminQuery q)
 		case "/settings/general":
 			handleSettingsGeneral(q);
 			return true;
+		case "/settings/general/passwords":
+			handleSettingsPasswords(q);
+			return true;
 		case "/settings/gametypes":
 			handleSettingsGametypes(q);
 			return true;
@@ -88,6 +91,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
 	menu.addMenu("/settings", "Settings", self);
 	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types.", 0);
+	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.", 0);
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.", 10);
 	//menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
 }
@@ -124,20 +128,20 @@ function handleIPPolicy(WebAdminQuery q)
 				}
 				if (parts[i] != string(int(parts[i])) || int(parts[i]) > 255 || int(parts[i]) < 0 )
 				{
-					q.response.subst("message", "<code>"$policy$"</code> is not a valid IP mask");
+					webadmin.addMessage(q, "<code>"$policy$"</code> is not a valid IP mask", MT_error);
 					break;
 				}
 			}
 			if (parts.length > 4 || parts.length < 1)
 			{
-				q.response.subst("message", "<code>"$policy$"</code> is not a valid IP mask");
+				webadmin.addMessage(q, "<code>"$policy$"</code> is not a valid IP mask", MT_error);
 				i = -1;
 			}
 			if (i == parts.length)
 			{
 				if (q.request.getVariable("policy") == "")
 				{
-					q.response.subst("message", "Invalid policy selected.");
+					webadmin.addMessage(q, "Invalid policy selected.", MT_error);
 				}
 				else {
 					policy = q.request.getVariable("policy")$","$policy;
@@ -212,7 +216,7 @@ function handleBans(WebAdminQuery q)
 		action -= " ";
 		if (action != string(int(action)))
 		{
-			q.response.subst("message", "<code>"$action$"</code> is not a valid ID");
+			webadmin.addMessage(q, "<code>"$action$"</code> is not a valid ID", MT_error);
 		}
 		else {
 			class'OnlineSubsystem'.static.StringToUniqueNetId(action, NewBanInfo.BannedID);
@@ -269,7 +273,7 @@ function handleHashBans(WebAdminQuery q)
 		action -= " ";
 		if (action == "0")
 		{
-			q.response.subst("message", "<code>"$action$"</code> is not a valid client hash");
+			webadmin.addMessage(q, "<code>"$action$"</code> is not a valid client hash", MT_error);
 		}
 		else {
 			NewBanInfo.BannedHash = action;
@@ -418,6 +422,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 				UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
 			}
 			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
+			webadmin.addMessage(q, "Settings saved.");
 		}
 		if (settingsRenderer == none)
 		{
@@ -427,7 +432,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		settingsRenderer.render(settings, q.response);
 	}
 	else {
-		q.response.subst("message", "Unable to create a settings instace for this gametype");
+		webadmin.addMessage(q, "Unable to load a settings information for this game type.", MT_Warning);
 	}
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");
@@ -487,6 +492,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 				UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
 			}
 			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
+			webadmin.addMessage(q, "Settings saved.");
 		}
 		if (settingsRenderer == none)
 		{
@@ -497,9 +503,15 @@ function handleSettingsGeneral(WebAdminQuery q)
 	}
 	else {
 		`Log("Failed to load the general settings class "$GeneralSettingsClass,,'WebAdmin');
+		webadmin.addMessage(q, "Unable to load settings.", MT_Warning);
 	}
 
  	webadmin.sendPage(q, "default_settings_general.html");
+}
+
+function handleSettingsPasswords(WebAdminQuery q)
+{
+	webadmin.sendPage(q, "default_settings_password.html");
 }
 
 function handleSettingsMutators(WebAdminQuery q)

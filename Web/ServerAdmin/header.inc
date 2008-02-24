@@ -15,3 +15,5 @@
 <h2 id="pageTitle"><%page.title%></h2>
 <p id="pageDescription"><%page.description%></p>
 </div>
+
+<%messages%>

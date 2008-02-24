@@ -32,6 +32,22 @@ struct WebAdminQuery
 	var array<KeyValuePair> cookies;
 };
 
+enum EMessageType
+{
+	MT_Information,
+	MT_Warning,
+	MT_Error,
+};
+
+/**
+ * Used for the generic message processing in WebAdmin.addMessage();
+ */
+struct Message
+{
+	var EMessageType type;
+	var string text;
+};
+
 /**
  * Called when the WebAdmin creates and initializes this query handler.
  */

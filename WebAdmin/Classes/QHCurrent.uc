@@ -329,7 +329,7 @@ function handleCurrentPlayers(WebAdminQuery q)
 		PRI = webadmin.WorldInfo.Game.GameReplicationInfo.FindPlayerByID(int(q.request.getVariable("playerid")));
 		if (PRI == none)
 		{
-			q.response.subst("message", "Unable to find the requested player.");
+			webadmin.addMessage(q, "Unable to find the requested player.", MT_Warning);
 		}
 		else {
 			PC = PlayerController(PRI.Owner);
@@ -339,7 +339,7 @@ function handleCurrentPlayers(WebAdminQuery q)
 			}
 			if (PC == none)
 			{
-				q.response.subst("message", "No human player associated with this player.");
+				webadmin.addMessage(q, "No human player associated with this player.", MT_Warning);
 			}
 			else {
 				if (action ~= "banip" || action ~= "ban ip")
@@ -358,10 +358,10 @@ function handleCurrentPlayers(WebAdminQuery q)
 				`endif
 				if (!webadmin.WorldInfo.Game.AccessControl.KickPlayer(PC, webadmin.WorldInfo.Game.AccessControl.DefaultKickReason))
 				{
-					q.response.subst("message", "Unable to kick the player "$PRI.PlayerName$". Logged in admins can not be kicked.");
+					webadmin.addMessage(q, "Unable to kick the player "$PRI.PlayerName$". Logged in admins can not be kicked.", MT_Error);
 				}
 				else {
-					q.response.subst("message", "Player "$PRI.PlayerName$" was removed from the server.");
+					webadmin.addMessage(q, "Player "$PRI.PlayerName$" was removed from the server.");
 				}
 			}
 		}
