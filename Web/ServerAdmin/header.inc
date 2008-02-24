@@ -5,6 +5,7 @@
 	<link rel="stylesheet" type="text/css" href="/images/ut3.css" title="Unreal Tournament 3" />
 	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
 	<script type="text/javascript" src="/images/jquery.js<%client.gzip%>"></script>
+	<%html.headers%>
 </head>
 <body>
 

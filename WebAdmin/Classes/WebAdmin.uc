@@ -255,6 +255,14 @@ function Query(WebRequest Request, WebResponse Response)
 		response.Subst("client.gzip", "");
 	}
 
+	if (WorldInfo.IsInSeamlessTravel())
+	{
+		response.subst("html.headers", "<meta http-equiv=\"refresh\" content=\"10\"/>");
+		response.IncludeUHTM(Path $ "/servertravel.html");
+		response.ClearSubst();
+		return;
+	}
+
 	currentQuery.request = Request;
 	currentQuery.response = Response;
 	parseCookies(Request.GetHeader("cookie", ""), currentQuery.cookies);

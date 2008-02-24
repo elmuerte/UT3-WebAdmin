@@ -9,6 +9,7 @@
   <td>
     <form method="POST" action="<%page.fulluri%>">
     <input type="hidden" name="playerid" value="<%player.playerid%>" />
+    <input type="hidden" name="playerkey" value="<%player.playerkey%>" />
     <button type="submit" name="action" value="kick">Kick</button>
     <button type="submit" name="action" value="banid">Ban unique ID</button>
     <button type="submit" name="action" value="banhash">Ban Client Hash</button>

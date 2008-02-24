@@ -279,9 +279,15 @@ static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInf
 	}
 }
 
+static function string getPlayerKey(PlayerReplicationInfo pri)
+{
+	return pri.PlayerID$"_"$class'OnlineSubsystem'.static.UniqueNetIdToString(pri.UniqueId)$"_"$pri.CreationTime;
+}
+
 static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 {
 	q.response.subst("player.playerid", pri.PlayerID);
+	q.response.subst("player.playerkey", getPlayerKey(pri));
 	if (len(pri.PlayerName) == 0)
 	{
 		q.response.subst("player.name", `HTMLEscape(pri.PlayerAlias));
@@ -294,6 +300,8 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.score", int(pri.score));
 	q.response.subst("player.deaths", int(pri.deaths));
 	q.response.subst("player.ping", pri.ping);
+	q.response.subst("player.exactping", pri.ExactPing);
+	q.response.subst("player.packetloss", pri.PacketLoss);
 	q.response.subst("player.lives", pri.numlives);
 	q.response.subst("player.ranking", pri.playerranking);
 	if (pri.Team != none)
@@ -326,7 +334,17 @@ function handleCurrentPlayers(WebAdminQuery q)
 	action = q.request.getVariable("action");
 	if (action != "")
 	{
-		PRI = webadmin.WorldInfo.Game.GameReplicationInfo.FindPlayerByID(int(q.request.getVariable("playerid")));
+		//PRI = webadmin.WorldInfo.Game.GameReplicationInfo.FindPlayerByID(int(q.request.getVariable("playerid")));
+		IP = q.request.getVariable("playerkey");
+		PRI = none;
+		for (idx = 0; idx < webadmin.WorldInfo.Game.GameReplicationInfo.PRIArray.length; idx++)
+		{
+			if (getPlayerKey(webadmin.WorldInfo.Game.GameReplicationInfo.PRIArray[idx]) == IP)
+			{
+				PRI = webadmin.WorldInfo.Game.GameReplicationInfo.PRIArray[idx];
+				break;
+			}
+		}
 		if (PRI == none)
 		{
 			webadmin.addMessage(q, "Unable to find the requested player.", MT_Warning);
