@@ -702,7 +702,7 @@ function handleCurrentChange(WebAdminQuery q)
  		}
 
  		webadmin.pageGenericInfo(q, "<p>Chaning the current game with the following url:<br /><input type=\"text\" readonly=\"readonly\" value=\""$`HTMLEscape(substvar)$"\" size=\"80\" class=\"monospace\"/></p><p>Please wait, this could take a little while.", "Changing game");
- 		webadmin.WorldInfo.ServerTravel(substvar);
+ 		webadmin.WorldInfo.ServerTravel(substvar, true);
  		return;
  	}
 
