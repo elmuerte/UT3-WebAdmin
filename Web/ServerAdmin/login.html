@@ -1,9 +1,9 @@
 <!-- #include file="header.inc" -->
 <div id="content">
-<form method="POST">
-<input type="hidden" name="token" value="<%token%>" />
+<form method="post" action="<%page.fulluri%>">
 <fieldset>
 <legend>Login</legend>
+<input type="hidden" name="token" value="<%token%>" />
 <dl>
 	<dt><label for="username">Username</label></dt>
 	<dd><input type="text" id="username" name="username" value="" /></dd>
@@ -12,7 +12,7 @@
 	<dd><button type="submit">login</button> 
         <input type="checkbox" id="remember" name="remember" value="1" />
         <label for="remember" title="Automatically log in the next time.">remember me</label>
-    <dd>
+    </dd>
 </dl>
 </fieldset>
 </form>
