@@ -466,6 +466,12 @@ protected function banByHash(PlayerController PC)
 
 function handleCurrentChat(WebAdminQuery q)
 {
+	local string msg;
+	msg = q.request.getVariable("message");
+	if (len(msg) > 0)
+	{
+		webadmin.WorldInfo.Game.Broadcast(q.user.getPC(), msg, 'Say');
+	}
 	procChatData(q, 0, "chat.log");
 	q.response.subst("chat.refresh", ChatRefresh);
 	webadmin.sendPage(q, "current_chat.html");

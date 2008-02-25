@@ -350,10 +350,10 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	width: 100%;
 	height: 100%;
 	z-index: 100;
-	opacity: .75;
-	filter: alpha(opacity=75);
 	display: none;
 	cursor: wait;
+	opacity: 0.75;
+	filter: alpha(opacity=75);
 }
 
 #throbber SPAN {
@@ -376,7 +376,7 @@ DIV.message {
 }
 
 #messages .warn {
-	border-color: gold;
+	border-color: #FFD700;
 	background-color: #ffe;
 	background-image: url(warning.gif);
 }

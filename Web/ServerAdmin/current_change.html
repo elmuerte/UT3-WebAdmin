@@ -45,7 +45,7 @@
 </form>
 
 <script type="text/javascript">
-<!--
+//<![CDATA[
 $('#gametype').change(function() {
     $('#throbber').fadeIn();
     requestData = {ajax: 1, gametype: $('#gametype').val()};
@@ -131,7 +131,7 @@ function updateSelection(elm, isChecked) {
 $('#btnupdate').remove();
 $('#gametype').after(' <div id="throbber"><span>Loading...</span></div>');
 $('#throbber').hide();
-// -->
+//]]>
 </script>
 
 </div>

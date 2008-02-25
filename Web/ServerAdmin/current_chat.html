@@ -13,6 +13,7 @@
 </div>
 
 <script type="text/javascript">
+//<![CDATA[
 $(document).ready(function(){
     $('#chatmessage').focus();
     setTimeout('getMessages()', <%chat.refresh%>);
@@ -65,6 +66,7 @@ function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
         document.location = '<%page.fulluri%>';
     }
 }
+//]]>
 </script>
 
 </div>

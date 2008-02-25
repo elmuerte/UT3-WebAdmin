@@ -11,9 +11,9 @@
 <%bans%>
 </table>
 
+<form method="post" action="<%page.fulluri%>">
 <fieldset id="addban">
 <legend>Add a new ban</legend>
-<form method="POST" action="<%page.fulluri%>">
 <input type="hidden" name="action" value="add" />
 <dl>
     <dt><label for="hashresponse">Client hash</label></dt>
@@ -22,9 +22,8 @@
     <dd><input type="text" name="playername" id="playername" /></dd>
     <dd><button type="submit">Add ban</button></dd>
 </dl>
-</form>
 </fieldset>
-
+</form>
 
 </div>
 

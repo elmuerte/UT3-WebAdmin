@@ -68,7 +68,7 @@
 </table>
 
 <script type="text/javascript">
-<!--
+//<![CDATA[
 $(document).ready(function(){
      // bug in sortedtable causes a javascript error when the table is empty.
     if ($("#players td").size() <= 1) return;
@@ -80,7 +80,7 @@ $(document).ready(function(){
     $("#players th").wrapInner("<span></span>");
     $("#players").tablesorter({sortList:[[3,0]], widgets: ['zebra']});
 });
-//-->
+//]]>
 </script>
 
 </div>

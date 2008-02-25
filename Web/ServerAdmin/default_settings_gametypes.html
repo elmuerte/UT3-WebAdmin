@@ -2,26 +2,26 @@
 
 <div id="content">
 
+<form method="post" action="<%page.fulluri%>">
 <fieldset>
 <legend>Gametype selection</legend>
-<form method="POST" action="<%page.fulluri%>">
     <select id="gametype" name="gametype">
     <%gametypes%>
     </select>
     <button type="submit" name="action" value="select" id="btnselect">edit gametype</button>
-</form>
 </fieldset>
+</form>
 
+<form method="post" action="<%page.fulluri%>">
 <fieldset>
 <legend>Settings for <em><%editgametype.name%></em></legend>
-<form method="POST" action="<%page.fulluri%>">
 <input type="hidden" name="gametype" value="<%editgametype.class%>" />
 <dl>
 <%settings%>
 </dl>
 <button type="submit" name="action" value="save" id="btnsave">save settings</button>
-</form>
 </fieldset>
+</form>
 
 </div>
 

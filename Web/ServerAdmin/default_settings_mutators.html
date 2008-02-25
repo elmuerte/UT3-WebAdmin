@@ -2,16 +2,16 @@
 
 <div id="content">
 
+<form method="post" action="<%page.fulluri%>">
 <fieldset>
 <legend>Mutator selection</legend>
-<form method="POST" action="<%page.fulluri%>">
     <select id="mutator" name="mutator">
     <option></option>
     <%mutators%>
     </select>
     <button type="submit" name="action" value="select" id="btnselect">edit mutator</button>
-</form>
 </fieldset>
+</form>
 
 <%settings%>
 
