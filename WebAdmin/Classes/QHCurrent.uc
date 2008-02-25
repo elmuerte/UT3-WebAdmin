@@ -659,7 +659,13 @@ function handleCurrentChange(WebAdminQuery q)
 
  	currentGameType = q.request.getVariable("gametype");
  	curmap = q.request.getVariable("map");
- 	curmiscurl = q.request.getVariable("urlextra", "");
+
+ 	curmiscurl = webadmin.WorldInfo.Game.ServerOptions;
+ 	class'UTGame'.static.RemoveOption(curmiscurl, "Mutator");
+ 	class'UTGame'.static.RemoveOption(curmiscurl, "Game");
+ 	class'UTGame'.static.RemoveOption(curmiscurl, "Team");
+ 	class'UTGame'.static.RemoveOption(curmiscurl, "Name");
+ 	curmiscurl = q.request.getVariable("urlextra", curmiscurl);
 
  	idx = int(q.request.getVariable("mutatorGroupCount", "0"));
  	for (i = 0; i < idx; i++)
@@ -683,7 +689,16 @@ function handleCurrentChange(WebAdminQuery q)
  			JoinArray(currentMutators, substvar2, ",");
  			substvar $= "?mutator="$substvar2;
  		}
- 		if (len(curmiscurl) > 0) substvar $= "?"$curmiscurl;
+ 		if (len(curmiscurl) > 0)
+		{
+			if (Left(curmiscurl, 1) == "?")
+			{
+				substvar $= curmiscurl;
+			}
+			else {
+				substvar $= "?"$curmiscurl;
+			}
+		}
 
  		for (i = 0; i < denyUrlOptions.length; i++)
  		{
