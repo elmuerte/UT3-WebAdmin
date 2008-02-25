@@ -6,6 +6,7 @@ Copyright 2008 Epic Games, Inc.
 </div>
 
 <script type="text/javascript">
+<!--
 $(document).ready(function(){
   if (jQuery.browser.msie && parseFloat(jQuery.browser.version) < 7) {
     // fix "buttons" to work properly in MSIE<7
@@ -19,6 +20,7 @@ $(document).ready(function(){
     });
   } /* end if */
 });
+// -->
 </script>
 
 </body>

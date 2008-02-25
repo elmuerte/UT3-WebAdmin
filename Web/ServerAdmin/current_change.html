@@ -2,7 +2,7 @@
 
 <div id="content">
 
-<form method="POST" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>">
 
 <fieldset>
 <legend>Game and map</legend>
@@ -41,10 +41,11 @@
 </dl>
 </fieldset>
 
-<button type="submit" name="action" value="change" id="btnchange">Change game</button>
+<p><button type="submit" name="action" value="change" id="btnchange">Change game</button></p>
 </form>
 
 <script type="text/javascript">
+<!--
 $('#gametype').change(function() {
     $('#throbber').fadeIn();
     requestData = {ajax: 1, gametype: $('#gametype').val()};
@@ -130,7 +131,7 @@ function updateSelection(elm, isChecked) {
 $('#btnupdate').remove();
 $('#gametype').after(' <div id="throbber"><span>Loading...</span></div>');
 $('#throbber').hide();
-
+// -->
 </script>
 
 </div>

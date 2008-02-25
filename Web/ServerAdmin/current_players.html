@@ -6,8 +6,8 @@
 <thead>
 <tr>
     <th>&nbsp;</th>
-    <th><a href="<%page.fulluri%>?sortby=name&reverse=<%reverse.name%>" class="<%sorted.name%>">Player name</a></th>
-    <th><a href="<%page.fulluri%>?sortby=ping&reverse=<%reverse.ping%>" class="<%sorted.ping%>">Ping</a></th>
+    <th><a href="<%page.fulluri%>?sortby=name&amp;reverse=<%reverse.name%>" class="sortable <%sorted.name%>">Player name</a></th>
+    <th><a href="<%page.fulluri%>?sortby=ping&amp;reverse=<%reverse.ping%>" class="sortable <%sorted.ping%>">Ping</a></th>
     <th>IP</th>
     <th title="A unique ID for this game account.">Unique ID</th>
     <th title="A unique ID for the copy of the game the player is using.">Client Hash</th>
@@ -21,6 +21,7 @@
 </table>
 
 <script type="text/javascript">
+<!--
 $(document).ready(function(){
     if ($("#players td").size() <= 0) return;
     $("#players th a").each(function(){
@@ -31,6 +32,7 @@ $(document).ready(function(){
     $("#players th").wrapInner("<span></span>");
     $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra']});
 });
+//-->
 </script>
 
 </div>

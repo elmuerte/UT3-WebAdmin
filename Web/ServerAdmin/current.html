@@ -52,12 +52,12 @@
 <thead>
 <tr>
     <th>&nbsp;</th>
-    <th><a href="<%page.fulluri%>?sortby=name&reverse=<%reverse.name%>" class="<%sorted.name%>">Player name</a></th>
-    <th><a href="<%page.fulluri%>?sortby=ranking&reverse=<%reverse.ranking%>" class="<%sorted.ranking%>">Ranking</a></th>
-    <th><a href="<%page.fulluri%>?sortby=score&reverse=<%reverse.score%>" class="<%sorted.score%>">Score</a></th>
-    <th><a href="<%page.fulluri%>?sortby=deaths&reverse=<%reverse.deaths%>" class="<%sorted.deaths%>">Deaths</a></th>
-    <th><a href="<%page.fulluri%>?sortby=kills&reverse=<%reverse.kills%>" class="<%sorted.kills%>">Kills</a></th>
-    <th><a href="<%page.fulluri%>?sortby=ping&reverse=<%reverse.ping%>" class="<%sorted.ping%>">Ping</a></th>
+    <th><a href="<%page.fulluri%>?sortby=name&amp;reverse=<%reverse.name%>" class="sortable <%sorted.name%>">Player name</a></th>
+    <th><a href="<%page.fulluri%>?sortby=ranking&amp;reverse=<%reverse.ranking%>" class="sortable <%sorted.ranking%>">Ranking</a></th>
+    <th><a href="<%page.fulluri%>?sortby=score&amp;reverse=<%reverse.score%>" class="sortable <%sorted.score%>">Score</a></th>
+    <th><a href="<%page.fulluri%>?sortby=deaths&amp;reverse=<%reverse.deaths%>" class="sortable <%sorted.deaths%>">Deaths</a></th>
+    <th><a href="<%page.fulluri%>?sortby=kills&amp;reverse=<%reverse.kills%>" class="sortable <%sorted.kills%>">Kills</a></th>
+    <th><a href="<%page.fulluri%>?sortby=ping&amp;reverse=<%reverse.ping%>" class="sortable <%sorted.ping%>">Ping</a></th>
     <th>Bot</th>
     <th>Admin</th>
 </tr>
@@ -68,9 +68,10 @@
 </table>
 
 <script type="text/javascript">
+<!--
 $(document).ready(function(){
      // bug in sortedtable causes a javascript error when the table is empty.
-    if ($("#players td").size() <= 0) return;
+    if ($("#players td").size() <= 1) return;
     $("#players th a").each(function(){
         jthis = $(this);
         jthis.before(jthis.html());
@@ -79,6 +80,7 @@ $(document).ready(function(){
     $("#players th").wrapInner("<span></span>");
     $("#players").tablesorter({sortList:[[3,0]], widgets: ['zebra']});
 });
+//-->
 </script>
 
 </div>

@@ -165,6 +165,10 @@ function handleCurrent(WebAdminQuery q)
 		substPri(q, pri);
 		players $= webadmin.include(q, "current_player_row.inc");
 	}
+	if (sortedPRI.Length == 0)
+	{
+		players = webadmin.include(q, "current_player_empty.inc");
+	}
 	q.response.subst("sorted."$q.request.getVariable("sortby", "score"), "sorted");
 	if (!(q.request.getVariable("reverse", "true") ~= "true"))
 	{
@@ -407,6 +411,11 @@ function handleCurrentPlayers(WebAdminQuery q)
 		`endif
 		players $= webadmin.include(q, "current_players_row.inc");
 	}
+	if (sortedPRI.Length == 0)
+	{
+		players = webadmin.include(q, "current_players_empty.inc");
+	}
+
 	q.response.subst("sorted."$q.request.getVariable("sortby", "name"), "sorted");
 	if (!(q.request.getVariable("reverse", "") ~= "true"))
 	{

@@ -7,9 +7,11 @@
 </div>
 
 <div id="chat">
-<form id="chatform" action="<%page.fulluri%>#chat" method="POST">
-<input type="text" id="chatmessage" name="message" value="" size="80"><button type="submit">say</button>
+<form id="chatform" action="<%page.fulluri%>#chat" method="post">
+<p><input type="text" id="chatmessage" name="message" value="" size="80" /><button type="submit">say</button></p>
 </form>
+</div>
+
 <script type="text/javascript">
 $(document).ready(function(){
     $('#chatmessage').focus();
@@ -64,8 +66,6 @@ function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
     }
 }
 </script>
-</div>
-
 
 </div>
 

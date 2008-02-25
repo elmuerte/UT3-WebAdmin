@@ -254,8 +254,11 @@ protected function string renderChilds(array<int> childs, WebResponse wr)
 			if (tree[child].children.length > 0)
 			{
 				subitems = renderChilds(tree[child].children, wr);
-				wr.subst("navigation.items", subitems, true);
-				subitems = wr.LoadParsedUHTM(webadmin.path$"/navigation_menu.inc");
+				if (len(subitems) > 0)
+				{
+					wr.subst("navigation.items", subitems, true);
+					subitems = wr.LoadParsedUHTM(webadmin.path$"/navigation_menu.inc");
+				}
 			}
 			else {
 				subitems = "";
