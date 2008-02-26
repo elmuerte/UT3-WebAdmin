@@ -85,6 +85,9 @@ function bool handleQuery(WebAdminQuery q)
 		case "/settings/mutators":
 			handleSettingsMutators(q);
 			return true;
+		case "/settings/maplist":
+			handleMapList(q);
+			return true;
 	}
 	return false;
 }
@@ -101,6 +104,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.", 0);
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes.", 10);
 	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configurable.", 20);
+	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. each game type can have a single map cycle.", 30);
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -685,4 +689,93 @@ function handleSettingsMutators(WebAdminQuery q)
 	}
 
 	webadmin.sendPage(q, "default_settings_mutators.html");
+}
+
+function handleMapList(WebAdminQuery q)
+{
+	local string currentGameType, substvar;
+	local UTUIDataProvider_GameModeInfo editGametype, gametype;
+	local int idx, i;
+	local class<GameInfo> gi;
+	local GameMapCycle cycle;
+	local array<UTUIDataProvider_MapInfo> allMaps;
+
+	currentGameType = q.request.getVariable("gametype");
+	if (currentGameType == "")
+ 	{
+ 		currentGameType = string(webadmin.WorldInfo.Game.class);
+ 	}
+ 	webadmin.dataStoreCache.loadGameTypes();
+ 	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
+ 	if (idx > INDEX_NONE)
+ 	{
+ 		editGametype = webadmin.dataStoreCache.gametypes[idx];
+ 		currentGameType = editGametype.GameMode;
+ 	}
+ 	else {
+ 		editGametype = none;
+ 		currentGameType = "";
+ 	}
+
+ 	substvar = "";
+ 	foreach webadmin.dataStoreCache.gametypes(gametype)
+ 	{
+ 		if (gametype.bIsCampaign)
+ 		{
+ 			continue;
+ 		}
+ 		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
+ 		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
+ 		q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+ 		if (currentGameType ~= gametype.GameMode)
+ 		{
+ 			q.response.subst("editgametype.name", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 			q.response.subst("editgametype.class", `HTMLEscape(gametype.GameMode));
+ 			q.response.subst("gametype.selected", "selected=\"selected\"");
+ 		}
+ 		else {
+ 			q.response.subst("gametype.selected", "");
+ 		}
+ 		substvar $= webadmin.include(q, "current_change_gametype.inc");
+ 	}
+ 	q.response.subst("gametypes", substvar);
+
+	if ((editGametype != none) && len(editGametype.GameMode) > 0)
+	{
+		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
+	}
+	if (gi != none)
+	{
+		allMaps = webadmin.dataStoreCache.getMaps(editGametype.GameMode);
+		idx = class'UTGame'.default.GameSpecificMapCycles.find('GameClassName', gi.name);
+		if (idx != INDEX_NONE)
+		{
+			cycle = class'UTGame'.default.GameSpecificMapCycles[idx];
+		}
+		else {
+			cycle.GameClassName = gi.name;
+			cycle.Maps.length = 0;
+		}
+
+		substvar = "";
+		for (i = 0; i < allMaps.length; i++)
+		{
+			if (i > 0) substvar $= chr(10);
+			substvar $= allMaps[i].MapName;
+		}
+		q.response.subst("allmaps.plain", `HTMLEscape(substvar));
+
+		substvar = "";
+		for (i = 0; i < cycle.Maps.length; i++)
+		{
+			if (i > 0) substvar $= chr(10);
+			substvar $= cycle.Maps[i];
+		}
+		q.response.subst("cycle.plain", `HTMLEscape(substvar));
+	}
+	else {
+		webadmin.addMessage(q, "Unable to load the selected game type.", MT_Warning);
+	}
+ 	webadmin.sendPage(q, "default_maplist.html");
 }

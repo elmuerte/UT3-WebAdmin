@@ -278,6 +278,16 @@ TABLE.grid TD {
 	vertical-align: middle;
 }
 
+
+TABLE.noborder {
+	border-collapse: collapse;
+	margin-bottom: 1em;
+}
+
+TABLE.noborder TD {
+	border: 0px solid #520000;
+}
+
 TR.odd {
 	background-color: #edd;
 }
@@ -385,4 +395,18 @@ DIV.message {
 	border-color: #BBBCFF;
 	background-color: #eef;
 	background-image: url(information.gif);
+}
+
+#jsmaplist UL, #jsmaplist OL {
+	margin: 0;
+	padding: 0;
+	padding-left: 1.2em;
+} 
+
+#jsmaplist LI {
+	cursor: move;
+}
+
+.sorting {
+	background-color: #FFE5E5;
 }

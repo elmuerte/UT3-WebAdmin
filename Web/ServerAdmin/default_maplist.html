@@ -1,0 +1,83 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<form method="post" action="<%page.fulluri%>">
+<fieldset>
+<legend>Gametype selection</legend>
+    <select id="gametype" name="gametype">
+    <%gametypes%>
+    </select>
+    <button type="submit" name="action" value="select" id="btnselect">edit map cycle</button>
+</fieldset>
+</form>
+
+<form method="post" action="<%page.fulluri%>">
+<fieldset>
+<legend>Map cycle for <em><%editgametype.name%></em></legend>
+<input type="hidden" name="gametype" value="<%editgametype.class%>" />
+
+<div>
+<table class="noborder">
+<thead>
+<tr>
+    <th>Available Maps</th>
+    <th>Map Cycle</th>
+</tr>
+</thead>
+
+<tbody id="noscript">
+<tr>
+    <td><textarea rows="15" cols="30" id="allmaps"><%allmaps.plain%></textarea></td>
+    <td><textarea rows="15" cols="30" name="mapcycle" id="mapcycle"><%cycle.plain%></textarea></td>
+</tr>
+<tr>
+    <td colspan="2"><em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser.</td>
+</tr>
+</tbody>
+
+<tbody id="jsmaplist" display="none">
+<tr>
+    <td><ul id="jsallmaps"></ul></td>
+    <td><ol id="jsmapcycle"></ol></td>
+</tr>
+<tr>
+    <td colspan="2"><em>Note:</em> drag and drop items to add and move items in the map cycle.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
+</fieldset>
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function() {
+    $('#noscript').hide();
+    $('#jsmaplist').show();
+    allmaps = $('#allmaps').val().split("\n");
+    jsallmaps = $('#jsallmaps');
+    for (i = 0; i < allmaps.length; i++)
+    {
+        jsallmaps.append('<li>'+jQuery.trim(allmaps[i])+'</li>');
+    }
+    mapcycle = $('#mapcycle').val().split("\n");
+    jsmapcycle = $('#jsmapcycle');
+    for (i = 0; i < mapcycle.length; i++)
+    {
+        jsmapcycle.append('<li>'+jQuery.trim(mapcycle[i])+'</li>');
+    }
+    jsmapcycle.sortable({ axis: "y", placeholder: "sorting" });
+});
+
+//]]>
+</script>
+
+</div>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->
