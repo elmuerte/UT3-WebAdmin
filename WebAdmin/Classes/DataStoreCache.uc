@@ -416,7 +416,7 @@ function loadMutators()
 {
 	local array<UTUIResourceDataProvider> ProviderList;
 	local UTUIDataProvider_Mutator item;
-	local int i, j, groupid;
+	local int i, j, groupid, emptyGroupId;
 	local array<string> groups;
 	local string group;
 
@@ -427,12 +427,18 @@ function loadMutators()
 	mutators.Remove(0, mutators.length);
 	gameTypeMutatorCache.Remove(0, gameTypeMutatorCache.length);
 
+	emptyGroupId = -1;
+
 	class'UTUIDataStore_MenuItems'.static.GetAllResourceDataProviders(class'UTUIDataProvider_Mutator', ProviderList);
 	for (i = 0; i < ProviderList.length; i++)
 	{
 		item = UTUIDataProvider_Mutator(ProviderList[i]);
 
 		ParseStringIntoArray(item.GroupNames, groups, "|", true);
+		if (groups.length == 0)
+		{
+			groups.AddItem("");
+		}
 		foreach groups(group)
 		{
 			groupid = mutatorGroups.find('GroupName', group);
@@ -447,6 +453,10 @@ function loadMutators()
 				}
 				mutatorGroups.Insert(groupid, 1);
 				mutatorGroups[groupid].GroupName = Caps(group);
+			}
+			if (emptyGroupId == -1 && len(group) == 0)
+			{
+				emptyGroupId = groupid;
 			}
 			for (j = 0; j < mutatorGroups[groupid].mutators.length; j++)
 			{
@@ -476,6 +486,42 @@ function loadMutators()
 		{
 			mutators.AddItem(item);
 		}
+	}
+
+	if (emptyGroupId == -1)
+	{
+		emptyGroupId = mutatorGroups.length;
+		mutatorGroups[emptyGroupId].GroupName = "";
+	}
+
+	// remove groups with single entries
+	for (i = mutatorGroups.length-1; i >= 0 ; i--)
+	{
+		if (i == emptyGroupId) continue;
+		if (mutatorGroups[i].mutators.length > 1) continue;
+		item = mutatorGroups[i].mutators[0];
+		for (j = 0; j < mutatorGroups[emptyGroupId].mutators.length; j++)
+		{
+			if (mutatorGroups[emptyGroupId].mutators[j] == item)
+			{
+				break;
+			}
+			if (compareMutator(mutatorGroups[emptyGroupId].mutators[j], item, "FriendlyName"))
+			{
+				mutatorGroups[emptyGroupId].mutators.Insert(j, 1);
+				mutatorGroups[emptyGroupId].mutators[j] =  item;
+				break;
+			}
+		}
+		if (j == mutatorGroups[emptyGroupId].mutators.length)
+		{
+			mutatorGroups[emptyGroupId].mutators.AddItem(item);
+		}
+		mutatorGroups.Remove(i, 1);
+	}
+	if (mutatorGroups[emptyGroupId].mutators.Length == 0)
+	{
+		mutatorGroups.Remove(emptyGroupId, 1);
 	}
 }
 

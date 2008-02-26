@@ -817,22 +817,25 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  		idx = 0;
  		for (i = 0; i < mutators.length; i++)
  		{
- 			if (mutators[i].mutators.Length == 1)
+ 			if ((mutators[i].mutators.Length == 1) || len(mutators[i].GroupName) == 0)
  			{
- 				q.response.subst("mutator.formtype", "checkbox");
- 				q.response.subst("mutator.groupid", "mutgroup"$i);
- 				q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[0].ClassName));
- 				q.response.subst("mutator.id", "mutfield"$(++idx));
- 				q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[0].FriendlyName));
- 				q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[0].Description));
- 				if (currentMutators.find(mutators[i].mutators[0].ClassName) != INDEX_NONE)
+ 				for (j = 0; j < mutators[i].mutators.Length; j++)
  				{
- 					q.response.subst("mutator.selected", "checked=\"checked\"");
-		 		}
- 				else {
-		 			q.response.subst("mutator.selected", "");
+ 					q.response.subst("mutator.formtype", "checkbox");
+	 				q.response.subst("mutator.groupid", "mutgroup"$i);
+ 					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
+ 					q.response.subst("mutator.id", "mutfield"$(++idx));
+ 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[j].FriendlyName));
+ 					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
+	 				if (currentMutators.find(mutators[i].mutators[0].ClassName) != INDEX_NONE)
+ 					{
+ 						q.response.subst("mutator.selected", "checked=\"checked\"");
+		 			}
+ 					else {
+		 				q.response.subst("mutator.selected", "");
+	 				}
+ 					substvar3 $= webadmin.include(q, "current_change_mutator.inc");
  				}
- 				substvar3 $= webadmin.include(q, "current_change_mutator.inc");
  			}
  			else {
  				substvar2 = "";
