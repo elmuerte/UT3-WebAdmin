@@ -72,6 +72,12 @@ $(document).ready(function() {
         jsmapcycle.append('<li>'+jQuery.trim(mapcycle[i])+'</li>');
     }
     jsmapcycle.sortable({ axis: "y", placeholder: "sorting" });
+    jsallmaps.draggable({helper: 'clone'});
+    jsmapcycle.droppable({
+	   drop: function(ev, ui) {
+            $(this).append("<br>Dropped!");
+	   }
+	});
 });
 
 //]]>
