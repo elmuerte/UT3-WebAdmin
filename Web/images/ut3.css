@@ -400,13 +400,49 @@ DIV.message {
 #jsmaplist UL, #jsmaplist OL {
 	margin: 0;
 	padding: 0;
-	padding-left: 1.2em;
+	padding-left: 2em;
 } 
 
 #jsmaplist LI {
 	cursor: move;
 }
 
+#jsmapcycle LI {
+}
+
 .sorting {
-	background-color: #FFE5E5;
+	/*background-color: #FFE5E5;*/
+}
+
+.dragging {
+	list-style: none;
+	border: 1px solid #FFCACA;
+	background: #FFE5E5;
+	padding: 0.05em 0.3em 0.05em 0.3em;
+}
+
+.droppable {
+    background-color: #FFF2F2;
+}
+
+UL#jsgarbage {
+	padding: 0;
+	margin: 0;
+	width: 32px;
+	background-image: url(warning.gif);
+	background-repeat: no-repeat;
+}
+
+UL#jsgarbage LI {
+	display: none;
+	padding: 0;
+	margin: 0;
+}
+
+UL#jsgarbage LI.garbagebin {
+	display: list-item;
+	list-style: none;
+	height: 32px;
+	width: 32px;
+	cursor: auto;
 }

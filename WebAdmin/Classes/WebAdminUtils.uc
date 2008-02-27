@@ -30,6 +30,27 @@ static final function String HTMLEscape(coerce string inp)
 }
 
 /**
+ * Trim everything below ascii 32 from begin and end
+ */
+static final function String Trim(coerce string inp)
+{
+	local int b,e;
+	b = 0;
+	e = Len(inp)-1;
+	while (b < e)
+	{
+		if (Asc(Mid(inp, b, 1)) > 32) break;
+		b++;
+	}
+	while (e > b)
+	{
+		if (Asc(Mid(inp, e, 1)) > 32) break;
+		e--;
+	}
+	return mid(inp, b, e-b+1);
+}
+
+/**
  * Convert a color to the HTML equivalent
  */
 static final function String ColorToHTMLColor(color clr)

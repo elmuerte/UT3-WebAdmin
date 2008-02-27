@@ -699,6 +699,7 @@ function handleMapList(WebAdminQuery q)
 	local class<GameInfo> gi;
 	local GameMapCycle cycle;
 	local array<UTUIDataProvider_MapInfo> allMaps;
+	local array<string> postcycle;
 
 	currentGameType = q.request.getVariable("gametype");
 	if (currentGameType == "")
@@ -756,6 +757,28 @@ function handleMapList(WebAdminQuery q)
 		else {
 			cycle.GameClassName = gi.name;
 			cycle.Maps.length = 0;
+			idx = class'UTGame'.default.GameSpecificMapCycles.length;
+		}
+
+		if (len(q.request.getVariable("action")) > 0)
+		{
+			ParseStringIntoArray(q.request.getVariable("mapcycle"), postcycle, chr(10), true);
+			cycle.Maps.length = 0;
+			for (i = 0; i < postcycle.length; i++)
+			{
+				substvar = `Trim(postcycle[i]);
+				if (len(substvar) > 0)
+				{
+					cycle.Maps[cycle.Maps.length] = substvar;
+				}
+			}
+			class'UTGame'.default.GameSpecificMapCycles[idx] = cycle;
+			class'UTGame'.static.StaticSaveConfig();
+			if (UTGame(webadmin.WorldInfo.Game) != none)
+			{
+				UTGame(webadmin.WorldInfo.Game).GameSpecificMapCycles = class'UTGame'.default.GameSpecificMapCycles;
+			}
+			webadmin.addMessage(q, "Map cycle saved.");
 		}
 
 		substvar = "";

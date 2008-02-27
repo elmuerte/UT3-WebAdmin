@@ -31,6 +31,10 @@
       <fileset dir="Web/jQuery-Src" includes="**/ui.mouse.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.dimensions.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.tablesorter.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/ui.draggable.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/ui.draggable.ext.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/ui.droppable.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/ui.droppable.ext.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.sortable.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.sortable.ext.js" />
     </concat>

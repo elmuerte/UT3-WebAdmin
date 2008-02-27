@@ -4,6 +4,7 @@
 
 
 `define HTMLEscape(str) class'WebAdminUtils'.static.HTMLEscape(`str)
+`define Trim(str) class'WebAdminUtils'.static.Trim(`str)
 
 
 // used by the WebAdmin to pass commands to the Settings subclasses using the
