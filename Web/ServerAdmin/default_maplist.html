@@ -12,18 +12,21 @@
 </fieldset>
 </form>
 
-<form method="post" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>" id="maplisteditor">
 <fieldset>
 <legend>Map cycle for <em><%editgametype.name%></em></legend>
 <input type="hidden" name="gametype" value="<%editgametype.class%>" />
 
 <div>
 <table class="noborder">
+<colgroup>
+    <col width="45%"/>
+    <col width="45%"/>
+<colgroup>
 <thead>
 <tr>
     <th>Available Maps</th>
     <th>Map Cycle</th>
-    <th></th>
 </tr>
 </thead>
 
@@ -31,10 +34,6 @@
 <tr>
     <td><textarea rows="15" cols="30" id="allmaps" readonly="readonly"><%allmaps.plain%></textarea></td>
     <td><textarea rows="15" cols="30" name="mapcycle" id="mapcycle"><%cycle.plain%></textarea></td>
-    <td></td>
-</tr>
-<tr>
-    <td colspan="3"><em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser. Enter one map per line.</td>
 </tr>
 </tbody>
 
@@ -42,13 +41,14 @@
 <tr>
     <td><ul id="jsallmaps"></ul></td>
     <td><ol id="jsmapcycle"></ol></td>
-    <td><ul id="jsgarbage"><li class="garbagebin"></li></ul></td>
-</tr>
-<tr>
-    <td colspan="3"><em>Note:</em> drag and drop items to add and move items in the map cycle.</td>
 </tr>
 </tbody>
 </table>
+
+<p id="noscriptHint"><em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser. Enter one map per line, you can include URL options like ?LinkSetup=...</p>
+<p id="jsmaplistHint"><em>Note:</em> drag items from the left list to the right list to add a map to the cycle. To move a map to a different position in the cycle, simply drag it to the desired location.
+Press the "x" button next to the map cycle entry to remove it. You can manually add a map to the cycle using the "manual add" button below.
+</p>
 
 </div>
 
@@ -59,41 +59,41 @@
 <script type="text/javascript">
 //<![CDATA[
 
+// prevents flicker
+$('#noscript').hide();
+
 $(document).ready(function() {
     $('#noscript').hide();
-    $('#jsmaplist').show();
+    $('#noscriptHint').hide();
     
-    allmaps = $('#allmaps').val().split("\n");
-    jsallmaps = $('#jsallmaps');
-    for (i = 0; i < allmaps.length; i++)
+    _allmaps = $('#allmaps').val().split("\n");
+    _jsallmaps = $('#jsallmaps');
+    for (i = 0; i < _allmaps.length; i++)
     {
-        str = jQuery.trim(allmaps[i]);
+        str = jQuery.trim(_allmaps[i]);
         if (str.length > 0)
         {
-            jsallmaps.append('<li>'+str+'</li>');
+            _jsallmaps.append('<li><span class="entry">'+str+'</span></li>');
         }
     }
-    mapcycle = $('#mapcycle').val().split("\n");
     
-    jsmapcycle = $('#jsmapcycle');
-    for (i = 0; i < mapcycle.length; i++)
+    _mapcycle = $('#mapcycle').val().split("\n");    
+    _jsmapcycle = $('#jsmapcycle');    
+    for (i = 0; i < _mapcycle.length; i++)
     {
-        str = jQuery.trim(mapcycle[i]);
+        str = jQuery.trim(_mapcycle[i]);
         if (str.length > 0)
         {
-            jsmapcycle.append('<li>'+str+'</li>');
+            var item = jQuery('<li><span class="entry">'+str+'</span></li>');
+            getDeleteMe($(item));
+            _jsmapcycle.append(item);
         }
     }
-    $('#jsgarbage').sortable({
-        axis: "x", 
-        containment: "parent"
-    });
-    jsmapcycle.sortable({ 
-        //axis: "y", 
+    _jsmapcycle.sortable({ 
+        axis: "y", 
         placeholder: "sorting", 
-        //containment: "parent",
+        containment: "parent",
         opacity: 0.5,
-        connectWith: ['#jsgarbage'],
         start: function(ev, ui) {
             $(ui.helper).addClass('dragging');
         },
@@ -116,12 +116,76 @@ $(document).ready(function() {
         accept: "li",
         activeClass: "droppable",
         drop: function(ev, ui) {
-            jsmapcycle.append($(ui.draggable).clone());
-            jsmapcycle.sortable("refresh");
-            jsmapcycle.sortable("refreshPositions");
+            var item = $(ui.draggable).clone();            
+            getDeleteMe(item);
+            _jsmapcycle.append(item);            
+            _jsmapcycle.sortable("refresh");
+            _jsmapcycle.sortable("refreshPositions");
+            item.hide();
+            item.fadeIn('fast');
         }
 	});
+	
+	$('#jsmaplist').show();
+    $('#jsmaplistHint').show();
+	
+	simpleEditBtn = jQuery('<button type="button" id="simpleEditBtn" title="switch to basic map cycle editing mode">basic edit mode</button>');
+	simpleEditBtn = $(simpleEditBtn);
+	simpleEditBtn.click(function(){
+	   $(this).remove();
+	   $('#manualAddBtn').remove();
+	   updateTextMapList();
+	   $('#jsmaplist').remove();
+	   $('#jsmaplistHint').remove();
+	   $('#noscript').show();
+	   $('#noscriptHint').show();
+    });
+    manualAddBtn = jQuery('<button type="button" id="manualAddBtn" title="add a map by entering the name">manual add</button>');
+	manualAddBtn = $(manualAddBtn);
+	manualAddBtn.click(function(){
+        var res = jQuery.trim(prompt("Enter the map name (without extension) to be added to the map cycle. \nHint: you can include URL options like ?LinkSetup=...", ""));
+        if (res != "") {
+            item = jQuery('<li><span class="entry">'+res+'</span></li>');
+            getDeleteMe($(item));
+            _jsmapcycle.append(item);
+            _jsmapcycle.sortable("refresh");
+            _jsmapcycle.sortable("refreshPositions");
+        }	   
+    });
+    $('#btnsave').after(simpleEditBtn).after(" ").after(manualAddBtn).after(" ");
+    $('#maplisteditor').submit(function () {
+        updateTextMapList();
+        return true;
+    });
 });
+
+function getDeleteMe(forItem) {
+    var res = jQuery('<span class="deleteButton" title="delete this map">&nbsp;</span>');
+    res = $(res);
+    res.click(deleteme);
+    res.hide();
+    forItem.hover(function() {
+        $(".deleteButton", this).show();
+        $(this).addClass('sorting');
+    }, function() {
+        $(".deleteButton", this).hide();
+        $(this).removeClass('sorting');
+    });
+    forItem.prepend(res);
+}
+
+function deleteme() {
+    $(this).parent().fadeOut('fast', function(){$(this).remove();} );
+}
+
+function updateTextMapList() {
+    var maplist = $('#jsmapcycle li');
+    var txtlist = "";
+    for (i = 0; i < maplist.size(); i++) {
+        txtlist += jQuery.trim($('.entry', maplist.get(i)).text())+'\n';
+    }
+    $('#mapcycle').val(txtlist);
+}
 
 //]]>
 </script>

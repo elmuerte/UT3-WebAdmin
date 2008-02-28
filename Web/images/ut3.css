@@ -405,13 +405,17 @@ DIV.message {
 
 #jsmaplist LI {
 	cursor: move;
+	white-space: nowrap;
+}
+
+#jsmaplist LI SPAN.entry {
 }
 
 #jsmapcycle LI {
 }
 
 .sorting {
-	/*background-color: #FFE5E5;*/
+	background-color: #FFE5E5;
 }
 
 .dragging {
@@ -425,24 +429,13 @@ DIV.message {
     background-color: #FFF2F2;
 }
 
-UL#jsgarbage {
-	padding: 0;
-	margin: 0;
-	width: 32px;
-	background-image: url(warning.gif);
+.deleteButton {
+	margin-left: 5px;
+	width: 14px;
+	background-image: url(delete.png);
 	background-repeat: no-repeat;
-}
-
-UL#jsgarbage LI {
-	display: none;
-	padding: 0;
-	margin: 0;
-}
-
-UL#jsgarbage LI.garbagebin {
-	display: list-item;
-	list-style: none;
-	height: 32px;
-	width: 32px;
-	cursor: auto;
+	background-position: right center;
+	display: block;
+	float: right;
+	cursor: pointer;
 }
