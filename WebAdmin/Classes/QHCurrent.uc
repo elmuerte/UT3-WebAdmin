@@ -513,7 +513,7 @@ function procChatData(WebAdminQuery q, optional int startFrom, optional string s
 		q.response.subst("msg.text", `HTMLEscape(entry.message));
 		if (entry.sender != none && entry.sender.Team != none)
 		{
-			q.response.subst("msg.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(entry.sender.Team.TeamColor));
+			q.response.subst("msg.teamcolor", class'WebAdminUtils'.static.ColorToHTMLColor(entry.sender.Team.GetHUDColor()));
 		}
 		else {
 			q.response.subst("msg.teamcolor", "transparent");
