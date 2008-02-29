@@ -811,6 +811,7 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  	}
 
 	outMutators = "";
+	outMutatorGroups = 0;
  	if (currentGameType != "")
  	{
  		mutators = webadmin.dataStoreCache.getMutators(currentGameType);
@@ -822,7 +823,7 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  				for (j = 0; j < mutators[i].mutators.Length; j++)
  				{
  					q.response.subst("mutator.formtype", "checkbox");
-	 				q.response.subst("mutator.groupid", "mutgroup"$i);
+	 				q.response.subst("mutator.groupid", "mutgroup"$(mutators.Length+outMutatorGroups));
  					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
  					q.response.subst("mutator.id", "mutfield"$(++idx));
  					q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[j].FriendlyName));
@@ -835,6 +836,7 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
 		 				q.response.subst("mutator.selected", "");
 	 				}
  					substvar3 $= webadmin.include(q, "current_change_mutator.inc");
+ 					outMutatorGroups++;
  				}
  			}
  			else {
@@ -889,7 +891,7 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  			outMutators = webadmin.include(q, "current_change_mutator_nogroup.inc")$outMutators;
  		}
  	}
- 	outMutatorGroups = mutators.Length;
+ 	outMutatorGroups = outMutatorGroups+mutators.Length;
 }
 
 function handleCurrentChangeData(WebAdminQuery q)

@@ -427,7 +427,9 @@ function loadMutators()
 	mutators.Remove(0, mutators.length);
 	gameTypeMutatorCache.Remove(0, gameTypeMutatorCache.length);
 
-	emptyGroupId = -1;
+	emptyGroupId = 0;
+	// the empty group
+	mutatorGroups.Length = 1;
 
 	class'UTUIDataStore_MenuItems'.static.GetAllResourceDataProviders(class'UTUIDataProvider_Mutator', ProviderList);
 	for (i = 0; i < ProviderList.length; i++)
