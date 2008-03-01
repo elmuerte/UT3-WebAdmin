@@ -72,6 +72,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/current/chat/data", "", self);
 	menu.addMenu("/current/change", "Change Game", self, "Change the current game.");
 	menu.addMenu("/current/change/data", "", self);
+	menu.addMenu("/current/change/check", "", self);
 	if (bConsoleEnabled)
 	{
 		menu.addMenu("/console", "Management Console", self,
@@ -96,6 +97,10 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/current/chat/data":
 			handleCurrentChatData(q);
+			return true;
+		case "/current/chat/check":
+			q.response.SendStandardHeaders();
+			q.response.SendText("done");
 			return true;
 		case "/console":
 			if (bConsoleEnabled)
@@ -654,6 +659,7 @@ function handleCurrentChange(WebAdminQuery q)
 	local string substvar, substvar2;
 	local int idx, i, j;
 	local mutator mut;
+	local array<KeyValuePair> options;
 
  	webadmin.dataStoreCache.loadGameTypes();
 
@@ -682,6 +688,7 @@ function handleCurrentChange(WebAdminQuery q)
 
  	if (q.request.getVariable("action") ~= "change" || q.request.getVariable("action") ~= "change game")
  	{
+ 		/*
  		substvar = curmap;
  		if (len(currentGameType) > 0) substvar $= "?game="$currentGameType;
  		if (currentMutators.length > 0)
@@ -702,7 +709,7 @@ function handleCurrentChange(WebAdminQuery q)
 
  		for (i = 0; i < denyUrlOptions.length; i++)
  		{
- 			idx = InStr(substvar, "?"$denyUrlOptions[i]);
+ 			idx = InStr(caps(substvar), caps("?"$denyUrlOptions[i]));
  			if (idx != INDEX_NONE)
  			{
  				j = InStr(mid(substvar, idx+1), "?");
@@ -715,8 +722,63 @@ function handleCurrentChange(WebAdminQuery q)
  				}
  			}
  		}
+ 		*/
 
- 		webadmin.pageGenericInfo(q, "<p>Chaning the current game with the following url:<br /><input type=\"text\" readonly=\"readonly\" value=\""$`HTMLEscape(substvar)$"\" size=\"80\" class=\"monospace\"/></p><p>Please wait, this could take a little while.", "Changing game");
+ 		options.length = 0;
+ 		class'WebAdminUtils'.static.parseUrlOptions(options, curmiscurl);
+ 		if (currentMutators.length > 0)
+ 		{
+ 			JoinArray(currentMutators, substvar2, ",");
+ 			class'WebAdminUtils'.static.parseUrlOptions(options, "mutator="$substvar2);
+ 		}
+ 		class'WebAdminUtils'.static.parseUrlOptions(options, "game="$currentGameType);
+ 		i = InStr(curmap, "?");
+ 		if (i != INDEX_NONE)
+ 		{
+ 			class'WebAdminUtils'.static.parseUrlOptions(options, Mid(curmap, i+1));
+ 			curmap = Left(curmap, i);
+ 		}
+ 		// remove denied options
+ 		for (i = 0; i < denyUrlOptions.length; i++)
+ 		{
+ 			for (j = options.length-1; j >= 0; j--)
+ 			{
+ 				if (options[j].key ~= denyUrlOptions[i])
+ 				{
+ 					options.remove(j, 1);
+ 				}
+ 			}
+ 		}
+
+		// construct url
+ 		substvar = curmap;
+ 		for (i = 0; i < options.length; i++)
+ 		{
+ 			substvar $= "?"$options[i].key;
+ 			if (Len(options[i].value) > 0)
+ 			{
+ 				substvar $= "="$options[i].value;
+ 			}
+ 		}
+
+		webadmin.addMessage(q, "Changing the game. This could take a little while...");
+		q.response.subst("newurl", `HTMLEscape(substvar));
+		webadmin.sendPage(q, "current_changing.html");
+
+		// add deny options when they were set on previous the commandline
+		for (i = 0; i < denyUrlOptions.length; i++)
+ 		{
+ 			if (webadmin.WorldInfo.Game.HasOption(webadmin.WorldInfo.Game.ServerOptions, denyUrlOptions[i]))
+ 			{
+ 				substvar $= "?"$denyUrlOptions[i];
+ 				substvar2 = webadmin.WorldInfo.Game.ParseOption(webadmin.WorldInfo.Game.ServerOptions, denyUrlOptions[i]);
+ 				if (len(substvar2) > 0)
+ 				{
+ 					substvar $= "="$substvar2;
+ 				}
+ 			}
+		}
+
  		webadmin.WorldInfo.ServerTravel(substvar, true);
  		return;
  	}
@@ -828,7 +890,7 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
  					q.response.subst("mutator.id", "mutfield"$(++idx));
  					q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[j].FriendlyName));
  					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
-	 				if (currentMutators.find(mutators[i].mutators[0].ClassName) != INDEX_NONE)
+	 				if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
  					{
  						q.response.subst("mutator.selected", "checked=\"checked\"");
 		 			}

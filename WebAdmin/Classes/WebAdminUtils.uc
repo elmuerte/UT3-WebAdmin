@@ -94,3 +94,35 @@ static final function string getLocalized(coerce string data)
 	}
 	return "";
 }
+
+static final function parseUrlOptions(out array<KeyValuePair> options, string url)
+{
+	local string part;
+	local array<string> parts;
+	local int idx, i;
+	local KeyValuePair kv;
+
+	ParseStringIntoArray(url, parts, "?", true);
+	foreach parts(part)
+	{
+		i = InStr(part, "=");
+		if (i == INDEX_NONE)
+		{
+			kv.Key = part;
+			kv.Value = "";
+		}
+		else {
+			kv.Key = Left(part, i);
+			kv.Value = Mid(part, i+1);
+		}
+		for (idx = 0; idx < options.length; idx++)
+		{
+			if (kv.key ~= options[idx].key)
+			{
+				break;
+			}
+		}
+		`Log("Add "$kv.key$" at "$idx);
+		options[idx] = kv;
+	}
+}

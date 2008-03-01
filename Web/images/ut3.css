@@ -397,6 +397,10 @@ DIV.message {
 	background-image: url(information.gif);
 }
 
+#messages .loadingMsg {
+	background-image: url(throbber.gif);
+}
+
 #jsmaplist UL, #jsmaplist OL {
 	margin: 0;
 	padding: 0;
