@@ -402,20 +402,30 @@ DIV.message {
 }
 
 #jsmaplist UL, #jsmaplist OL {
-	margin: 0;
 	padding: 0;
-	padding-left: 2em;
+	margin: 0;
+	width: 100%;
 } 
+
+#jsmaplist UL {
+	margin-right: 1em;
+}
 
 #jsmaplist LI {
 	cursor: move;
+	white-space: normal;
+	margin-left: 1.25em;	
+}
+
+#jsmaplist #jsmapcycle  LI {
+	margin-left: 2em;
+	padding-right: 0.5em;
 	white-space: nowrap;
 }
 
-#jsmaplist LI SPAN.entry {
-}
-
-#jsmapcycle LI {
+#jsmaplist #jsmapcycle LI SPAN {
+	margin-left: 5px;
+	white-space: nowrap;
 }
 
 .sorting {
@@ -434,12 +444,20 @@ DIV.message {
 }
 
 .deleteButton {
-	margin-left: 5px;
-	width: 14px;
-	background-image: url(delete.png);
-	background-repeat: no-repeat;
-	background-position: right center;
 	display: block;
-	float: right;
+	width: 14px;
+	height: 1em;
+
+	background-repeat: no-repeat;
+	background-position: center;	
+	float: left;
 	cursor: pointer;
+}
+
+.sorting .deleteButton {
+	background-image: url(delete.png);	
+}
+
+.dragging .deleteButton {
+	display: none;
 }

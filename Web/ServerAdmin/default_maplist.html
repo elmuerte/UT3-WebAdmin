@@ -19,10 +19,12 @@
 
 <div>
 <table class="noborder">
+<!--
 <colgroup>
-    <col width="45%"/>
-    <col width="45%"/>
-<colgroup>
+    <col width="45%" />
+    <col width="50%" />
+</colgroup>
+-->
 <thead>
 <tr>
     <th>Available Maps</th>
@@ -85,21 +87,18 @@ $(document).ready(function() {
         if (str.length > 0)
         {
             var item = jQuery('<li><span class="entry">'+str+'</span></li>');
-            getDeleteMe($(item));
             _jsmapcycle.append(item);
+            getDeleteMe($(item));
         }
     }
     _jsmapcycle.sortable({ 
         axis: "y", 
-        placeholder: "sorting", 
         containment: "parent",
-        opacity: 0.5,
         start: function(ev, ui) {
             $(ui.helper).addClass('dragging');
         },
         stop: function(ev, ui) {
             $(ui.helper).removeClass('dragging');
-            $(ui.placeholder).remove();
         }
     });
     $('#jsallmaps li').draggable({
@@ -121,8 +120,6 @@ $(document).ready(function() {
             _jsmapcycle.append(item);            
             _jsmapcycle.sortable("refresh");
             _jsmapcycle.sortable("refreshPositions");
-            item.hide();
-            item.fadeIn('fast');
         }
 	});
 	
@@ -160,22 +157,20 @@ $(document).ready(function() {
 });
 
 function getDeleteMe(forItem) {
-    var res = jQuery('<span class="deleteButton" title="delete this map">&nbsp;</span>');
+    var res = jQuery('<span class="deleteButton" title="delete this map"></span>');
     res = $(res);
     res.click(deleteme);
-    res.hide();
+    forItem.prepend(res);
     forItem.hover(function() {
-        $(".deleteButton", this).show();
         $(this).addClass('sorting');
     }, function() {
-        $(".deleteButton", this).hide();
         $(this).removeClass('sorting');
     });
-    forItem.prepend(res);
 }
 
 function deleteme() {
-    $(this).parent().fadeOut('fast', function(){$(this).remove();} );
+    //$(this).parent().fadeOut('fast', function(){$(this).remove();} );
+    $(this).parent().remove();
 }
 
 function updateTextMapList() {

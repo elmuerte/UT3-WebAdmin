@@ -11,8 +11,8 @@
 			
 			var args = Array.prototype.slice.call(arguments, 1);
 			
-			if ( options == "serialize" )
-				return $.data(this[0], "ui-sortable").serialize(arguments[1]);
+			if (options == "serialize" || options == "toArray")
+				return $.data(this[0], "ui-sortable")[options](arguments[1]);
 			
 			return this.each(function() {
 				if (typeof options == "string") {
@@ -30,6 +30,7 @@
 		var self = this;
 		
 		this.element = $(element);
+		this.containerCache = {};
 		
 		$.data(element, "ui-sortable", this);
 		this.element.addClass("ui-sortable");
@@ -55,7 +56,7 @@
 		this.refresh();
 
 		//Let's determine if the items are floating
-		this.floating = /left|right/.test(this.items[0].item.css('float'));
+		this.floating = this.items.length ? (/left|right/).test(this.items[0].item.css('float')) : false;
 		
 		//Let's determine the parent's offset
 		if(!(/(relative|absolute|fixed)/).test(this.element.css('position'))) this.element.css('position', 'relative');
@@ -90,19 +91,22 @@
 	
 	$.extend($.ui.sortable.prototype, {
 		plugins: {},
-		ui: function() {
+		ui: function(inst) {
 			return {
-				helper: this.helper,
-				placeholder: this.placeholder || $([]),
-				position: this.position,
-				absolutePosition: this.positionAbs,
+				helper: (inst || this)["helper"],
+				placeholder: (inst || this)["placeholder"] || $([]),
+				position: (inst || this)["position"],
+				absolutePosition: (inst || this)["positionAbs"],
 				instance: this,
-				options: this.options
+				options: this.options,
+				element: this.element,
+				item: (inst || this)["currentItem"],
+				sender: inst ? inst.element : null
 			};		
 		},
-		propagate: function(n,e) {
-			$.ui.plugin.call(this, n, [e, this.ui()]);
-			this.element.triggerHandler(n == "sort" ? n : "sort"+n, [e, this.ui()], this.options[n]);
+		propagate: function(n,e,inst) {
+			$.ui.plugin.call(this, n, [e, this.ui(inst)]);
+			this.element.triggerHandler(n == "sort" ? n : "sort"+n, [e, this.ui(inst)], this.options[n]);
 		},
 		serialize: function(o) {
 			
@@ -118,6 +122,18 @@
 			return str.join('&');
 			
 		},
+		toArray: function(attr) {
+			
+			var items = $(this.options.items, this.element).not('.ui-sortable-helper'); //Only the items of the sortable itself
+			var ret = [];
+			
+			items.each(function() {
+				ret.push(this.getAttribute(attr || 'id'));				
+			});
+			
+			return ret;
+			
+		},
 		intersectsWith: function(item) {
 			
 			var x1 = this.positionAbs.left, x2 = x1 + this.helperProportions.width,
@@ -131,19 +147,38 @@
 				&&     y2 - (this.helperProportions.height / 2) < b ); // Top Half
 			
 		},
+		inEmptyZone: function(container) {
+
+			if(!$(container.options.items, container.element).length) {
+				return container.options.dropOnEmpty ? true : false;
+			};
+
+			var last = $(container.options.items, container.element).not('.ui-sortable-helper'); last = $(last[last.length-1]);
+			var top = last.offset()[this.floating ? 'left' : 'top'] + last[0][this.floating ? 'offsetWidth' : 'offsetHeight'];
+			return (this.positionAbs[this.floating ? 'left' : 'top'] > top);
+		},
 		refresh: function() {
 			
 			this.items = [];
+			this.containers = [this];
 			var items = this.items;
 			var queries = [$(this.options.items, this.element)];
 			
 			if(this.options.connectWith) {
 				for (var i = this.options.connectWith.length - 1; i >= 0; i--){
-					var inst = $.data($(this.options.connectWith[i])[0], 'ui-sortable');
-					if(inst && !inst.disabled) queries.push($(inst.options.items, inst.element));
+					
+					var cur = $(this.options.connectWith[i]);
+					for (var j = cur.length - 1; j >= 0; j--){
+						var inst = $.data(cur[j], 'ui-sortable');
+						if(inst && !inst.disabled) {
+							queries.push($(inst.options.items, inst.element));
+							this.containers.push(inst);
+						}
+					};
+
 				};
 			}
-			
+
 			for (var i = queries.length - 1; i >= 0; i--){
 				queries[i].each(function() {
 					$.data(this, 'ui-sortable-item', true); // Data for target checking (mouse manager)
@@ -158,11 +193,18 @@
 		},
 		refreshPositions: function(fast) {
 			for (var i = this.items.length - 1; i >= 0; i--){
-				if(!fast) this.items[i].width = this.items[i].item.outerWidth();
-				if(!fast) this.items[i].height = this.items[i].item.outerHeight();
+				if(!fast) this.items[i].width 			= this.items[i].item.outerWidth();
+				if(!fast) this.items[i].height 			= this.items[i].item.outerHeight();
 				var p = this.items[i].item.offset();
-				this.items[i].left = p.left;
-				this.items[i].top = p.top;
+				this.items[i].left 						= p.left;
+				this.items[i].top 						= p.top;
+			};
+			for (var i = this.containers.length - 1; i >= 0; i--){
+				var p =this.containers[i].element.offset();
+				this.containers[i].containerCache.left 	= p.left;
+				this.containers[i].containerCache.top 	= p.top;
+				this.containers[i].containerCache.width	= this.containers[i].element.outerWidth();
+				this.containers[i].containerCache.height= this.containers[i].element.outerHeight();
 			};
 		},
 		destroy: function() {
@@ -268,6 +310,12 @@
 			//Set the original element visibility to hidden to still fill out the white space	
 			$(this.currentItem).css('visibility', 'hidden');
 
+			//Post events to possible containers
+			for (var i = this.containers.length - 1; i >= 0; i--) {
+				this.containers[i].propagate("activate", e, this);
+			}
+
+			this.dragging = true;
 			return false;
 						
 		},
@@ -275,7 +323,26 @@
 
 			this.propagate("stop", e); //Call plugins and trigger callbacks
 			if(this.positionDOM != this.currentItem.prev()[0]) this.propagate("update", e);
+			if(!this.element[0].contains(this.currentItem[0])) { //Node was moved out of the current element
+				this.propagate("remove", e);
+				for (var i = this.containers.length - 1; i >= 0; i--){
+					if(this.containers[i].element[0].contains(this.currentItem[0])) {
+						this.containers[i].propagate("update", e, this);
+						this.containers[i].propagate("receive", e, this);
+					}
+				};				
+			};
 			
+			//Post events to containers
+			for (var i = this.containers.length - 1; i >= 0; i--){
+				this.containers[i].propagate("deactivate", e, this);
+				if(this.containers[i].containerCache.over) {
+					this.containers[i].propagate("out", e, this);
+					this.containers[i].containerCache.over = 0;
+				}
+			}
+			
+			this.dragging = false;
 			if(this.cancelHelperRemoval) return false;			
 			$(this.currentItem).css('visibility', '');
 			if(this.placeholder) this.placeholder.remove();
@@ -293,20 +360,64 @@
 
 			//Rearrange
 			for (var i = this.items.length - 1; i >= 0; i--) {
-				if(this.intersectsWith(this.items[i]) && this.items[i].item[0] != this.currentItem[0] && (this.options.tree ? !this.currentItem[0].contains(this.items[i].item[0]) : true)) {
-					//Rearrange the DOM
-					this.items[i].item[this.direction == 'down' ? 'before' : 'after'](this.currentItem);
-					this.refreshPositions(true); //Precompute after each DOM insertion, NOT on mousemove
-					if(this.placeholderElement) this.placeholder.css(this.placeholderElement.offset());
+				if(
+						this.intersectsWith(this.items[i]) //items must intersect
+					&& 	this.items[i].item[0] != this.currentItem[0] //cannot intersect with itself
+					&&	this.items[i].item[this.direction == 'down' ? 'prev' : 'next']()[0] != this.currentItem[0] //no useless actions that have been done before
+					&&	!this.currentItem[0].contains(this.items[i].item[0]) //no action if the item moved is the parent of the item checked
+				) {
+					
+					this.rearrange(e, this.items[i]);
 					this.propagate("change", e); //Call plugins and callbacks
 					break;
 				}
 			}
+			
+			//Post events to containers
+			for (var i = this.containers.length - 1; i >= 0; i--){
+
+				if(this.intersectsWith(this.containers[i].containerCache)) {
+					if(!this.containers[i].containerCache.over) {
+						
+
+						if(!this.containers[i].element[0].contains(this.currentItem[0])) {
+							
+							//When entering a new container, we will find the item with the least distance and append our item near it
+							var dist = 10000; var itemWithLeastDistance = null; var base = this.positionAbs[this.containers[i].floating ? 'left' : 'top'];
+							for (var j = this.items.length - 1; j >= 0; j--) {
+								if(!this.containers[i].element[0].contains(this.items[j].item[0])) continue;
+								var cur = this.items[j][this.containers[i].floating ? 'left' : 'top'];
+								if(Math.abs(cur - base) < dist) {
+									dist = Math.abs(cur - base); itemWithLeastDistance = this.items[j];
+								}
+							}
+							
+							itemWithLeastDistance ? this.rearrange(e, itemWithLeastDistance) : this.rearrange(e, null, this.containers[i].element);
+							this.propagate("change", e); //Call plugins and callbacks
+							this.containers[i].propagate("change", e, this); //Call plugins and callbacks
+						}
+						
+						this.containers[i].propagate("over", e, this);
+						this.containers[i].containerCache.over = 1;
+					}
+				} else {
+					if(this.containers[i].containerCache.over) {
+						this.containers[i].propagate("out", e, this);
+						this.containers[i].containerCache.over = 0;
+					}
+				}
+				
+			};
 
 			this.propagate("sort", e); //Call plugins and callbacks
 			this.helper.css({ left: this.position.left+'px', top: this.position.top+'px' }); // Stick the helper to the cursor
 			return false;
 			
+		},
+		rearrange: function(e, i, a) {
+			a ? a.append(this.currentItem) : i.item[this.direction == 'down' ? 'before' : 'after'](this.currentItem);
+			this.refreshPositions(true); //Precompute after each DOM insertion, NOT on mousemove
+			if(this.placeholderElement) this.placeholder.css(this.placeholderElement.offset());			
 		}
 	});
 

@@ -48,7 +48,13 @@
 			e.unselectable = "off";
 			e.onselectstart = function() { return true; };
 			if (e.style) e.style.MozUserSelect = "";
-		}
+		},
+		hasScroll: function(e, a) {
+      var scroll = /top/.test(a||"top") ? 'scrollTop' : 'scrollLeft', has = false;
+      if (e[scroll] > 0) return true; e[scroll] = 1;
+      has = e[scroll] > 0 ? true : false; e[scroll] = 0;
+      return has; 
+    }
 	});
 	
 	/********************************************************************************************************/
@@ -89,7 +95,7 @@
 			
 			if(
 				   e.which != 1 //only left click starts dragging
-				|| $.inArray(e.target.nodeName.toLowerCase(), this.options.dragPrevention) != -1 // Prevent execution on defined elements
+				|| $.inArray(e.target.nodeName.toLowerCase(), this.options.dragPrevention || []) != -1 // Prevent execution on defined elements
 				|| (this.options.condition && !this.options.condition.apply(this.options.executor || this, [e, this.element])) //Prevent execution on condition
 			) return true;
 			
