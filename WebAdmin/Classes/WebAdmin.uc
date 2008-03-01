@@ -266,6 +266,7 @@ function Query(WebRequest Request, WebResponse Response)
 	currentQuery.request = Request;
 	currentQuery.response = Response;
 	parseCookies(Request.GetHeader("cookie", ""), currentQuery.cookies);
+
 	if (!getSession(currentQuery))
 	{
 		return;
@@ -304,7 +305,11 @@ function Query(WebRequest Request, WebResponse Response)
 			Response.AddHeader("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
 			if (bHttpAuth)
 			{
-				Response.AddHeader("Set-Cookie: forceAuthentication=true; Path="$path$"/");
+				response.Subst("navigation.menu", "");
+				Response.AddHeader("Set-Cookie: forceAuthentication=1; Path="$path$"/");
+				addMessage(currentQuery, "To properly log out you will need to close the webbrowser to clear the saved authentication information.", MT_Warning);
+				pageGenericInfo(currentQuery, "");
+				return;
 			}
 			Response.Redirect(path$"/");
 			return;
@@ -458,13 +463,17 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	// 2: try to authenticate
 	if (len(q.request.Username) > 0 && len(q.request.Password) > 0)
 	{
-		if (bHttpAuth && q.cookies.Find('key', "forceAuthentication") != INDEX_NONE)
+		username = q.request.Username;
+		password = q.request.Password;
+		if (bHttpAuth)
 		{
-			q.Response.AddHeader("Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0");
-		}
-		else {
-			username = q.request.Username;
-			password = q.request.Password;
+			idx = q.cookies.Find('key', "forceAuthentication");
+			if (idx != INDEX_NONE && q.cookies[idx].value == "1")
+			{
+				q.Response.AddHeader("Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0");
+				pageAuthentication(q);
+				return false;
+			}
 		}
 	}
 	else if (len(rememberCookie) > 0)
@@ -481,6 +490,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		}
 	}
 
+	// not set, check request variables
 	if (len(username) == 0 || len(password) == 0)
 	{
 		username = q.request.GetVariable("username");
@@ -489,6 +499,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		checkToken = true;
 	}
 
+	// request authentication
 	if (len(username) == 0 || len(password) == 0)
 	{
 		pageAuthentication(q);
@@ -643,5 +654,5 @@ defaultproperties
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
-	version="0.7"
+	version="0.8"
 }
