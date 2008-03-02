@@ -94,8 +94,8 @@ function init()
 
 	if (QueryHandlers.length == 0)
 	{
-		QueryHandlers[0] = "WebAdmin.QHCurrent";
-		QueryHandlers[1] = "WebAdmin.QHDefaults";
+		QueryHandlers[0] = class.getPackageName()$".QHCurrent";
+		QueryHandlers[1] = class.getPackageName()$".QHDefaults";
 		SaveConfig();
 	}
 

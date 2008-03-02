@@ -48,7 +48,7 @@ function init(WebAdmin webapp)
 {
 	if (Len(GeneralSettingsClass) == 0)
 	{
-		GeneralSettingsClass = "WebAdmin.GeneralSettings";
+		GeneralSettingsClass = class.getPackageName()$".GeneralSettings";
 		SaveConfig();
 	}
 	webadmin = webapp;
@@ -376,8 +376,8 @@ function class<Settings> getSettingsClass(class forClass, optional bool bSilent=
 	// try to find it automatically
 	settingsClass = string(forClass.GetPackageName());
 	// rewrite standard game classes to WebAdmin
-	if (settingsClass != "UTGame") settingsClass = "WebAdmin";
-	else if (settingsClass != "UTGameContent") settingsClass = "WebAdmin";
+	if (settingsClass != "UTGame") settingsClass = string(class.getPackageName());
+	else if (settingsClass != "UTGameContent") settingsClass = string(class.getPackageName());
 	settingsClass $= "."$string(forClass)$"Settings";
 	result = class<Settings>(DynamicLoadObject(settingsClass, class'class', true));
 	if (result != none)
