@@ -14,12 +14,12 @@ var WorldInfo worldinfo;
 var array<BasicWebAdminUser> users;
 
 /**
- * If this is not empty the simple authentication handler will require this 
+ * If this is not empty the simple authentication handler will require this
  * username. Otherwise any username accepted by the current AccessControl will
- * be accepted. In case of the standard AccessControl this means that any 
- * username is ok. 
- */ 
-var config string RequireUsername;
+ * be accepted. In case of the standard AccessControl this means that any
+ * username is ok.
+ */
+var config array<string> RequireUsername;
 
 function init(WorldInfo wi)
 {
@@ -43,7 +43,7 @@ function IWebAdminUser authenticate(string username, string password, out string
 		errorMsg = "No AccessControl instance.";
 		return none;
 	}
-	if (Len(RequireUsername) > 0 && RequireUsername != username)
+	if (RequireUsername.length > 0 && RequireUsername.find(username) != INDEX_NONE)
     {
         errorMsg = "Invalid credentials.";
         return none;
@@ -68,7 +68,7 @@ function bool logout(IWebAdminUser user)
 
 function bool validate(string username, string password, out string errorMsg)
 {
-    if (Len(RequireUsername) > 0 && RequireUsername != username)
+	if (RequireUsername.length > 0 && RequireUsername.find(username) != INDEX_NONE)
     {
         errorMsg = "Invalid credentials.";
         return false;

@@ -104,7 +104,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.", 0);
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.", 10);
 	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configured. Changes will take effect in the next level.", 20);
-	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. Each game type can have a single map cycle.", 30);
+	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. each game type can have a single map cycle.", 30);
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -796,6 +796,8 @@ function handleMapList(WebAdminQuery q)
 			substvar $= cycle.Maps[i];
 		}
 		q.response.subst("cycle.plain", `HTMLEscape(substvar));
+
+		q.response.subst("maplist_editor", webadmin.include(q, "default_maplist_editor.inc"));
 	}
 	else {
 		webadmin.addMessage(q, "Unable to load the selected game type.", MT_Warning);
