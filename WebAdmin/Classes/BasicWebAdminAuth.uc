@@ -23,8 +23,16 @@ var config array<string> RequireUsername;
 
 function init(WorldInfo wi)
 {
+	local int i;
 	worldinfo = wi;
 	ac = worldinfo.Game.AccessControl;
+	for (i = RequireUsername.length-1; i >= 0; i--)
+	{
+		if (Len(RequireUsername[i]) == 0)
+		{
+			RequireUsername.remove(i, 1);
+		}
+	}
 }
 
 function cleanup()
@@ -43,7 +51,7 @@ function IWebAdminUser authenticate(string username, string password, out string
 		errorMsg = "No AccessControl instance.";
 		return none;
 	}
-	if (RequireUsername.length > 0 && RequireUsername.find(username) != INDEX_NONE)
+	if (RequireUsername.length > 0 && RequireUsername.find(username) == INDEX_NONE)
     {
         errorMsg = "Invalid credentials.";
         return none;
@@ -68,7 +76,7 @@ function bool logout(IWebAdminUser user)
 
 function bool validate(string username, string password, out string errorMsg)
 {
-	if (RequireUsername.length > 0 && RequireUsername.find(username) != INDEX_NONE)
+	if (RequireUsername.length > 0 && RequireUsername.find(username) == INDEX_NONE)
     {
         errorMsg = "Invalid credentials.";
         return false;
