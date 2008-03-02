@@ -671,6 +671,10 @@ function handleCurrentChange(WebAdminQuery q)
  	class'UTGame'.static.RemoveOption(curmiscurl, "Game");
  	class'UTGame'.static.RemoveOption(curmiscurl, "Team");
  	class'UTGame'.static.RemoveOption(curmiscurl, "Name");
+ 	for (i = 0; i < denyUrlOptions.length; i++)
+ 	{
+ 		class'UTGame'.static.RemoveOption(curmiscurl, denyUrlOptions[i]);
+ 	}
  	curmiscurl = q.request.getVariable("urlextra", curmiscurl);
 
  	idx = int(q.request.getVariable("mutatorGroupCount", "0"));
@@ -688,42 +692,6 @@ function handleCurrentChange(WebAdminQuery q)
 
  	if (q.request.getVariable("action") ~= "change" || q.request.getVariable("action") ~= "change game")
  	{
- 		/*
- 		substvar = curmap;
- 		if (len(currentGameType) > 0) substvar $= "?game="$currentGameType;
- 		if (currentMutators.length > 0)
- 		{
- 			JoinArray(currentMutators, substvar2, ",");
- 			substvar $= "?mutator="$substvar2;
- 		}
- 		if (len(curmiscurl) > 0)
-		{
-			if (Left(curmiscurl, 1) == "?")
-			{
-				substvar $= curmiscurl;
-			}
-			else {
-				substvar $= "?"$curmiscurl;
-			}
-		}
-
- 		for (i = 0; i < denyUrlOptions.length; i++)
- 		{
- 			idx = InStr(caps(substvar), caps("?"$denyUrlOptions[i]));
- 			if (idx != INDEX_NONE)
- 			{
- 				j = InStr(mid(substvar, idx+1), "?");
- 				if (j == INDEX_NONE)
- 				{
- 					substvar = Left(substvar, idx);
- 				}
- 				else {
- 					substvar = Left(substvar, idx)$Mid(substvar, idx+j+1);
- 				}
- 			}
- 		}
- 		*/
-
  		options.length = 0;
  		class'WebAdminUtils'.static.parseUrlOptions(options, curmiscurl);
  		if (currentMutators.length > 0)
@@ -845,7 +813,7 @@ function handleCurrentChange(WebAdminQuery q)
 function procCurrentChange(WebAdminQuery q, string currentGameType, string curmap, array<string> currentMutators,
 	out string outMaps, out string outMutators, out int outMutatorGroups)
 {
-	local string substvar2, substvar3;
+	local string substvar2, substvar3, mutname;
 	local int idx, i, j, k;
 	local array<UTUIDataProvider_MapInfo> maps;
 	local array<MutatorGroup> mutators;
@@ -888,7 +856,9 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
 	 				q.response.subst("mutator.groupid", "mutgroup"$(mutators.Length+outMutatorGroups));
  					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
  					q.response.subst("mutator.id", "mutfield"$(++idx));
- 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[j].FriendlyName));
+ 					mutname = mutators[i].mutators[j].FriendlyName;
+ 					if (len(mutname) == 0) mutname = mutators[i].mutators[j].ClassName;
+ 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutname));
  					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
 	 				if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
  					{
@@ -911,7 +881,9 @@ function procCurrentChange(WebAdminQuery q, string currentGameType, string curma
 	 				q.response.subst("mutator.groupid", "mutgroup"$i);
  					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
  					q.response.subst("mutator.id", "mutfield"$(++idx));
- 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutators[i].mutators[j].FriendlyName));
+ 					mutname = mutators[i].mutators[j].FriendlyName;
+ 					if (len(mutname) == 0) mutname = mutators[i].mutators[j].ClassName;
+ 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutname));
  					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
 					if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
  					{

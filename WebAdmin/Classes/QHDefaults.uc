@@ -9,7 +9,8 @@
  *
  * @author  Michiel 'elmuerte' Hendriks
  */
-class QHDefaults extends Object implements(IQueryHandler) config(WebAdmin);
+class QHDefaults extends Object implements(IQueryHandler) config(WebAdmin)
+	dependson(WebAdminUtils);
 
 `include(WebAdmin.uci)
 
@@ -40,6 +41,8 @@ var config string GeneralSettingsClass;
 var WebAdmin webadmin;
 
 var SettingsRenderer settingsRenderer;
+
+var AdditionalMapLists additionalML;
 
 function init(WebAdmin webapp)
 {
@@ -88,6 +91,9 @@ function bool handleQuery(WebAdminQuery q)
 		case "/settings/maplist":
 			handleMapList(q);
 			return true;
+		case "/settings/maplist/additional":
+			handleMapListAdditional(q);
+			return true;
 	}
 	return false;
 }
@@ -105,6 +111,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.", 10);
 	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configured. Changes will take effect in the next level.", 20);
 	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. each game type can have a single map cycle.", 30);
+	menu.addMenu("/settings/maplist/additional", "Additional Map Cycles", self, "Manage additional map cycle configurations.");
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -803,4 +810,208 @@ function handleMapList(WebAdminQuery q)
 		webadmin.addMessage(q, "Unable to load the selected game type.", MT_Warning);
 	}
  	webadmin.sendPage(q, "default_maplist.html");
+}
+
+function handleMapListAdditional(WebAdminQuery q)
+{
+	local int i, currentCycleIdx;
+	local string editCycleId, substvar, postAction;
+	local ExtraMapCycle currentCycle, cycle;
+	local UTUIDataProvider_GameModeInfo gametype;
+	local class<GameInfo> gi;
+	local WebAdminUtils.DateTime datetime;
+	local array<UTUIDataProvider_MapInfo> allMaps;
+	local array<string> postcycle;
+
+	currentCycleIdx = INDEX_NONE;
+	webadmin.dataStoreCache.loadGameTypes();
+
+	if (additionalML == none)
+	{
+		additionalML = new class'AdditionalMapLists';
+		if (additionalML.mapCycles.Length == 0 && !additionalML.bInitialized)
+		{
+			for (i = 0; i < class'UTGame'.default.GameSpecificMapCycles.length; i++)
+			{
+				if (webadmin.dataStoreCache.resolveGameType(class'UTGame'.default.GameSpecificMapCycles[i].GameClassName) == INDEX_NONE)
+				{
+					continue;
+				}
+				if (class'UTGame'.default.GameSpecificMapCycles[i].maps.length == 0)
+				{
+					continue;
+				}
+				class'WebAdminUtils'.static.getDateTime(datetime);
+				cycle.id = "imported"$i@datetime.year$datetime.month$datetime.day$datetime.hour$datetime.minute$datetime.second;
+				cycle.FriendlyName = "Imported map cycle";
+				cycle.cycle = class'UTGame'.default.GameSpecificMapCycles[i];
+				additionalML.mapCycles.AddItem(cycle);
+			}
+			additionalML.bInitialized = true;
+			additionalML.SaveConfig();
+		}
+	}
+
+	editCycleId = q.request.getVariable("maplistid");
+
+	postAction = q.request.getVariable("action");
+	if (postAction ~= "create")
+	{
+		gi = class<GameInfo>(DynamicLoadObject(q.request.getVariable("gametype"), class'class', true));
+		if (gi == none)
+		{
+			webadmin.addMessage(q, "Invalid gametype selected.", MT_Error);
+		}
+		else {
+			currentCycle.FriendlyName = q.request.getVariable("name");
+			if (Len(currentCycle.FriendlyName) == 0)
+			{
+				currentCycle.FriendlyName = "Untitled";
+			}
+			currentCycle.cycle.GameClassName = gi.name;
+			currentCycle.cycle.maps.length = 0;
+			class'WebAdminUtils'.static.getDateTime(datetime);
+			editCycleId = gi.name@datetime.year$datetime.month$datetime.day$datetime.hour$datetime.minute$datetime.second;
+			currentCycle.id = editCycleId;
+			currentCycleIdx = additionalML.mapCycles.length;
+			additionalML.mapCycles[currentCycleIdx] = currentCycle;
+		}
+	}
+	else if (postAction ~= "delete")
+	{
+		currentCycleIdx = additionalML.mapCycles.find('id', editCycleId);
+		if (currentCycleIdx == INDEX_NONE)
+		{
+			webadmin.addMessage(q, "Unable to find the map cycle", MT_Error);
+		}
+		else {
+			webadmin.addMessage(q, "Map cycle <em>"$`HTMLEscape(additionalML.mapCycles[currentCycleIdx].FriendlyName)$"</em> deleted.");
+			additionalML.mapCycles.remove(currentCycleIdx, 1);
+			additionalML.SaveConfig();
+			currentCycleIdx = INDEX_NONE;
+		}
+	}
+
+	if (len(editCycleId) == 0 && additionalML.mapCycles.length > 0)
+	{
+		currentCycle = additionalML.mapCycles[0];
+		currentCycleIdx = additionalML.mapCycles.length;
+	}
+	else if (currentCycleIdx == INDEX_NONE && len(editCycleId) > 0)
+	{
+		currentCycleIdx = additionalML.mapCycles.find('id', editCycleId);
+		if (currentCycleIdx != INDEX_NONE)
+		{
+			currentCycle = additionalML.mapCycles[currentCycleIdx];
+		}
+	}
+
+	if (currentCycleIdx != INDEX_NONE)
+	{
+		if (postAction ~= "save" || postAction ~= "activate")
+		{
+			currentCycle.FriendlyName = q.request.getVariable("name");
+			ParseStringIntoArray(q.request.getVariable("mapcycle"), postcycle, chr(10), true);
+			currentCycle.cycle.Maps.length = 0;
+			for (i = 0; i < postcycle.length; i++)
+			{
+				substvar = `Trim(postcycle[i]);
+				if (len(substvar) > 0)
+				{
+					currentCycle.cycle.Maps[currentCycle.cycle.Maps.length] = substvar;
+				}
+			}
+			additionalML.mapCycles[currentCycleIdx] = currentCycle;
+			additionalML.SaveConfig();
+			webadmin.addMessage(q, "Map cycle <em>"$`HTMLEscape(currentCycle.FriendlyName)$"</em> saved");
+		}
+		if (postAction ~= "activate")
+		{
+			i = class'UTGame'.default.GameSpecificMapCycles.find('GameClassName', currentCycle.cycle.GameClassName);
+			if (i == INDEX_NONE)
+			{
+				i = class'UTGame'.default.GameSpecificMapCycles.length;
+			}
+			class'UTGame'.default.GameSpecificMapCycles[i] = currentCycle.cycle;
+			class'UTGame'.static.StaticSaveConfig();
+   			if (UTGame(webadmin.WorldInfo.Game) != none)
+			{
+				UTGame(webadmin.WorldInfo.Game).GameSpecificMapCycles = class'UTGame'.default.GameSpecificMapCycles;
+			}
+			webadmin.addMessage(q, "Map cycle activated for the game type "$currentCycle.cycle.GameClassName);
+		}
+
+		q.response.subst("editmaplist.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(currentCycle.FriendlyName)));
+ 		q.response.subst("editmaplist.id", `HTMLEscape(currentCycle.id));
+ 		q.response.subst("editmaplist.gametype", `HTMLEscape(currentCycle.cycle.GameClassName));
+ 		i = webadmin.dataStoreCache.resolveGameType(currentCycle.cycle.GameClassName);
+ 		if (i != INDEX_NONE)
+ 		{
+ 			q.response.subst("editmaplist.gametype", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(webadmin.dataStoreCache.gametypes[i].FriendlyName)));
+ 		}
+
+		substvar = "";
+		allMaps = webadmin.dataStoreCache.getMaps(""$currentCycle.cycle.GameClassName);
+		for (i = 0; i < allMaps.length; i++)
+		{
+			if (i > 0) substvar $= chr(10);
+			substvar $= allMaps[i].MapName;
+		}
+		q.response.subst("allmaps.plain", `HTMLEscape(substvar));
+
+		substvar = "";
+		for (i = 0; i < currentCycle.cycle.Maps.length; i++)
+		{
+			if (i > 0) substvar $= chr(10);
+			substvar $= currentCycle.cycle.Maps[i];
+		}
+		q.response.subst("cycle.plain", `HTMLEscape(substvar));
+
+		q.response.subst("maplist_editor", webadmin.include(q, "default_maplist_editor.inc"));
+
+		q.response.subst("maplist_editor", webadmin.include(q, "default_maplist_additional_edit.inc"));
+	}
+
+	substvar = "";
+ 	foreach additionalML.mapCycles(cycle)
+ 	{
+ 		q.response.subst("maplist.id", `HTMLEscape(cycle.id));
+ 		q.response.subst("maplist.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(cycle.FriendlyName)));
+ 		q.response.subst("maplist.gametype", `HTMLEscape(cycle.cycle.GameClassName));
+
+ 		i = webadmin.dataStoreCache.resolveGameType(cycle.cycle.GameClassName);
+ 		if (i != INDEX_NONE)
+ 		{
+ 			q.response.subst("maplist.gametype", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(webadmin.dataStoreCache.gametypes[i].FriendlyName)));
+ 		}
+
+ 		if (editCycleId ~= cycle.id)
+ 		{
+ 			q.response.subst("maplist.selected", "selected=\"selected\"");
+ 		}
+ 		else {
+ 			q.response.subst("maplist.selected", "");
+ 		}
+ 		substvar $= webadmin.include(q, "default_maplist_additional_cycle.inc");
+ 	}
+ 	q.response.subst("maplists", substvar);
+
+	// used to create a new maplist
+	substvar = "";
+	foreach webadmin.dataStoreCache.gametypes(gametype)
+ 	{
+ 		if (gametype.bIsCampaign)
+ 		{
+ 			continue;
+ 		}
+ 		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
+ 		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
+ 		q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+		q.response.subst("gametype.selected", "");
+ 		substvar $= webadmin.include(q, "current_change_gametype.inc");
+ 	}
+ 	q.response.subst("gametypes", substvar);
+
+	webadmin.sendPage(q, "default_maplist_additional.html");
 }

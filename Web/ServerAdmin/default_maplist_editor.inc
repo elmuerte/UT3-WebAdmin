@@ -84,7 +84,7 @@ $(document).ready(function() {
     });
     $('#jsmapcycle').parent().droppable({
         accept: "li",
-        activeClass: "droppable",
+        hoverClass: "droppable",
         drop: function(ev, ui) {
             var item = $(ui.draggable).clone();            
             getDeleteMe(item);
@@ -120,7 +120,7 @@ $(document).ready(function() {
             _jsmapcycle.sortable("refreshPositions");
         }      
     });
-    $('#btnsave').after(simpleEditBtn).after(" ").after(manualAddBtn).after(" ");
+    $('#mlactions').append(simpleEditBtn).append(" ").append(manualAddBtn).append(" ");
     $('#maplistform').submit(function () {
         updateTextMapList();
         return true;
