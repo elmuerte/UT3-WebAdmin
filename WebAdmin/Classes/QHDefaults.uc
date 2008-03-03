@@ -42,6 +42,8 @@ var WebAdmin webadmin;
 
 var SettingsRenderer settingsRenderer;
 
+var config string AdditionalMLClass;
+
 var AdditionalMapLists additionalML;
 
 function init(WebAdmin webapp)
@@ -49,6 +51,11 @@ function init(WebAdmin webapp)
 	if (Len(GeneralSettingsClass) == 0)
 	{
 		GeneralSettingsClass = class.getPackageName()$".GeneralSettings";
+		SaveConfig();
+	}
+	if (Len(AdditionalMLClass) == 0)
+	{
+		AdditionalMLClass = class.getPackageName()$".AdditionalMapLists";
 		SaveConfig();
 	}
 	webadmin = webapp;
@@ -822,13 +829,20 @@ function handleMapListAdditional(WebAdminQuery q)
 	local WebAdminUtils.DateTime datetime;
 	local array<UTUIDataProvider_MapInfo> allMaps;
 	local array<string> postcycle;
+	local class<AdditionalMapLists> amlClass;
 
 	currentCycleIdx = INDEX_NONE;
 	webadmin.dataStoreCache.loadGameTypes();
 
 	if (additionalML == none)
 	{
-		additionalML = new class'AdditionalMapLists';
+		amlClass = class<AdditionalMapLists>(DynamicLoadObject(AdditionalMLClass, class'class'));
+		if (amlClass == none)
+		{
+			`Log("Failed to load the configured additional map lists storage class "$AdditionalMLClass,,'WebAdmin');
+			amlClass = class'AdditionalMapLists';
+		}
+		additionalML = new amlClass;
 		if (additionalML.mapCycles.Length == 0 && !additionalML.bInitialized)
 		{
 			for (i = 0; i < class'UTGame'.default.GameSpecificMapCycles.length; i++)
