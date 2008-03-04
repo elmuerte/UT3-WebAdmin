@@ -90,6 +90,8 @@ function init()
 	local IpAddr ipaddr;
 	local int i;
 
+    `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
+
 	super.init();
 
 	if (QueryHandlers.length == 0)
