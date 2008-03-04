@@ -38,6 +38,9 @@ var protected array<SortedSetting> sorted;
 var protected Settings curSettings;
 var protected WebResponse curResponse;
 
+/**
+ * Initialization when the instance is created.
+ */
 function init(string basePath, optional string namePre="settings_", optional string filePrefix="settings_")
 {
 	prefix = filePrefix;
@@ -66,55 +69,77 @@ function cleanup()
 	curResponse = none;
 }
 
+/**
+ * Used to initialize the rendered for an IAdvWebAdminSettings instance
+ */
+function initEx(Settings settings, WebResponse response)
+{
+	curSettings = settings;
+	curResponse = response;
+}
+
+/**
+ * Sort all settings based on their name
+ */
+function sortSettings()
+{
+	local int i, j;
+	local SortedSetting sortset;
+
+	sorted.length = 0; // clear old
+	for (i = 0; i < curSettings.LocalizedSettingsMappings.length; i++)
+	{
+		sortset.idx = i;
+		sortset.isLocalized = true;
+		sortset.txt = getLocalizedSettingText(curSettings.LocalizedSettingsMappings[i].Id);
+		for (j = 0; j < sorted.length; j++)
+		{
+			if (Caps(sorted[j].txt) > Caps(sortset.txt))
+			{
+				sorted.Insert(j, 1);
+				sorted[j] = sortset;
+				break;
+			}
+		}
+		if (j == sorted.length)
+		{
+			sorted[j] = sortset;
+		}
+	}
+	for (i = 0; i < curSettings.PropertyMappings.length; i++)
+	{
+		sortset.idx = i;
+		sortset.isLocalized = false;
+		sortset.txt = getSettingText(curSettings.PropertyMappings[i].Id);
+		for (j = 0; j < sorted.length; j++)
+		{
+			if (Caps(sorted[j].txt) > Caps(sortset.txt))
+			{
+				sorted.Insert(j, 1);
+				sorted[j] = sortset;
+				break;
+			}
+		}
+		if (j == sorted.length)
+		{
+			sorted[j] = sortset;
+		}
+	}
+}
+
+/**
+ * Render all properties of the given settings instance
+ */
 function render(Settings settings, WebResponse response, optional string substName = "settings")
 {
 	local string result, entry;
 	local int i, j;
 	local EPropertyValueMappingType mtype;
-	local SortedSetting sortset;
 
 	curSettings = settings;
 	curResponse = response;
 
-	sorted.length = 0; // clear old
-	for (i = 0; i < settings.LocalizedSettingsMappings.length; i++)
-	{
-		sortset.idx = i;
-		sortset.isLocalized = true;
-		sortset.txt = getLocalizedSettingText(settings.LocalizedSettingsMappings[i].Id);
-		for (j = 0; j < sorted.length; j++)
-		{
-			if (Caps(sorted[j].txt) > Caps(sortset.txt))
-			{
-				sorted.Insert(j, 1);
-				sorted[j] = sortset;
-				break;
-			}
-		}
-		if (j == sorted.length)
-		{
-			sorted[j] = sortset;
-		}
-	}
-	for (i = 0; i < settings.PropertyMappings.length; i++)
-	{
-		sortset.idx = i;
-		sortset.isLocalized = false;
-		sortset.txt = getSettingText(settings.PropertyMappings[i].Id);
-		for (j = 0; j < sorted.length; j++)
-		{
-			if (Caps(sorted[j].txt) > Caps(sortset.txt))
-			{
-				sorted.Insert(j, 1);
-				sorted[j] = sortset;
-				break;
-			}
-		}
-		if (j == sorted.length)
-		{
-			sorted[j] = sortset;
-		}
-	}
+	sortSettings();
 
 	for (i = 0; i < sorted.length; i++)
 	{
@@ -125,10 +150,7 @@ function render(Settings settings, WebResponse response, optional string substNa
 		else {
 			j = sorted[i].idx;
 			settings.GetPropertyMappingType(settings.PropertyMappings[j].Id, mtype);
-			curResponse.subst("setting.id", string(settings.PropertyMappings[j].Id));
-			curResponse.subst("setting.name", curSettings.GetPropertyName(settings.PropertyMappings[j].Id));
-			curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settings.PropertyMappings[j].Id));
-			curResponse.subst("setting.text", `HTMLEscape(getSettingText(settings.PropertyMappings[j].Id)));
+			defaultSubst(settings.PropertyMappings[j].Id);
 			switch (mtype)
 			{
 				case PVMT_PredefinedValues:
@@ -154,7 +176,10 @@ function render(Settings settings, WebResponse response, optional string substNa
 	curResponse.subst(substName, result);
 }
 
-protected function string getLocalizedSettingText(int settingId)
+/**
+ * Get a readable name for the current localized property
+ */
+function string getLocalizedSettingText(int settingId)
 {
 	local string val;
 	val = curSettings.GetStringSettingColumnHeader(settingId);
@@ -162,7 +187,10 @@ protected function string getLocalizedSettingText(int settingId)
 	return string(curSettings.GetStringSettingName(settingId));
 }
 
-protected function string renderLocalizedSetting(int settingId)
+/**
+ * Render a localized property
+ */
+function string renderLocalizedSetting(int settingId)
 {
 	local string options;
 	local array<IdToStringMapping> values;
@@ -194,7 +222,10 @@ protected function string renderLocalizedSetting(int settingId)
 	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
 }
 
-protected function string getSettingText(int settingId)
+/**
+ * Get a name for the current setting property.
+ */
+function string getSettingText(int settingId)
 {
 	local string val;
 	val = curSettings.GetPropertyColumnHeader(settingId);
@@ -202,7 +233,18 @@ protected function string getSettingText(int settingId)
 	return string(curSettings.GetPropertyName(settingId));
 }
 
-protected function string renderPredefinedValues(int settingId, int idx)
+/**
+ * Set the default substitution parts for the current property
+ */
+function defaultSubst(int settingId)
+{
+	curResponse.subst("setting.id", string(settingId));
+	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId));
+	curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settingId));
+	curResponse.subst("setting.text", `HTMLEscape(getSettingText(settingId)));
+}
+
+function string renderPredefinedValues(int settingId, int idx)
 {
 	local string options, selectedValue, part1, part2;
 	local int i;
@@ -265,7 +307,7 @@ protected function string renderPredefinedValues(int settingId, int idx)
 	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "multisetting.inc");
 }
 
-protected function string renderRanged(int settingId)
+function string renderRanged(int settingId)
 {
 	local float value, min, max, incr;
 	local byte asInt;
@@ -292,7 +334,7 @@ protected function string renderRanged(int settingId)
 	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "ranged.inc");
 }
 
-protected function string renderIdMapped(int settingId, int idx)
+function string renderIdMapped(int settingId, int idx)
 {
 	local string options;
 	local array<IdToStringMapping> values;
@@ -320,7 +362,7 @@ protected function string renderIdMapped(int settingId, int idx)
 	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
 }
 
-protected function string renderRaw(int settingId, int idx)
+function string renderRaw(int settingId, int idx)
 {
 	local float min, max;
 	curResponse.subst("setting.type", "raw");

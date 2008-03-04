@@ -547,16 +547,23 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	return true;
 }
 
-function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT_Information)
+function WebAdminMessages getMessagesObject(WebAdminQuery q)
 {
 	local WebAdminMessages msgs;
-	if (len(msg) == 0) return;
 	msgs = WebAdminMessages(q.session.getObject("WebAdmin.Messages"));
 	if (msgs == none)
 	{
 		msgs = new class'WebAdminMessages';
 		q.session.putObject("WebAdmin.Messages", msgs);
 	}
+	return msgs;
+}
+
+function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT_Information)
+{
+	local WebAdminMessages msgs;
+	if (len(msg) == 0) return;
+	msgs = getMessagesObject(q);
 	msgs.addMessage(msg, type);
 }
 

@@ -14,6 +14,8 @@
 `define WA_INIT_SETTINGS '`{WEBADMIN_CMD}init'
 // save the settings data
 `define WA_SAVE_SETTINGS '`{WEBADMIN_CMD}save'
+// cleanup references
+`define WA_CLEANUP_SETTINGS '`{WEBADMIN_CMD}cleanup'
 
 
 // the following stuff might change

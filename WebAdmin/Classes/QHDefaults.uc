@@ -33,6 +33,13 @@ struct ClassSettingsCacheEntry
 };
 var array<ClassSettingsCacheEntry> classSettingsCache;
 
+struct SettingsInstance
+{
+	var class<Settings> cls;
+	var Settings instance;
+};
+var array<SettingsInstance> settingsInstances;
+
 /**
  * Settings class used for the general, server wide, settings
  */
@@ -63,8 +70,21 @@ function init(WebAdmin webapp)
 
 function cleanup()
 {
+	local int i;
 	webadmin = none;
 	settingsRenderer = none;
+	for (i = 0; i < settingsInstances.length; i++)
+	{
+		if (IAdvWebAdminSettings(settingsInstances[i].instance) != none)
+		{
+			IAdvWebAdminSettings(settingsInstances[i].instance).cleanup();
+		}
+		else if (settingsInstances[i].instance != none)
+		{
+			settingsInstances[i].instance.SetSpecialValue(`{WA_CLEANUP_SETTINGS}, "");
+		}
+	}
+	settingsInstances.Length = 0;
 }
 
 function bool handleQuery(WebAdminQuery q)
@@ -408,6 +428,28 @@ function class<Settings> getSettingsClass(class forClass, optional bool bSilent=
 	return result;
 }
 
+function Settings getSettingsInstance(class<Settings> cls)
+{
+	local Settings instance;
+	local int idx;
+	idx = settingsInstances.find('cls', cls);
+	if (idx == INDEX_NONE)
+	{
+		instance = new cls;
+		idx = settingsInstances.length;
+		settingsInstances[idx].cls = cls;
+		settingsInstances[idx].instance = instance;
+		if (IAdvWebAdminSettings(instance) != none)
+		{
+			IAdvWebAdminSettings(instance).initSettings(webadmin.WorldInfo, webadmin.dataStoreCache);
+		}
+		else {
+			instance.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
+		}
+	}
+	return settingsInstances[idx].instance;
+}
+
 function handleSettingsGametypes(WebAdminQuery q)
 {
 	local string currentGameType, substvar;
@@ -471,9 +513,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		}
 		if (settingsClass != none)
 		{
-			// save this somewhere?
-			settings = new settingsClass;
-			settings.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
+			settings = getSettingsInstance(settingsClass);
 		}
 	}
 
@@ -481,20 +521,36 @@ function handleSettingsGametypes(WebAdminQuery q)
 	{
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
-			applySettings(settings, q.request);
-			if (UTGame(WebAdmin.WorldInfo.Game) != none)
-			{	// this prevents some saving of variables at a level change
-				UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
+			if (IAdvWebAdminSettings(settings) != none)
+			{
+				if (IAdvWebAdminSettings(settings).saveSettings(q.request, webadmin.getMessagesObject(q)))
+				{
+					webadmin.addMessage(q, "Settings saved.");
+				}
 			}
-			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
-			webadmin.addMessage(q, "Settings saved.");
+			else {
+				applySettings(settings, q.request);
+				if (UTGame(WebAdmin.WorldInfo.Game) != none)
+				{	// this prevents some saving of variables at a level change
+					UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
+				}
+				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
+				webadmin.addMessage(q, "Settings saved.");
+			}
 		}
 		if (settingsRenderer == none)
 		{
 			settingsRenderer = new class'SettingsRenderer';
 			settingsRenderer.init(webadmin.path);
 		}
-		settingsRenderer.render(settings, q.response);
+		if (IAdvWebAdminSettings(settings) != none)
+		{
+			settingsRenderer.initEx(settings, q.response);
+			IAdvWebAdminSettings(settings).renderSettings(q.response, settingsRenderer);
+		}
+		else {
+			settingsRenderer.render(settings, q.response);
+		}
 	}
 	else if (editGametype != none) {
 		webadmin.addMessage(q, "Unable to load a settings information for this game type.", MT_Warning);
@@ -542,29 +598,43 @@ function handleSettingsGeneral(WebAdminQuery q)
 	settingsClass = class<Settings>(DynamicLoadObject(GeneralSettingsClass, class'class'));
 	if (settingsClass != none)
 	{
-		// save this somewhere?
-		settings = new settingsClass;
-		settings.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
+		settings = getSettingsInstance(settingsClass);
 	}
 
 	if (settings != none)
 	{
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
-			applySettings(settings, q.request);
-			if (UTGame(WebAdmin.WorldInfo.Game) != none)
-			{	// this prevents some saving of variables at a level change
-				UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
+			if (IAdvWebAdminSettings(settings) != none)
+			{
+				if (IAdvWebAdminSettings(settings).saveSettings(q.request, webadmin.getMessagesObject(q)))
+				{
+					webadmin.addMessage(q, "Settings saved.");
+				}
 			}
-			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
-			webadmin.addMessage(q, "Settings saved.");
+			else {
+				applySettings(settings, q.request);
+				if (UTGame(WebAdmin.WorldInfo.Game) != none)
+				{	// this prevents some saving of variables at a level change
+					UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
+				}
+				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
+				webadmin.addMessage(q, "Settings saved.");
+			}
 		}
 		if (settingsRenderer == none)
 		{
 			settingsRenderer = new class'SettingsRenderer';
 			settingsRenderer.init(webadmin.path);
 		}
-		settingsRenderer.render(settings, q.response);
+		if (IAdvWebAdminSettings(settings) != none)
+		{
+			settingsRenderer.initEx(settings, q.response);
+			IAdvWebAdminSettings(settings).renderSettings(q.response, settingsRenderer);
+		}
+		else {
+			settingsRenderer.render(settings, q.response);
+		}
 	}
 	else {
 		`Log("Failed to load the general settings class "$GeneralSettingsClass,,'WebAdmin');
@@ -676,9 +746,7 @@ function handleSettingsMutators(WebAdminQuery q)
 		}
 		if (settingsClass != none)
 		{
-			// save this somewhere?
-			settings = new settingsClass;
-			settings.SetSpecialValue(`{WA_INIT_SETTINGS}, "");
+			settings = getSettingsInstance(settingsClass);
 		}
 	}
 
@@ -686,16 +754,32 @@ function handleSettingsMutators(WebAdminQuery q)
 	{
 		if (q.request.getVariable("action") ~= "save" || q.request.getVariable("action") ~= "save settings")
 		{
-			applySettings(settings, q.request);
-			settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
-			webadmin.addMessage(q, "Settings saved.");
+			if (IAdvWebAdminSettings(settings) != none)
+			{
+				if (IAdvWebAdminSettings(settings).saveSettings(q.request, webadmin.getMessagesObject(q)))
+				{
+					webadmin.addMessage(q, "Settings saved.");
+				}
+			}
+			else {
+				applySettings(settings, q.request);
+				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
+				webadmin.addMessage(q, "Settings saved.");
+			}
 		}
 		if (settingsRenderer == none)
 		{
 			settingsRenderer = new class'SettingsRenderer';
 			settingsRenderer.init(webadmin.path);
 		}
-		settingsRenderer.render(settings, q.response);
+		if (IAdvWebAdminSettings(settings) != none)
+		{
+			settingsRenderer.initEx(settings, q.response);
+			IAdvWebAdminSettings(settings).renderSettings(q.response, settingsRenderer);
+		}
+		else {
+			settingsRenderer.render(settings, q.response);
+		}
 		q.response.subst("settings", webadmin.include(q, "default_settings_mutators_select.inc"));
 	}
 	else if (editMutator != none) {
