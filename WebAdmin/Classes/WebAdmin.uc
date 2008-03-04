@@ -243,6 +243,8 @@ function Query(WebRequest Request, WebResponse Response)
 	local IQueryHandler handler;
 	local string title, description;
 
+    response.Subst("build.timestamp", timestamp);
+	response.Subst("build.version", version);
 	response.Subst("webadmin.path", path);
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
@@ -634,8 +636,6 @@ function pageAbout(WebAdminQuery q)
 {
 	q.response.Subst("page.title", "About");
 	q.response.Subst("page.description", "Various information about the UT3 WebAdmin");
-	q.response.Subst("build.timestamp", timestamp);
-	q.response.Subst("build.version", version);
 	q.response.Subst("engine.version", worldinfo.EngineVersion);
 	q.response.Subst("engine.netversion", worldinfo.MinNetVersion);
 	q.response.Subst("game.version", Localize("UTUIFrontEnd", "VersionText", "utgame"));
@@ -654,5 +654,5 @@ defaultproperties
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
-	version="0.8"
+	version="0.9"
 }
