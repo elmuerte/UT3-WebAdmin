@@ -437,6 +437,7 @@ function Settings getSettingsInstance(class<Settings> cls)
 	{
 		instance = new cls;
 		idx = settingsInstances.length;
+		settingsInstances.Length = idx+1;
 		settingsInstances[idx].cls = cls;
 		settingsInstances[idx].instance = instance;
 		if (IAdvWebAdminSettings(instance) != none)
@@ -780,7 +781,7 @@ function handleSettingsMutators(WebAdminQuery q)
 		else {
 			settingsRenderer.render(settings, q.response);
 		}
-		q.response.subst("settings", webadmin.include(q, "default_settings_mutators_select.inc"));
+		q.response.subst("settings", webadmin.include(q, "default_settings_mutators.inc"));
 	}
 	else if (editMutator != none) {
 		webadmin.addMessage(q, "Unable to load a settings information for this mutator.", MT_Warning);

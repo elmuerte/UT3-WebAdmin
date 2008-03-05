@@ -49,6 +49,8 @@ struct GameTypeMutators
  */
 var array<GameTypeMutators> gameTypeMutatorCache;
 
+var array<UTUIDataProvider_Weapon> weapons;
+
 function cleanup()
 {
 	gametypes.remove(0, gametypes.length);
@@ -544,5 +546,61 @@ static function bool compareMutator(UTUIDataProvider_Mutator m1, UTUIDataProvide
 	else if (sorton ~= "GroupNames")
 	{
 		return m1.GroupNames > m2.GroupNames;
+	}
+}
+
+function loadWeapons()
+{
+	local array<UTUIResourceDataProvider> ProviderList;
+	local UTUIDataProvider_Weapon item;
+	local int i, j;
+
+	if (weapons.Length > 0)
+	{
+		return;
+	}
+
+	class'UTUIDataStore_MenuItems'.static.GetAllResourceDataProviders(class'UTUIDataProvider_Weapon', ProviderList);
+	for (i = 0; i < ProviderList.length; i++)
+	{
+		item = UTUIDataProvider_Weapon(ProviderList[i]);
+
+		for (j = 0; j < weapons.length; j++)
+		{
+			if (compareWeapon(weapons[j], item, "FriendlyName"))
+			{
+				weapons.Insert(j, 1);
+				weapons[j] =  item;
+				break;
+			}
+		}
+		if (j == weapons.length)
+		{
+			weapons.AddItem(item);
+		}
+	}
+}
+
+static function bool compareWeapon(UTUIDataProvider_Weapon w1, UTUIDataProvider_Weapon w2, string sorton)
+{
+	if (sorton ~= "ClassName")
+	{
+		return w1.ClassName > w2.ClassName;
+	}
+	else if (sorton ~= "FriendlyName")
+	{
+		return w1.FriendlyName > w2.FriendlyName;
+	}
+	else if (sorton ~= "Description")
+	{
+		return w1.Description > w2.Description;
+	}
+	else if (sorton ~= "AmmoClassPath")
+	{
+		return w1.AmmoClassPath > w2.AmmoClassPath;
+	}
+	else if (sorton ~= "MeshReference")
+	{
+		return w1.MeshReference > w2.MeshReference;
 	}
 }
