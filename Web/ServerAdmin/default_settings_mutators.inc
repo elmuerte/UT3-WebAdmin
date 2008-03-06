@@ -2,6 +2,7 @@
 <fieldset>
 <legend>Settings for <em><%editmutator.name%></em></legend>
 <input type="hidden" name="mutator" value="<%editmutator.class%>" />
+<p><%editmutator.description%></p>
 <dl>
 <%settings%>
 </dl>

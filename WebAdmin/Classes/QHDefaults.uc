@@ -729,6 +729,7 @@ function handleSettingsMutators(WebAdminQuery q)
  		{
  			q.response.subst("editmutator.name", `HTMLEscape(mutator.FriendlyName));
  			q.response.subst("editmutator.class", `HTMLEscape(mutator.ClassName));
+ 			q.response.subst("editmutator.description", `HTMLEscape(mutator.Description));
  			q.response.subst("mutator.selected", "selected=\"selected\"");
  		}
  		else {
