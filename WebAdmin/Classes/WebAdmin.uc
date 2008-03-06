@@ -92,6 +92,10 @@ function init()
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
 
+    `if(WITH_WEBCONX_FIX)
+	WebServer.AcceptClass = class'WebConnectionEx';
+    `endif
+
 	super.init();
 
 	if (QueryHandlers.length == 0)

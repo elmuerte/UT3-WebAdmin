@@ -2,6 +2,8 @@
 `define WITH_BASE64ENC 1
 `define WITH_BANCDHASH 1
 
+// workaround for bug #37
+`define WITH_WEBCONX_FIX 1
 
 `define HTMLEscape(str) class'WebAdminUtils'.static.HTMLEscape(`str)
 `define Trim(str) class'WebAdminUtils'.static.Trim(`str)
