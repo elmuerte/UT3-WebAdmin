@@ -21,15 +21,19 @@ var array<WeaponData> weapons;
 function initSettings(WorldInfo worldinfo, DataStoreCache dscache)
 {
 	local class<Weapon> weaponClass;
+	local class ammoCls;
+
 	local int i, idx;
 	dscache.loadWeapons();
 	for (i = 0; i < dscache.weapons.Length; i++)
 	{
 		weaponClass = class<Weapon>(DynamicLoadObject(dscache.weapons[i].ClassName, class'class', true));
+		ammocls = class(DynamicLoadObject(dscache.weapons[i].AmmoClassPath, class'class', true));
 		if (weaponClass == none) continue;
 		idx = weapons.length;
 		weapons.length = idx+1;
 		weapons[idx].cls = weaponClass;
+		weapons[idx].ammoCls = ammoCls;
 		weapons[idx].data = dscache.weapons[i];
 	}
 }
@@ -41,7 +45,34 @@ function cleanup()
 
 function bool saveSettings(WebRequest request, WebAdminMessages messages)
 {
-	// TODO
+	local int i, idx;
+	local string cls;
+	local ReplacementInfo entry;
+
+	class'UTMutator_WeaponReplacement'.default.WeaponsToReplace.Length = 0;
+	class'UTMutator_WeaponReplacement'.default.AmmoToReplace.Length = 0;
+	for (i = 0; i < weapons.length; i++)
+	{
+		cls = request.GetVariable("weapon.."$weapons[i].data.ClassName);
+		if (Len(cls) == 0) continue;
+		if (cls ~= weapons[i].data.ClassName) continue;
+		for (idx = 0; idx < weapons.Length; idx++)
+		{
+			if (weapons[idx].data.ClassName ~= cls) break;
+		}
+		if (idx == weapons.Length) continue;
+
+		entry.OldClassName = weapons[i].cls.name;
+		entry.NewClassPath = weapons[idx].data.ClassName;
+		class'UTMutator_WeaponReplacement'.default.WeaponsToReplace.AddItem(entry);
+		if (weapons[i].ammoCls != none)
+		{
+			entry.OldClassName = weapons[i].ammoCls.name;
+			entry.NewClassPath = weapons[idx].data.AmmoClassPath;
+			class'UTMutator_WeaponReplacement'.default.AmmoToReplace.AddItem(entry);
+		}
+	}
+
 	class'UTMutator_WeaponReplacement'.static.StaticSaveConfig();
 	return true;
 }
@@ -66,6 +97,7 @@ function renderSettings(WebResponse response, SettingsRenderer renderer, optiona
 		else {
 			selectedValue = weapons[i].cls.GetPackageName()$"."$weapons[i].cls.name;
 		}
+		options = "";
  		for (j = 0; j < weapons.Length; j++)
 		{
 			response.subst("setting.option.value", weapons[j].data.ClassName);
