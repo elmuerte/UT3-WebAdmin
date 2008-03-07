@@ -58,7 +58,7 @@
   <target name="-dist-copy-files">
     <copy todir="build">
         <fileset dir="${basedir}">
-            <include name="*.URL" />
+            <include name="UT3 WebAdmin *" />
         </fileset>
     </copy>
   
