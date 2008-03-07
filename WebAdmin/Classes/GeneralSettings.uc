@@ -7,6 +7,8 @@
  */
 class GeneralSettings extends WebAdminSettings;
 
+`include(WebAdmin.uci)
+
 function init()
 {
 	// Server Information
@@ -22,8 +24,10 @@ function init()
 	SetIntPropertyByName('MaxSpectators', class'GameInfo'.default.MaxSpectators);
 	SetIntPropertyByName('MaxPlayers', class'GameInfo'.default.MaxPlayers);
 	SetIntPropertyByName('bKickLiveIdlers', int(class'GameInfo'.default.bKickLiveIdlers));
+	`if(`WITH_BANCDHASH)
 	SetIntPropertyByName('bKickMissingCDHashKeys', int(class'GameInfo'.default.bKickMissingCDHashKeys));
 	SetFloatPropertyByName('TimeToWaitForHashKey', class'GameInfo'.default.TimeToWaitForHashKey);
+	`endif
 
 	// Cheat detection settings
 	SetFloatPropertyByName('MaxTimeMargin', class'GameInfo'.default.MaxTimeMargin);
@@ -72,11 +76,13 @@ function save()
 	{
 		class'GameInfo'.default.bKickLiveIdlers = val != 0;
 	}
+	`if(`WITH_BANCDHASH)
 	if (GetIntPropertyByName('bKickMissingCDHashKeys', val))
 	{
 		class'GameInfo'.default.bKickMissingCDHashKeys = val != 0;
 	}
 	GetFloatPropertyByName('TimeToWaitForHashKey', class'GameInfo'.default.TimeToWaitForHashKey);
+	`endif
 
 	// Cheat detection settings
 	GetFloatPropertyByName('MaxTimeMargin', class'GameInfo'.default.MaxTimeMargin);

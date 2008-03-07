@@ -97,9 +97,11 @@ function bool handleQuery(WebAdminQuery q)
 		case "/policy/bans":
 			handleBans(q);
 			return true;
+		`if(`WITH_BANCDHASH)
 		case "/policy/hashbans":
 			handleHashBans(q);
 			return true;
+		`endif
 		case "/settings":
 			q.response.Redirect(WebAdmin.Path$"/settings/general");
 			return true;
@@ -131,7 +133,9 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
 	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These record ban a single online account.");
+	`if(`WITH_BANCDHASH)
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
+	`endif
 	menu.addMenu("/settings", "Settings", self);
 	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types. Changes will take effect in the next level.", 0);
 	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.", 0);
@@ -296,6 +300,7 @@ function handleBans(WebAdminQuery q)
 	webadmin.sendPage(q, "policy_bans.html");
 }
 
+`if(`WITH_BANCDHASH)
 function handleHashBans(WebAdminQuery q)
 {
 	local string bans, action;
@@ -339,6 +344,7 @@ function handleHashBans(WebAdminQuery q)
 	q.response.subst("bans", bans);
 	webadmin.sendPage(q, "policy_hashbans.html");
 }
+`endif
 
 function class<Settings> getSettingsClassEx(string forClass, optional bool bSilent=false)
 {

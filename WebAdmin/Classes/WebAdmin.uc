@@ -92,7 +92,7 @@ function init()
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
 
-    `if(WITH_WEBCONX_FIX)
+    `if(`WITH_WEBCONX_FIX)
 	WebServer.AcceptClass = class'WebConnectionEx';
     `endif
 
@@ -540,7 +540,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	}
 	q.session.putObject("IWebAdminUser", q.user);
 
-	`if(WITH_BASE64ENC)
+	`if(`WITH_BASE64ENC)
 	if (q.request.GetVariable("remember") == "1")
 	{
 		rememberCookie = q.request.EncodeBase64(username$chr(10)$password);
