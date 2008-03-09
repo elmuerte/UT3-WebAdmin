@@ -323,12 +323,14 @@ function string renderRanged(int settingId)
 		curResponse.subst("setting.minval", string(min));
 		curResponse.subst("setting.maxval", string(max));
 		curResponse.subst("setting.increment", string(incr));
+		curResponse.subst("setting.asint", "false");
 	}
 	else {
 		curResponse.subst("setting.value", string(int(value)));
 		curResponse.subst("setting.minval", string(int(min)));
 		curResponse.subst("setting.maxval", string(int(max)));
 		curResponse.subst("setting.increment", string(int(incr)));
+		curResponse.subst("setting.asint", "true");
 	}
 
 	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "ranged.inc");
@@ -382,9 +384,10 @@ function string renderRaw(int settingId, int idx)
 				curResponse.subst("setting.minval", int(min));
 			}
 			else {
-				curResponse.subst("setting.maxval", "NaN");
-				curResponse.subst("setting.minval", "NaN");
+				curResponse.subst("setting.maxval", "Number.NaN");
+				curResponse.subst("setting.minval", "Number.NaN");
 			}
+			curResponse.subst("setting.asint", "true");
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "int.inc");
 		case SDT_Double:
 		case SDT_Float:
@@ -394,9 +397,10 @@ function string renderRaw(int settingId, int idx)
 				curResponse.subst("setting.minval", min);
 			}
 			else {
-				curResponse.subst("setting.maxval", "NaN");
-				curResponse.subst("setting.minval", "NaN");
+				curResponse.subst("setting.maxval", "Number.NaN");
+				curResponse.subst("setting.minval", "Number.NaN");
 			}
+			curResponse.subst("setting.asint", "false");
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "float.inc");
 		default:
 			if (max != 0)

@@ -462,3 +462,19 @@ DIV.message {
 .dragging .deleteButton {
 	display: none;
 }
+
+INPUT.spin-button {
+	padding-right: 20px;
+	background-repeat: no-repeat;
+	background-position: 100% 1px;
+	background-image: url(spinbtn.png);
+}
+
+INPUT.spin-button.up {
+	cursor: pointer;
+	background-position: 100% -49px;
+}
+INPUT.spin-button.down {
+	cursor: pointer;
+	background-position: 100% -99px;
+}
