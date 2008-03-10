@@ -137,11 +137,11 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
 	`endif
 	menu.addMenu("/settings", "Settings", self);
-	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types. Changes will take effect in the next level.", 0);
-	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.", 0);
-	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.", 10);
-	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configured. Changes will take effect in the next level.", 20);
-	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. each game type can have a single map cycle.", 30);
+	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types. Changes will take effect in the next level.", -10);
+	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.");
+	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.");
+	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can configured. Changes will take effect in the next level.");
+	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. each game type can have a single map cycle.");
 	menu.addMenu("/settings/maplist/additional", "Additional Map Cycles", self, "Manage additional map cycle configurations.");
 }
 

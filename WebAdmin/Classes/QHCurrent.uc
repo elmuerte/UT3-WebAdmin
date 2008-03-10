@@ -80,6 +80,7 @@ function registerMenuItems(WebAdminMenu menu)
 			"You may not have access to the same commands as you would when logged in as admin when playing on the server."
 		);
 	}
+	menu.addMenu("/current/bots", "Bots", self, "Add or remove bots from the current game.");
 }
 
 function bool handleQuery(WebAdminQuery q)
@@ -114,6 +115,9 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/current/change/data":
 			handleCurrentChangeData(q);
+			return true;
+		case "/current/bots":
+			handleBots(q);
 			return true;
 	}
 	return false;
@@ -976,6 +980,20 @@ function handleCurrentChangeData(WebAdminQuery q)
 	q.response.SendText("<input type=\"hidden\" id=\"mutatorGroupCount\" value=\""$idx$"\" />");
 
 	//q.response.SendText("</result>");
+}
+
+function handleBots(WebAdminQuery q)
+{
+	local int i;
+	local string substvar;
+	for (i = 0; i < class'UTCustomChar_Data'.default.Characters.length; i++)
+	{
+		q.response.subst("bot.name", `HTMLEscape(class'UTCustomChar_Data'.default.Characters[i].CharName));
+		q.response.subst("group.id", "mutgroup0");
+		q.response.subst("group.id", "mutgroup0");
+		substvar $= webadmin.include(q, "current_bots_bot.inc");
+	}
+	webadmin.sendPage(q, "current_bots.html");
 }
 
 defaultproperties
