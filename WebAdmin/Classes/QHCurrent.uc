@@ -47,6 +47,14 @@ var string cssHidden;
 
 var array<PlayerReplicationInfo> sortedPRI;
 
+struct FactionCharacters
+{
+	var string factionName;
+	var FactionInfo fi;
+	var array<CharacterInfo> chars;
+};
+var array<FactionCharacters> factions;
+
 function init(WebAdmin webapp)
 {
 	webadmin = webapp;
@@ -984,15 +992,73 @@ function handleCurrentChangeData(WebAdminQuery q)
 
 function handleBots(WebAdminQuery q)
 {
-	local int i;
-	local string substvar;
-	for (i = 0; i < class'UTCustomChar_Data'.default.Characters.length; i++)
+	local FactionCharacters facchar;
+	local CharacterInfo ci1;
+	local int i,j,k;
+	local string sv1, sv2;
+
+	if (factions.length == 0)
 	{
-		q.response.subst("bot.name", `HTMLEscape(class'UTCustomChar_Data'.default.Characters[i].CharName));
-		q.response.subst("group.id", "mutgroup0");
-		q.response.subst("group.id", "mutgroup0");
-		substvar $= webadmin.include(q, "current_bots_bot.inc");
+		for (i = 0; i < class'UTCustomChar_Data'.default.Factions.Length; i++)
+		{
+			facchar.fi = class'UTCustomChar_Data'.default.Factions[i];
+			facchar.factionName = class'WebAdminUtils'.static.getLocalized(class'UTCustomChar_Data'.default.Factions[i].FriendlyName);
+			facchar.chars.Length = 0;
+			for (j = 0; j < class'UTCustomChar_Data'.default.Characters.length; j++)
+			{
+				ci1 = class'UTCustomChar_Data'.default.Characters[j];
+				if (ci1.Faction != facchar.fi.Faction)
+				{
+					continue;
+				}
+				for (k = 0; k < facchar.chars.Length; k++)
+				{
+					if (facchar.chars[k].CharName > ci1.CharName)
+					{
+						facchar.chars.insert(k, 1);
+						facchar.chars[k] = ci1;
+						break;
+					}
+				}
+				if (k == facchar.chars.Length)
+				{
+					facchar.chars.AddItem(ci1);
+				}
+			}
+
+			for (j = 0; j < factions.length; j++)
+			{
+				if (factions[j].factionName > facchar.factionName)
+				{
+					factions.Insert(j, 1);
+					factions[j] = facchar;
+					break;
+				}
+			}
+			if (j == factions.length)
+			{
+				factions.AddItem(facchar);
+			}
+		}
 	}
+
+	for (i = 0; i < factions.length; i++)
+	{
+		q.response.subst("faction.id", factions[i].fi.Faction);
+		q.response.subst("faction.name", `HTMLEscape(factions[i].factionName));
+		q.response.subst("faction.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(factions[i].fi.Description)));
+		sv2 = "";
+		for (j = 0; j < factions[i].chars.length; j++)
+		{
+			q.response.subst("char.id", factions[i].chars[j].CharID);
+			q.response.subst("char.name", `HTMLEscape(factions[i].chars[j].CharName));
+			q.response.subst("char.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(factions[i].chars[j].Description)));
+			sv2 $= webadmin.include(q, "current_bots_character.inc");
+		}
+		q.response.subst("faction.characters", sv2);
+		sv1 $= webadmin.include(q, "current_bots_faction.inc");
+	}
+	q.response.subst("factions", sv1);
 	webadmin.sendPage(q, "current_bots.html");
 }
 
