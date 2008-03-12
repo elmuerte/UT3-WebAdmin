@@ -401,29 +401,29 @@ DIV.message {
 	background-image: url(throbber.gif);
 }
 
-#jsmaplist UL, #jsmaplist OL {
+#jsmaplist UL, #jsmaplist OL, #jsbotroster {
 	padding: 0;
 	margin: 0;
 	width: 100%;
 } 
 
-#jsmaplist UL {
+#jsmaplist UL, #jsbotroster {
 	margin-right: 1em;
 }
 
-#jsmaplist LI {
+#jsmaplist LI, #jsbotroster LI {
 	cursor: move;
 	white-space: normal;
 	margin-left: 1.25em;	
 }
 
-#jsmaplist #jsmapcycle  LI {
+#jsmaplist #jsmapcycle LI, #jsbotroster LI {
 	margin-left: 2em;
 	padding-right: 0.5em;
 	white-space: nowrap;
 }
 
-#jsmaplist #jsmapcycle LI SPAN {
+#jsmaplist #jsmapcycle LI SPAN, #jsbotroster LI SPAN {
 	margin-left: 5px;
 	white-space: nowrap;
 }
@@ -438,6 +438,7 @@ DIV.message {
 	background: #FFE5E5;
 	padding: 0.05em 0.3em 0.05em 0.3em;
 	white-space: nowrap;
+	cursor: move;
 }
 
 .droppable {
@@ -477,4 +478,17 @@ INPUT.spin-button.up {
 INPUT.spin-button.down {
 	cursor: pointer;
 	background-position: 100% -99px;
+}
+
+UL.charlist {
+	margin: 0;
+	padding: 0;
+}
+
+UL.charlist LI {
+	list-style: none;
+}
+
+#jsbotroster {
+	margin-bottom: 0.5em;
 }

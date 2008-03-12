@@ -14,7 +14,7 @@
 </tr>
 </tbody>
 
-<tbody id="jsmaplist" display="none">
+<tbody id="jsmaplist">
 <tr>
     <td><ul id="jsallmaps"></ul></td>
     <td><ol id="jsmapcycle"></ol></td>
