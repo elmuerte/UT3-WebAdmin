@@ -995,7 +995,12 @@ function handleBots(WebAdminQuery q)
 	local FactionCharacters facchar;
 	local CharacterInfo ci1;
 	local int i,j,k;
-	local string sv1, sv2;
+	local string sv1, sv2, tmp;
+	local array<string> roster;
+	local array<ActiveBotInfo> activeBots;
+	local UTBot bot;
+	local array<UTBot> bots;
+	local array<string> activeRoster;
 
 	if (factions.length == 0)
 	{
@@ -1042,6 +1047,100 @@ function handleBots(WebAdminQuery q)
 		}
 	}
 
+	foreach webadmin.WorldInfo.AllControllers(class'UTBot', bot)
+	{
+		i = class'UTCustomChar_Data'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
+		if (i != INDEX_NONE)
+		{
+			ci1 = class'UTCustomChar_Data'.default.Characters[i];
+			activeRoster.length = activeRoster.length+1;
+			activeRoster[activeRoster.length-1] = ci1.Faction$"."$ci1.CharID;
+		}
+		bots.addItem(bot);
+	}
+
+	sv1 = q.request.getVariable("action", "");
+	if (sv1 ~= "activation")
+	{
+		sv1 = "";
+		foreach bots(bot)
+		{
+			i = class'UTCustomChar_Data'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
+			if (i != INDEX_NONE)
+			{
+				ci1 = class'UTCustomChar_Data'.default.Characters[i];
+				sv2 = ci1.Faction$"."$ci1.CharID;
+				if (q.request.getVariable(sv2) != "1")
+				{
+					if (len(sv1) > 0) sv1 $= ", ";
+					sv1 $= ci1.CharName;
+					UTGame(webadmin.WorldInfo.Game).DesiredPlayerCount = webadmin.WorldInfo.Game.NumPlayers + webadmin.WorldInfo.Game.NumBots-1;
+					UTGame(webadmin.WorldInfo.Game).KillBot(bot);
+					j = activeRoster.find(sv2);
+					if (j != INDEX_NONE) activeRoster.Remove(j,1);
+				}
+			}
+		}
+		if (len(sv1) > 0)
+		{
+			webadmin.addMessage(q, "Removed bots: "$sv1);
+		}
+		bots.length = 0;
+
+		sv1 = "";
+		for (i = 0; i < class'UTCustomChar_Data'.default.Characters.length; i++)
+		{
+			ci1 = class'UTCustomChar_Data'.default.Characters[i];
+			sv2 = ci1.Faction$"."$ci1.CharID;
+			if (q.request.getVariable(sv2) == "1")
+			{
+				if (activeRoster.find(sv2) != INDEX_NONE)
+				{
+					continue;
+				}
+				if (UTGame(webadmin.WorldInfo.Game).AddNamedBot(ci1.CharName) != none)
+				{
+					if (len(sv1) > 0) sv1 $= ", ";
+					sv1 $= ci1.CharName;
+					activeRoster.AddItem(sv2);
+				}
+			}
+		}
+		if (len(sv1) > 0)
+		{
+			webadmin.addMessage(q, "Added bots: "$sv1);
+		}
+	}
+	else if (sv1 ~= "roster")
+	{
+		ParseStringIntoArray(q.request.getVariable("botroster"), roster, chr(10), true);
+		for (i = 0; i < roster.length; i++)
+		{
+			sv1 = `Trim(roster[i]);
+			if (len(sv1) > 0)
+			{
+				activeBots.length = activeBots.length+1;
+				activeBots[activeBots.length-1].BotName = sv1;
+			}
+		}
+		class'UTGame'.default.ActiveBots = activeBots;
+		class'UTGame'.StaticSaveConfig();
+		if (UTGame(webadmin.worldinfo.Game) != none)
+		{
+			for (i = 0; i < activeBots.length; i++)
+			{
+				j = UTGame(webadmin.worldinfo.Game).ActiveBots.find('BotName', activeBots[i].BotName);
+				if (j != INDEX_NONE)
+				{
+					activeBots[i].bInUse = UTGame(webadmin.worldinfo.Game).ActiveBots[j].bInUse;
+				}
+			}
+			UTGame(webadmin.worldinfo.Game).ActiveBots = activeBots;
+		}
+		webadmin.addMessage(q, "Roster saved.");
+	}
+
+	sv1 = "";
 	for (i = 0; i < factions.length; i++)
 	{
 		q.response.subst("faction.id", factions[i].fi.Faction);
@@ -1053,12 +1152,40 @@ function handleBots(WebAdminQuery q)
 			q.response.subst("char.id", factions[i].chars[j].CharID);
 			q.response.subst("char.name", `HTMLEscape(factions[i].chars[j].CharName));
 			q.response.subst("char.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(factions[i].chars[j].Description)));
+			tmp = factions[i].fi.Faction$"."$factions[i].chars[j].CharID;
+			if (activeRoster.find(tmp) != INDEX_NONE)
+			{
+				q.response.subst("char.active", "checked=\"checked\"");
+			}
+			else {
+				q.response.subst("char.active", "");
+			}
 			sv2 $= webadmin.include(q, "current_bots_character.inc");
 		}
 		q.response.subst("faction.characters", sv2);
 		sv1 $= webadmin.include(q, "current_bots_faction.inc");
 	}
 	q.response.subst("factions", sv1);
+
+	sv1 = "";
+	if (UTGame(webadmin.worldinfo.Game) != none)
+	{
+		for (i = 0; i < UTGame(webadmin.worldinfo.Game).ActiveBots.Length; i++)
+		{
+			if (len(sv1) > 0) sv1 $= chr(10);
+			sv1 $= UTGame(webadmin.worldinfo.Game).ActiveBots[i].BotName;
+		}
+	}
+	else {
+		for (i = 0; i < class'UTGame'.default.ActiveBots.Length; i++)
+		{
+			if (len(sv1) > 0) sv1 $= chr(10);
+			sv1 $= class'UTGame'.default.ActiveBots[i].BotName;
+		}
+	}
+	q.response.subst("activebots", sv1);
+	q.response.subst("playerlimit", webadmin.worldinfo.game.MaxPlayers);
+
 	webadmin.sendPage(q, "current_bots.html");
 }
 

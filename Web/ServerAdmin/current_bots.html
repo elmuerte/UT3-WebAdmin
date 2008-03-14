@@ -15,7 +15,7 @@
 <form method="post" action="<%page.fulluri%>">
 <%factions%>
 
-<div><input type="hidden" name="action" value="activation" /><button type="submit">(de)activate</button></div>
+<div id="charcmds"><input type="hidden" name="action" value="activation" /><button type="submit">(de)activate</button></div>
 </form>
 </td>
 
@@ -23,17 +23,11 @@
 <h3>Bot Roster</h3>
 <p>Unless explicitly added by name, characters will enter the game in this order.</p>
 
-<form method="post" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>" id="rosterform">
 <div>
 <input type="hidden" name="action" value="roster" />
 
-<textarea id="botroster" name="botroster" rows="10" cols="20">
-Ariel
-Avalon
-Barktooth
-Blackjack
-Blain 
-</textarea>
+<textarea id="botroster" name="botroster" rows="10" cols="20"><%activebots%></textarea>
 <ol id="jsbotroster"></ol>
 
 <button type="submit">save roster</button>
@@ -101,9 +95,22 @@ $(document).ready(function() {
         }
     });
     
-    $('#charhint').append('There are currently <em id="activecnt"></em> character(s) select to be active.');    
+    $('#rosterform').submit(function () {
+        updateTextRoster();
+        return true;
+    });
+    
+    $('#charhint').after('<p>There are currently <em id="activecnt"></em> character(s) selected to be active.</p>');    
     $('.charlist li :checkbox').change(updateCount);
     updateCount();
+    deselectAll = $('<button type="button">deselect all</button>');
+    deselectAll.click(function() {
+        $('.charlist li :checkbox:checked').each(function() {
+            this.checked = false; 
+        });
+        updateCount();
+    });
+    $('#charcmds').append(" ").append(deselectAll);
 });    
 
 function updateCount() {
@@ -126,16 +133,16 @@ function deleteme() {
     $(this).parent().remove();
 }
 
-function updateTextMapList() {
+function updateTextRoster() {
     // check manual mode  
     if ($('#jsbotroster').size() == 0)
     {
         return;      
     }
-    var maplist = $('#jsbotroster li');
+    var brost = $('#jsbotroster li');
     var txtlist = "";
-    for (i = 0; i < maplist.size(); i++) {
-        txtlist += jQuery.trim($('.entry', maplist.get(i)).text())+'\n';
+    for (i = 0; i < brost.size(); i++) {
+        txtlist += jQuery.trim($('.entry', brost.get(i)).text())+'\n';
     }
     $('#botroster').val(txtlist);
 }
