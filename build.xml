@@ -37,6 +37,7 @@
       <fileset dir="Web/jQuery-Src" includes="**/ui.droppable.ext.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.sortable.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.sortable.ext.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/ui.tabs.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.numeric.js" />
       <fileset dir="Web/jQuery-Src" includes="**/JQuerySpinBtn.js" />
     </concat>

@@ -4,15 +4,16 @@
 
 <table>
 <colgroup>
-    <col width="4*" />
-    <col width="3*" />
+    <col width="60%" />
+    <col width="40%" />
 </colgroup>
 <tr>
 
 <td>
-<h3>Characters</h3>
+<h3>Active characters</h3>
 <p id="charhint">Select the characters you want to (de)activate. The current player limit is <%playerlimit%>.</p>
-<form method="post" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>" id="charform">
+
 <%factions%>
 
 <div id="charcmds"><input type="hidden" name="action" value="activation" /><button type="submit">(de)activate</button></div>
@@ -20,7 +21,7 @@
 </td>
 
 <td>
-<h3>Bot Roster</h3>
+<h3>Roster</h3>
 <p>Unless explicitly added by name, characters will enter the game in this order.</p>
 
 <form method="post" action="<%page.fulluri%>" id="rosterform">
@@ -100,10 +101,9 @@ $(document).ready(function() {
         return true;
     });
     
-    $('#charhint').after('<p>There are currently <em id="activecnt"></em> character(s) selected to be active.</p>');    
+    $('#charhint').after('<p>There are currently <em id="activecnt">0</em> character(s) selected to be active.</p>');    
     $('.charlist li :checkbox').change(updateCount);
-    updateCount();
-    deselectAll = $('<button type="button">deselect all</button>');
+    var deselectAll = $('<button type="button">deselect all</button>');
     deselectAll.click(function() {
         $('.charlist li :checkbox:checked').each(function() {
             this.checked = false; 
@@ -111,10 +111,24 @@ $(document).ready(function() {
         updateCount();
     });
     $('#charcmds').append(" ").append(deselectAll);
+    
+    var tabs = $('<ul id="chartabs"></ul>');
+    $('#charform').prepend(tabs);
+    $('#charform fieldset').each(function() {
+        var legend = $('legend', this);
+        tabs.append('<li><a href="#'+this.id+'"><span>'+legend.text()+' (<em id="cnt_'+this.id+'">0</em>)</span></a></li>');
+        legend.remove();
+    });
+    tabs.tabs();
+    
+    updateCount();
 });    
 
 function updateCount() {
     $('#activecnt').text($('.charlist li :checkbox:checked').size());
+    $('#charform fieldset').each(function() {
+        $('#cnt_'+this.id).text($('li :checkbox:checked', this).size());
+    });
 }
 
 function getDeleteMe(forItem) {

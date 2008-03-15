@@ -175,9 +175,9 @@ defaultproperties
 	Properties.Add((PropertyId=21,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=22,Data=(Type=SDT_Float)))
 
-	PropertyMappings.Add((Id=20,Name="MaxTimeMargin",ColumnHeaderText="[Speed Hack] Maximum Time Margin",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=20,Name="MaxTimeMargin",ColumnHeaderText="[Speed Hack] Maximum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
 	PropertyMappings.Add((Id=21,Name="TimeMarginSlack",ColumnHeaderText="[Speed Hack] Time Margin Slack",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=22,Name="MinTimeMargin",ColumnHeaderText="[Speed Hack] Minimum Time Margin",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=22,Name="MinTimeMargin",ColumnHeaderText="[Speed Hack] Minimum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
 
 	// Game settings
 	Properties.Add((PropertyId=30,Data=(Type=SDT_Float)))
@@ -187,8 +187,8 @@ defaultproperties
 	Properties.Add((PropertyId=34,Data=(Type=SDT_Int32)))
 
 	PropertyMappings.Add((Id=30,Name="GameDifficulty",ColumnHeaderText="Game Difficulty",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=31,Name="GoreLevel",ColumnHeaderText="Gore Level",MappingType=PVMT_Ranged,MinVal=0,MaxVal=256,RangeIncrement=1))
-	PropertyMappings.Add((Id=32,Name="bChangeLevels",ColumnHeaderText="Change Levels",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
+	PropertyMappings.Add((Id=31,name="GoreLevel",ColumnHeaderText="Gore Reduction",MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32)),MinVal=0,MaxVal=256,RangeIncrement=1))
+	PropertyMappings.Add((Id=32,name="bChangeLevels",ColumnHeaderText="Change Levels",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=33,Name="EndTimeDelay",ColumnHeaderText="End Game Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
 	PropertyMappings.Add((Id=34,Name="RestartWait",ColumnHeaderText="Game Restart Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 
