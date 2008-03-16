@@ -9,6 +9,14 @@ class GeneralSettings extends WebAdminSettings;
 
 `include(WebAdmin.uci)
 
+function string GetSpecialValue(name PropertyName)
+{
+	if (PropertyName == `{WA_GROUP_SETTINGS})
+	{
+		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60";
+	}
+}
+
 function init()
 {
 	// Server Information
@@ -177,7 +185,7 @@ defaultproperties
 
 	PropertyMappings.Add((Id=20,Name="MaxTimeMargin",ColumnHeaderText="[Speed Hack] Maximum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
 	PropertyMappings.Add((Id=21,Name="TimeMarginSlack",ColumnHeaderText="[Speed Hack] Time Margin Slack",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=22,Name="MinTimeMargin",ColumnHeaderText="[Speed Hack] Minimum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=22,name="MinTimeMargin",ColumnHeaderText="[Speed Hack] Minimum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
 
 	// Game settings
 	Properties.Add((PropertyId=30,Data=(Type=SDT_Float)))

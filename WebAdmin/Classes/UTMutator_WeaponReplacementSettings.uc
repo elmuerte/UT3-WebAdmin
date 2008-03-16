@@ -115,5 +115,6 @@ function renderSettings(WebResponse response, SettingsRenderer renderer, optiona
 		response.subst("setting.html", response.LoadParsedUHTM(renderer.getPath() $ "/" $ renderer.getFilePrefix() $ "select.inc"));
 		substvar $= response.LoadParsedUHTM(renderer.getPath() $ "/" $ renderer.getFilePrefix() $ "entry.inc");
 	}
-	response.Subst(substName, substvar);
+	response.subst("settings", substvar);
+	response.Subst(substName, response.LoadParsedUHTM(renderer.getPath() $ "/" $ renderer.getFilePrefix() $ "wrapper_single.inc"));
 }

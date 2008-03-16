@@ -15,16 +15,16 @@
 <%maplist_editor%>
 
 <form method="post" action="<%page.fulluri%>">
-<input type="hidden" name="action" value="create" />
-<input type="hidden" name="maplistid" value="" />
 <fieldset>
 <legend>Create a new map cycle</legend>
+<input type="hidden" name="action" value="create" />
+<input type="hidden" name="maplistid" value="" />
 <dl>
     <dt>Name</dt>
     <dd><input type="text" name="name" /></dd>
     <dt>Game type</dt>
     <dd><select id="gametype" name="gametype"><%gametypes%></select></dd>
-    <dd><button type="submit" id="btnselect">create map cycle</button></dd>
+    <dd><button type="submit" id="btncreate">create map cycle</button></dd>
 </dl>
 </fieldset>
 </form>

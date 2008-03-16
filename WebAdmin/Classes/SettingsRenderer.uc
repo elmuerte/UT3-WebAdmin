@@ -33,7 +33,15 @@ struct SortedSetting
 	/** if true it's a localized setting rather than a property */
 	var bool isLocalized;
 };
-var protected array<SortedSetting> sorted;
+
+struct SettingsGroup
+{
+	var string title;
+	var array<SortedSetting> settings;
+	var int pMin,pMax;
+	var int lMin,lMax;
+};
+var array<SettingsGroup> groups;
 
 var protected Settings curSettings;
 var protected WebResponse curResponse;
@@ -81,49 +89,98 @@ function initEx(Settings settings, WebResponse response)
 /**
  * Sort all settings based on their name
  */
-function sortSettings()
+function sortSettings(int groupId)
 {
 	local int i, j;
 	local SortedSetting sortset;
 
-	sorted.length = 0; // clear old
+	groups[groupId].settings.length = 0; // clear old
 	for (i = 0; i < curSettings.LocalizedSettingsMappings.length; i++)
 	{
+		if (curSettings.LocalizedSettingsMappings[i].Id < groups[groupId].lMin) continue;
+		if (curSettings.LocalizedSettingsMappings[i].Id >= groups[groupId].lMax) continue;
 		sortset.idx = i;
 		sortset.isLocalized = true;
 		sortset.txt = getLocalizedSettingText(curSettings.LocalizedSettingsMappings[i].Id);
-		for (j = 0; j < sorted.length; j++)
+		for (j = 0; j < groups[groupId].settings.length; j++)
 		{
-			if (Caps(sorted[j].txt) > Caps(sortset.txt))
+			if (Caps(groups[groupId].settings[j].txt) > Caps(sortset.txt))
 			{
-				sorted.Insert(j, 1);
-				sorted[j] = sortset;
+				groups[groupId].settings.Insert(j, 1);
+				groups[groupId].settings[j] = sortset;
 				break;
 			}
 		}
-		if (j == sorted.length)
+		if (j == groups[groupId].settings.length)
 		{
-			sorted[j] = sortset;
+			groups[groupId].settings[j] = sortset;
 		}
 	}
 	for (i = 0; i < curSettings.PropertyMappings.length; i++)
 	{
+		if (curSettings.PropertyMappings[i].Id < groups[groupId].pMin) continue;
+		if (curSettings.PropertyMappings[i].Id >= groups[groupId].pMax) continue;
 		sortset.idx = i;
 		sortset.isLocalized = false;
 		sortset.txt = getSettingText(curSettings.PropertyMappings[i].Id);
-		for (j = 0; j < sorted.length; j++)
+		for (j = 0; j < groups[groupId].settings.length; j++)
 		{
-			if (Caps(sorted[j].txt) > Caps(sortset.txt))
+			if (Caps(groups[groupId].settings[j].txt) > Caps(sortset.txt))
 			{
-				sorted.Insert(j, 1);
-				sorted[j] = sortset;
+				groups[groupId].settings.Insert(j, 1);
+				groups[groupId].settings[j] = sortset;
 				break;
 			}
 		}
-		if (j == sorted.length)
+		if (j == groups[groupId].settings.length)
 		{
-			sorted[j] = sortset;
+			groups[groupId].settings[j] = sortset;
 		}
+	}
+}
+
+/**
+ * Creates the settings groups
+ */
+function createGroups()
+{
+	// Group spec:
+	//	<group1>;<group2>;<group3>
+	// Where group:
+	//	<title>=<pMin>,<pMax>,<lMin>,<lMax>
+	local string spec;
+	local array<string> gspec, ranges;
+	local SettingsGroup group;
+	local int idx;
+
+	groups.length = 0;
+	spec = curSettings.GetSpecialValue(`{WA_GROUP_SETTINGS});
+	ParseStringIntoArray(spec, gspec, ";", true);
+	foreach gspec(spec)
+	{
+		idx = InStr(spec, "=");
+		if (idx == INDEX_NONE) continue;
+		group.title = Left(spec, idx);
+		spec = Mid(spec, idx+1);
+		group.settings.Length = 0;
+		ParseStringIntoArray(spec, ranges, ",", false);
+		ranges.length = 4;
+		group.pMin = int(ranges[0]);
+		group.pMax = int(ranges[1]);
+		group.lMin = int(ranges[2]);
+		group.lMax = int(ranges[3]);
+		groups.AddItem(group);
+	}
+	if (groups.length == 0)
+	{
+		group.title = "";
+		group.pMin = 0;
+		group.pMax = curSettings.PropertyMappings.Length;
+		group.lMin = 0;
+		group.lMax = curSettings.LocalizedSettingsMappings.length;
+		group.settings.Length = 0;
+		groups.AddItem(group);
+		return;
 	}
 }
 
@@ -133,37 +190,69 @@ function sortSettings()
 function render(Settings settings, WebResponse response, optional string substName = "settings")
 {
 	local string result, entry;
-	local int i, j;
-	local EPropertyValueMappingType mtype;
+	local int i;
 
 	curSettings = settings;
 	curResponse = response;
 
-	sortSettings();
-
-	for (i = 0; i < sorted.length; i++)
+	createGroups();
+	for (i = 0; i < groups.length; i++)
 	{
-		if (sorted[i].isLocalized)
+		sortSettings(i);
+	}
+	if (groups.length == 1)
+	{
+		curResponse.Subst("settings", renderGroup(groups[0]));
+		result = curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "wrapper_single.inc");
+	}
+	else {
+		for (i = 0; i < groups.length; i++)
 		{
-			entry = renderLocalizedSetting(settings.LocalizedSettingsMappings[sorted[i].idx].Id);
+			if (groups[i].settings.length == 0) continue;
+			curResponse.Subst("group.id", "SettingsGroup"$i);
+			curResponse.Subst("group.title", `HTMLEscape(groups[i].title));
+			curResponse.Subst("group.settings", renderGroup(groups[i]));
+			entry = curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "group.inc");
+			result $= entry;
+		}
+		curResponse.Subst("settings", result);
+		result = curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "wrapper_group.inc");
+	}
+	curResponse.subst(substName, result);
+}
+
+/**
+ * Render a selection of settings
+ */
+function string renderGroup(SettingsGroup group)
+{
+	local string result, entry;
+	local int i, j;
+	local EPropertyValueMappingType mtype;
+
+	for (i = 0; i < group.settings.length; i++)
+	{
+		if (group.settings[i].isLocalized)
+		{
+			entry = renderLocalizedSetting(curSettings.LocalizedSettingsMappings[group.settings[i].idx].Id);
 		}
 		else {
-			j = sorted[i].idx;
-			settings.GetPropertyMappingType(settings.PropertyMappings[j].Id, mtype);
-			defaultSubst(settings.PropertyMappings[j].Id);
+			j = group.settings[i].idx;
+			curSettings.GetPropertyMappingType(curSettings.PropertyMappings[j].Id, mtype);
+			defaultSubst(curSettings.PropertyMappings[j].Id);
 			switch (mtype)
 			{
 				case PVMT_PredefinedValues:
-					entry = renderPredefinedValues(settings.PropertyMappings[j].Id, j);
+					entry = renderPredefinedValues(curSettings.PropertyMappings[j].Id, j);
 					break;
 				case PVMT_Ranged:
-					entry = renderRanged(settings.PropertyMappings[j].Id);
+					entry = renderRanged(curSettings.PropertyMappings[j].Id);
 					break;
 				case PVMT_IdMapped:
-					entry = renderIdMapped(settings.PropertyMappings[j].Id, j);
+					entry = renderIdMapped(curSettings.PropertyMappings[j].Id, j);
 					break;
 				default:
-					entry = renderRaw(settings.PropertyMappings[j].Id, j);
+					entry = renderRaw(curSettings.PropertyMappings[j].Id, j);
 			}
 		}
 		if (len(entry) > 0)
@@ -172,8 +261,7 @@ function render(Settings settings, WebResponse response, optional string substNa
 			result $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "entry.inc");
 		}
 	}
-
-	curResponse.subst(substName, result);
+	return result;
 }
 
 /**
