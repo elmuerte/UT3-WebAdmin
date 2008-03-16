@@ -27,15 +27,44 @@ INPUT {
 }
 
 INPUT[type="text"], INPUT[type="password"], INPUT[type=""] {
-	border: 1px solid #520000;	
+	border: 1px solid #C5ADAD;	
 	padding-left: 0.1em;
-	background-color: White;
+	background-color: #fffafa;
 	height: 1.25em;
+	color: #444444;
+}
+
+TEXTAREA {
+	border: 1px solid #C5ADAD;	
+	padding-left: 0.1em;
+	background-color: #fffafa;
+	color: #444444;
 }
 
 SELECT {
-	border: 1px solid #520000;	
+	border: 1px solid #C5ADAD;	
+	background-color: #fffafa;
+	color: #444444;
+}
+
+INPUT[type="text"]:Hover, INPUT[type="password"]:Hover, INPUT[type=""]:Hover, TEXTAREA:Hover, SELECT:Hover,
+INPUT[type="text"]:Focus, INPUT[type="password"]:Focus, INPUT[type=""]:Focus, TEXTAREA:Focus, SELECT:Focus {
 	background-color: White;
+	border-color: #520000;	
+	color: black;
+}
+
+LABEL[for] {
+	cursor: pointer;
+}
+
+LABEL[for]:Hover {
+	color: #520000;
+}
+
+INPUT[readonly="readonly"], TEXTAREA[readonly="readonly"] {
+	background-color: #EDE6E6;	
+	color: black;
 }
 
 DT {
