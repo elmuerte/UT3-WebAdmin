@@ -82,6 +82,11 @@ function mapListUpdate(data, textStatus) {
         
         x = jdata.children('#mutatorGroupCount');
         $('input[name="mutatorGroupCount"]').val(x.val());
+        
+        $('.mutatorGroup input:radio, .mutatorGroup input:checkbox').click(function(){
+            changeHistory = new Array();
+            updateSelection(this, this.checked);
+        });
     });
     $('#throbber').hide();
 }
