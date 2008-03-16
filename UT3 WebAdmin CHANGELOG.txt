@@ -1,3 +1,10 @@
+v0.10 - 2008-03-16
+------------------
+- Added the ability to manage the bots. You can also edit the bot roster 
+  (similar and drop interface as the maplist editor)
+- Various HTML/CSS tweaks.
+- General settings are now grouped by section  
+
 v0.9 - 2008-03-07
 -----------------
 - Started including a changelog with the distribution
