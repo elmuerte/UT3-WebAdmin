@@ -11,8 +11,8 @@ class UTMutator_WeaponReplacementSettings extends Settings implements(IAdvWebAdm
 
 struct WeaponData
 {
-	var class<Weapon> cls;
-	var class ammoCls; // exact tyle is not relevant
+	var name clsName;
+	var name ammoClsName;
 	var UTUIDataProvider_Weapon data;
 };
 
@@ -20,20 +20,25 @@ var array<WeaponData> weapons;
 
 function initSettings(WorldInfo worldinfo, DataStoreCache dscache)
 {
-	local class<Weapon> weaponClass;
-	local class ammoCls;
-
 	local int i, idx;
 	dscache.loadWeapons();
 	for (i = 0; i < dscache.weapons.Length; i++)
 	{
-		weaponClass = class<Weapon>(DynamicLoadObject(dscache.weapons[i].ClassName, class'class', true));
-		ammocls = class(DynamicLoadObject(dscache.weapons[i].AmmoClassPath, class'class', true));
-		if (weaponClass == none) continue;
+		if (InStr(dscache.weapons[i].ClassName, ".") == INDEX_NONE)
+		{
+			`Warn("Invalid weapon class: "$dscache.weapons[i].ClassName,,'WebAdmin');
+			continue;
+		}
 		idx = weapons.length;
 		weapons.length = idx+1;
-		weapons[idx].cls = weaponClass;
-		weapons[idx].ammoCls = ammoCls;
+		weapons[idx].clsName = name(Split(dscache.weapons[i].ClassName, ".", true));
+		if (InStr(dscache.weapons[i].AmmoClassPath, ".") != INDEX_NONE)
+		{
+			weapons[idx].ammoClsName = name(Split(dscache.weapons[i].AmmoClassPath, ".", true));
+		}
+		else {
+			weapons[idx].ammoClsName = 'none';
+		}
 		weapons[idx].data = dscache.weapons[i];
 	}
 }
@@ -62,12 +67,12 @@ function bool saveSettings(WebRequest request, WebAdminMessages messages)
 		}
 		if (idx == weapons.Length) continue;
 
-		entry.OldClassName = weapons[i].cls.name;
+		entry.OldClassName = weapons[i].clsName;
 		entry.NewClassPath = weapons[idx].data.ClassName;
 		class'UTMutator_WeaponReplacement'.default.WeaponsToReplace.AddItem(entry);
-		if (weapons[i].ammoCls != none)
+		if (weapons[i].ammoClsName != 'none')
 		{
-			entry.OldClassName = weapons[i].ammoCls.name;
+			entry.OldClassName = weapons[i].ammoClsName;
 			entry.NewClassPath = weapons[idx].data.AmmoClassPath;
 			class'UTMutator_WeaponReplacement'.default.AmmoToReplace.AddItem(entry);
 		}
@@ -89,13 +94,13 @@ function renderSettings(WebResponse response, SettingsRenderer renderer, optiona
 		response.subst("setting.formname", "weapon.."$weapons[i].data.ClassName);
 		response.subst("setting.text", `HTMLEscape(weapons[i].data.FriendlyName));
 
-		idx = class'UTMutator_WeaponReplacement'.default.WeaponsToReplace.find('OldClassName', weapons[i].cls.name);
+		idx = class'UTMutator_WeaponReplacement'.default.WeaponsToReplace.find('OldClassName', weapons[i].clsName);
 		if (idx != INDEX_NONE)
 		{
 			selectedValue = class'UTMutator_WeaponReplacement'.default.WeaponsToReplace[idx].NewClassPath;
 		}
 		else {
-			selectedValue = weapons[i].cls.GetPackageName()$"."$weapons[i].cls.name;
+			selectedValue = weapons[i].data.ClassName;
 		}
 		options = "";
  		for (j = 0; j < weapons.Length; j++)

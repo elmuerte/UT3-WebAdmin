@@ -47,6 +47,8 @@ var string cssHidden;
 
 var array<PlayerReplicationInfo> sortedPRI;
 
+var private string newUrl;
+
 struct FactionCharacters
 {
 	var string factionName;
@@ -123,6 +125,15 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/current/change/data":
 			handleCurrentChangeData(q);
+			return true;
+		case "/current/change/check":
+			if (newUrl == "")
+			{
+				q.response.SendText("ok");
+			}
+			else {
+				q.response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
+			}
 			return true;
 		case "/current/bots":
 			handleBots(q);
@@ -663,6 +674,15 @@ function handleConsole(WebAdminQuery q)
 	webadmin.sendPage(q, "console.html");
 }
 
+event ChangeGameTimer()
+{
+	if (Len(newUrl) > 0)
+	{
+		webadmin.WorldInfo.ServerTravel(newUrl, true);
+		newUrl = "";
+	}
+}
+
 function handleCurrentChange(WebAdminQuery q)
 {
 	local UTUIDataProvider_GameModeInfo gametype;
@@ -759,7 +779,9 @@ function handleCurrentChange(WebAdminQuery q)
  			}
 		}
 
- 		webadmin.WorldInfo.ServerTravel(substvar, true);
+		newUrl = substvar;
+		webadmin.WebServer.SetTimer(0.5, false, 'ChangeGameTimer', self);
+ 		//webadmin.WorldInfo.ServerTravel(substvar, true);
  		return;
  	}
 

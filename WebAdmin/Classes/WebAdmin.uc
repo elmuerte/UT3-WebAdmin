@@ -265,6 +265,7 @@ function Query(WebRequest Request, WebResponse Response)
 
 	if (WorldInfo.IsInSeamlessTravel())
 	{
+		response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
 		response.subst("html.headers", "<meta http-equiv=\"refresh\" content=\"10\"/>");
 		response.IncludeUHTM(Path $ "/servertravel.html");
 		response.ClearSubst();
@@ -667,5 +668,5 @@ defaultproperties
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
-	version="0.10"
+	version="0.11"
 }

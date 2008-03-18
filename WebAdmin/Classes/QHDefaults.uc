@@ -346,11 +346,12 @@ function handleHashBans(WebAdminQuery q)
 }
 `endif
 
-function class<Settings> getSettingsClassEx(string forClass, optional bool bSilent=false)
+/**
+ * Get the settings class by the fully qualified name
+ */
+function class<Settings> getSettingsClassFqn(string forClass, optional bool bSilent=false)
 {
-	local class<Object> cls;
 	local int idx;
-
 	if (len(forClass) == 0) return none;
 
 	idx = classSettingsCache.find('cls', Locs(forClass));
@@ -358,39 +359,35 @@ function class<Settings> getSettingsClassEx(string forClass, optional bool bSile
 	{
 		return classSettingsCache[idx].settingsCls;
 	}
-	cls = class<Object>(DynamicLoadObject(forClass, class'class', true));
-	if (cls == none) return none;
-	return getSettingsClass(cls, bSilent);
+	idx = InStr(forClass, ".");
+	if (idx == INDEX_NONE) return getSettingsClass("", forClass, bSilent);
+	return getSettingsClass(Left(forClass, idx), Mid(forClass, idx+1), bSilent);
 }
 
 /**
- * Try to find the settings class for the provided class
+ * Find the settings class. package name could be empty
  */
-function class<Settings> getSettingsClass(class forClass, optional bool bSilent=false)
+function class<Settings> getSettingsClass(string pkgName, string clsName, optional bool bSilent=false)
 {
 	local string className, settingsClass;
 	local class<Settings> result;
 	local int idx;
 	local ClassSettingsCacheEntry cacheEntry;
 
-	if (forClass == none)
-	{
-		return none;
-	}
+	if (len(clsName) == 0) return none;
 
-	idx = classSettingsCache.find('cls', Locs(forClass));
+	idx = classSettingsCache.find('cls', Locs(pkgName$"."$clsName));
 	if (idx != INDEX_NONE)
 	{
 		return classSettingsCache[idx].settingsCls;
 	}
 
-	cacheEntry.cls = Locs(forClass);
+	cacheEntry.cls = Locs(pkgName$"."$clsName);
 
-	className = string(forClass);
-	idx = settingsClasses.find('className', className);
+	idx = settingsClasses.find('className', clsName);
 	if (idx == INDEX_NONE)
 	{
-		className = forClass.getPackageName()$"."$string(forClass);
+		className = cacheEntry.cls;
 		idx = settingsClasses.find('className', className);
 	}
 	if (idx != INDEX_NONE)
@@ -407,11 +404,11 @@ function class<Settings> getSettingsClass(class forClass, optional bool bSilent=
 		}
 	}
 	// try to find it automatically
-	settingsClass = string(forClass.GetPackageName());
+	settingsClass = pkgName;
 	// rewrite standard game classes to WebAdmin
-	if (settingsClass != "UTGame") settingsClass = string(class.getPackageName());
-	else if (settingsClass != "UTGameContent") settingsClass = string(class.getPackageName());
-	settingsClass $= "."$string(forClass)$"Settings";
+	if (settingsClass ~= "UTGame") settingsClass = string(class.getPackageName());
+	else if (settingsClass ~= "UTGameContent") settingsClass = string(class.getPackageName());
+	settingsClass $= "."$clsName$"Settings";
 	result = class<Settings>(DynamicLoadObject(settingsClass, class'class', true));
 	if (result != none)
 	{
@@ -420,18 +417,26 @@ function class<Settings> getSettingsClass(class forClass, optional bool bSilent=
 		return result;
 	}
 	// not in the same package, try the find the object (only works when it was loaded)
-	result = class<Settings>(FindObject(string(forClass)$"Settings", class'class'));
+	result = class<Settings>(FindObject(clsName$"Settings", class'class'));
 	if (result == none)
 	{
 		if (!bSilent)
 		{
-			`Log("Settings class "$settingsClass$" for class "$forClass$" not found (auto detection).",,'WebAdmin');
+			`Log("Settings class "$settingsClass$" for class "$pkgName$"."$clsName$" not found (auto detection).",,'WebAdmin');
 		}
 	}
 	// even cache a none result
 	cacheEntry.settingsCls = result;
 	classSettingsCache.addItem(cacheEntry);
 	return result;
+}
+
+/**
+ * Try to find the settings class for the provided class
+ */
+function class<Settings> getSettingsClassByClass(class forClass, optional bool bSilent=false)
+{
+	return getSettingsClass(string(forClass.getPackageName()), string(forClass.name), bSilent);
 }
 
 function Settings getSettingsInstance(class<Settings> cls)
@@ -490,7 +495,7 @@ function handleSettingsGametypes(WebAdminQuery q)
  		{
  			continue;
  		}
- 		if (getSettingsClassEx(gametype.GameMode) == none)
+ 		if (getSettingsClassFqn(gametype.GameMode) == none)
  		{
  			continue;
  		}
@@ -516,7 +521,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
 		if (gi != none)
 		{
-			settingsClass = getSettingsClass(gi);
+			settingsClass = getSettingsClassByClass(gi);
 		}
 		if (settingsClass != none)
 		{
@@ -723,7 +728,7 @@ function handleSettingsMutators(WebAdminQuery q)
  	substvar = "";
  	foreach webadmin.dataStoreCache.mutators(mutator)
  	{
- 		if (getSettingsClassEx(mutator.ClassName, true) == none)
+ 		if (getSettingsClassFqn(mutator.ClassName, true) == none)
  		{
  			continue;
  		}
@@ -750,7 +755,7 @@ function handleSettingsMutators(WebAdminQuery q)
 		mut = class<Mutator>(DynamicLoadObject(editMutator.ClassName, class'class'));
 		if (mut != none)
 		{
-			settingsClass = getSettingsClass(mut);
+			settingsClass = getSettingsClassByClass(mut);
 		}
 		if (settingsClass != none)
 		{

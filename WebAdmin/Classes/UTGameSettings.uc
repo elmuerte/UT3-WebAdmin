@@ -7,7 +7,7 @@
  */
 class UTGameSettings extends WebAdminSettings abstract;
 
-var const class<UTGame> UTGameClass;
+var class<UTGame> UTGameClass;
 
 function init()
 {
