@@ -2,8 +2,12 @@
  * Base class for all WebAdminSettings instances that are include with the
  * WebAdmin package. You can use it as base class for your own WebAdmin
  * configuration classes, but that imposes a dependency on the WebAdmin package.
- * It's simply best to create a direct subclass of Settings and copy The
- * SetSpecialValue(...) implementation.
+ * It's simply best to create a subclass of Settings and copy the
+ * SetSpecialValue(...) implementation from this class to your own.
+ *
+ * IMPORTANT! The WebAdmin is an optional server-side only package. Do not
+ * introduce a dependency on this package from a package that a client needs to
+ * download in order to play your mod.
  *
  * Copyright 2008 Epic Games, Inc. All Rights Reserved
  *

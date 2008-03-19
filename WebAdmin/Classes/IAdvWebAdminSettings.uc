@@ -5,6 +5,10 @@
  * However, using it does create a dependency on the WebAdmin package (an
  * optional server side only package).
  *
+ * IMPORTANT! The WebAdmin is an optional server-side only package. Do not
+ * introduce a dependency on this package from a package that a client needs to
+ * download in order to play your mod.
+ *
  * Implementers must be a subclass of Settings (or one of it's subclasses).
  *
  * Copyright 2008 Epic Games, Inc. All Rights Reserved
