@@ -1,5 +1,5 @@
-v0.11 - 2008-03-24
-------------------
+v1.0 - 2008-03-24
+-----------------
 - various small performance fixes:
   - Mutator\Gametype settings pages load faster and use less memory
 - fixed issue where the messaging spectator is registered with the online 
