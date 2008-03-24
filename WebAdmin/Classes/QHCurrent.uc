@@ -331,7 +331,7 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.playeralias", `HTMLEscape(pri.PlayerAlias));
 	q.response.subst("player.score", int(pri.score));
 	q.response.subst("player.deaths", int(pri.deaths));
-	q.response.subst("player.ping", pri.ping);
+	q.response.subst("player.ping", pri.ping * 4); // this ping value is divided by 4 (250 = 1sec) see bug #40
 	q.response.subst("player.exactping", pri.ExactPing);
 	q.response.subst("player.packetloss", pri.PacketLoss);
 	q.response.subst("player.lives", pri.numlives);
