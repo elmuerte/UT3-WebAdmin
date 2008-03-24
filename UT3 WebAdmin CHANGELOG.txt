@@ -1,7 +1,9 @@
-v0.11 - 2008-03-??
+v0.11 - 2008-03-24
 ------------------
 - various small performance fixes:
   - Mutator\Gametype settings pages load faster and use less memory
+- fixed issue where the messaging spectator is registered with the online 
+  subsystem resulting in a server crash during the level switch GC.
 
 Bug Tracker Changes
 - 0000040: [Front end (HTML/CSS/JavaScript)] Re: 0000017 - Ping is not 

@@ -27,6 +27,17 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 	ReceiveMessage(pri, s, type);
 }
 
+function InitPlayerReplicationInfo()
+{
+	super.InitPlayerReplicationInfo();
+	PlayerReplicationInfo.bIsInactive = true;
+	PlayerReplicationInfo.PlayerName = "WebAdmin";
+	PlayerReplicationInfo.bIsSpectator = true;
+	PlayerReplicationInfo.bOnlySpectator = true;
+	PlayerReplicationInfo.bOutOfLives = true;
+	PlayerReplicationInfo.bWaitingPlayer = false;
+}
+
 auto state NotPlaying
 {}
 
@@ -52,20 +63,17 @@ function Reset()
 reliable client function ClientReset()
 {}
 
-function InitPlayerReplicationInfo()
+event InitInputSystem()
 {
-	super.InitPlayerReplicationInfo();
-	PlayerReplicationInfo.bIsInactive = true;
-	PlayerReplicationInfo.PlayerName = "WebAdmin";
-	PlayerReplicationInfo.bIsSpectator = true;
-	PlayerReplicationInfo.bOnlySpectator = true;
-	PlayerReplicationInfo.bOutOfLives = true;
-	PlayerReplicationInfo.bWaitingPlayer = false;
-}
-
-event GetSeamlessTravelActorList(bool bToEntry, out array<Actor> ActorList)
-{
-	`Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	if (PlayerInput == None)
+	{
+		Assert(InputClass != None);
+		PlayerInput = new(Self) InputClass;
+	}
+	if ( Interactions.Find(PlayerInput) == -1 )
+	{
+		Interactions[Interactions.Length] = PlayerInput;
+	}
 }
 
 defaultproperties
