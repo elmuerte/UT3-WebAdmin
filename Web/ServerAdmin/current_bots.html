@@ -29,7 +29,6 @@
 <input type="hidden" name="action" value="roster" />
 
 <textarea id="botroster" name="botroster" rows="10" cols="20"><%activebots%></textarea>
-<ol id="jsbotroster"></ol>
 
 <button type="submit">save roster</button>
 </div>
@@ -47,6 +46,7 @@ $('#botroster').hide();
 
 $(document).ready(function() {
     $('#botroster').hide();
+    $('#botroster').after('<ol id="jsbotroster"></ol>');
     
     var curroster = $('#botroster').val().split("\n");
     var jsbotroster = $('#jsbotroster');

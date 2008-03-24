@@ -14,18 +14,9 @@
 </tr>
 </tbody>
 
-<tbody id="jsmaplist">
-<tr>
-    <td><ul id="jsallmaps"></ul></td>
-    <td><ol id="jsmapcycle"></ol></td>
-</tr>
-</tbody>
 </table>
 
 <p id="noscriptHint"><em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser. Enter one map per line, you can include URL options like ?LinkSetup=...</p>
-<p id="jsmaplistHint"><em>Note:</em> drag items from the left list to the right list to add a map to the cycle. To move a map to a different position in the cycle, simply drag it to the desired location.
-Press the "x" button next to the map cycle entry to remove it. You can manually add a map to the cycle using the "manual add" button below.
-</p>
 
 </div>
 
@@ -37,7 +28,11 @@ $('#noscript').hide();
 
 $(document).ready(function() {
     $('#noscript').hide();
-    $('#noscriptHint').hide();
+    $('#noscriptHint').hide();    
+    $('#noscript').after('<tbody id="jsmaplist"><tr><td><ul id="jsallmaps"></ul></td><td><ol id="jsmapcycle"></ol></td></tr></tbody>');
+    $('#noscriptHint').after('<p id="jsmaplistHint"><em>Note:</em> drag items from the left list to the right list to add a map to the cycle. '+
+      'To move a map to a different position in the cycle, simply drag it to the desired location. Press the "x" button next to the map cycle entry to remove it. '+
+      'You can manually add a map to the cycle using the "manual add" button below.</p>');
     
     _allmaps = $('#allmaps').val().split("\n");
     _jsallmaps = $('#jsallmaps');
