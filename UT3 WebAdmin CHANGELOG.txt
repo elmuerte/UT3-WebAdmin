@@ -1,3 +1,12 @@
+v0.11 - 2008-03-??
+------------------
+- various small performance fixes:
+  - Mutator\Gametype settings pages load faster and use less memory
+
+Bug Tracker Changes
+- 0000040: [Front end (HTML/CSS/JavaScript)] Re: 0000017 - Ping is not 
+  read from server properly - resolved.
+
 v0.10 - 2008-03-16
 ------------------
 - Added the ability to manage the bots. You can also edit the bot roster 

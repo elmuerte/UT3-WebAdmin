@@ -11,8 +11,11 @@ delegate ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type );
 
 simulated event PostBeginPlay()
 {
-	Super.PostBeginPlay();
-	bIsPlayer = False;
+	super.PostBeginPlay();
+	if (PlayerReplicationInfo == none)
+	{
+		InitPlayerReplicationInfo();
+	}
 }
 
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )
@@ -27,10 +30,26 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 auto state NotPlaying
 {}
 
+function EnterStartState()
+{
+	GotoState('NotPlaying');
+}
+
+function bool IsSpectating()
+{
+	return true;
+}
+
 reliable client function ClientGameEnded(Actor EndGameFocus, bool bIsWinner)
 {}
 
 function GameHasEnded(optional Actor EndGameFocus, optional bool bIsWinner)
+{}
+
+function Reset()
+{}
+
+reliable client function ClientReset()
 {}
 
 function InitPlayerReplicationInfo()
@@ -44,7 +63,13 @@ function InitPlayerReplicationInfo()
 	PlayerReplicationInfo.bWaitingPlayer = false;
 }
 
+event GetSeamlessTravelActorList(bool bToEntry, out array<Actor> ActorList)
+{
+	`Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+}
+
 defaultproperties
 {
+	bIsPlayer=False
 	CameraClass=None
 }
