@@ -7,13 +7,15 @@
   <td><%player.hashresponse%></td>
   <td class="center"><%player.admin%></td>
   <td>
-    <form method="POST" action="<%page.fulluri%>">
+    <form method="post" action="<%page.fulluri%>">
+    <div>
     <input type="hidden" name="playerid" value="<%player.playerid%>" />
     <input type="hidden" name="playerkey" value="<%player.playerkey%>" />
     <button type="submit" name="action" value="kick">Kick</button>
     <button type="submit" name="action" value="banid">Ban unique ID</button>
     <button type="submit" name="action" value="banhash">Ban Client Hash</button>
     <button type="submit" name="action" value="banip">Ban IP</button>
+    </div>
     </form>
   </td>
 </tr>
