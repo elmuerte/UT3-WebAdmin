@@ -395,15 +395,18 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 				if (GameModeClass == none)
 				{
 					GameModeClass = class<UTGame>(DynamicLoadObject(gametype, class'class'));
+					if (GameModeClass == none)
+					{
+						`Log("DataStoreCache::filterMutators() - Unable to find game class: "$gametype);
+					}
 				}
 				if(GameModeClass != none)
 				{
-					group.mutators.AddItem(source[i].mutators[j]);
+					if (GameModeClass.static.AllowMutator(source[i].mutators[j].ClassName))
+					{
+						group.mutators.AddItem(source[i].mutators[j]);
+					}
 				}
-				else
-				{
-					`Log("DataStoreCache::filterMutators() - Unable to find game class: "$gametype);
- 				}
 			}
 		}
 		if (group.mutators.length > 0)
