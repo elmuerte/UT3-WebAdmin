@@ -1,6 +1,11 @@
-v1.1 - 2008-03-??
+v1.1 - 2008-04-??
 -----------------
 - fixed mutator filtering for gametypes
+- Admin* console commands are not supported in the management console
+- changed the login form to allow different timeouts. "Tell next map load" was
+  the previous behavior when you didn't check "remember me". In now defaults to
+  "session" which will remember the authentication for the browser session.
+  This does not apply when using bHttpAuth
 
 v1.0 - 2008-03-24
 -----------------

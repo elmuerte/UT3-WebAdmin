@@ -42,6 +42,16 @@ var config array<string> denyConsoleCommands;
  */
 var config bool bAdminConsoleCommandsHack;
 
+/**
+ * The AdminCommandHandler class to use for handling the admin console command hack.
+ */
+var config string AdminCommandHandlerClass;
+
+/**
+ *
+ */
+var AdminCommandHandler adminCmdHandler;
+
 var string cssVisible;
 var string cssHidden;
 
@@ -59,6 +69,13 @@ var array<FactionCharacters> factions;
 
 function init(WebAdmin webapp)
 {
+	local class<AdminCommandHandler> achc;
+	if (Len(AdminCommandHandlerClass) == 0)
+	{
+  		AdminCommandHandlerClass = class.getPackageName()$".AdminCommandHandler";
+		SaveConfig();
+	}
+
 	webadmin = webapp;
 	if (len(webapp.startpage) == 0)
 	{
@@ -66,10 +83,20 @@ function init(WebAdmin webapp)
 		webapp.SaveConfig();
 	}
 	if (ChatRefresh < 500) ChatRefresh = 5000;
+
+	if (bAdminConsoleCommandsHack)
+	{
+		achc = class<AdminCommandHandler>(DynamicLoadObject(AdminCommandHandlerClass, class'class'));
+		if (achc != none)
+		{
+			adminCmdHandler = webadmin.worldinfo.spawn(achc);
+		}
+	}
 }
 
 function cleanup()
 {
+	adminCmdHandler = none;
 	webadmin = none;
 	sortedPRI.Remove(0, sortedPRI.Length);
 }
@@ -565,10 +592,9 @@ function procChatData(WebAdminQuery q, optional int startFrom, optional string s
 
 function handleConsole(WebAdminQuery q)
 {
-	local string cmd, args, result;
+	local string cmd, result;
 	local int i;
 	local bool denied;
-	local Admin adminuser;
 
 	cmd = q.request.getVariable("command");
 	if (len(cmd) > 0)
@@ -585,76 +611,15 @@ function handleConsole(WebAdminQuery q)
 
 		if (!denied)
 		{
-			if (bAdminConsoleCommandsHack)
+			result = "";
+			if (bAdminConsoleCommandsHack && adminCmdHandler != none)
 			{
 				// hack to blend in some admin exec commands
-				adminuser = admin(q.user.getPC());
-				if (adminuser != none)
-				{
-					i = InStr(cmd, " ");
-					if (i != INDEX_NONE)
-					{
-						result = Left(cmd, i);
-						args = Mid(cmd, i+1);
-					}
-					else {
-						result = cmd;
-						args = "";
-					}
-					if (result ~= "KickBan")
-					{
-						adminuser.KickBan(args);
-						denied = true;
-					}
-					else if (result ~= "Kick")
-					{
-						adminuser.Kick(args);
-						denied = true;
-					}
-					else if (result ~= "PlayerList")
-					{
-						adminuser.PlayerList();
-						denied = true;
-					}
-					else if (result ~= "RestartMap")
-					{
-						adminuser.RestartMap();
-						denied = true;
-					}
-					else if (result ~= "switch")
-					{
-						adminuser.switch(args);
-						denied = true;
-					}
-					else if (result ~= "SloMo")
-					{
-						adminuser.CheatManager.SloMo(float(args));
-						denied = true;
-					}
-					else if (result ~= "SetJumpZ")
-					{
-						adminuser.CheatManager.SetJumpZ(float(args));
-						denied = true;
-					}
-					else if (result ~= "SetGravity")
-					{
-						adminuser.CheatManager.SetGravity(float(args));
-						denied = true;
-					}
-					else if (result ~= "SetSpeed")
-					{
-						adminuser.CheatManager.SetSpeed(float(args));
-						denied = true;
-					}
-				}
+				denied = adminCmdHandler.execute(cmd, result, q.user.getPC());
 			}
-
 			if (!denied)
 			{
 				result = webadmin.WorldInfo.Game.ConsoleCommand(cmd, false);
-			}
-			else {
-				result = "";
 			}
 			q.response.subst("console.command", `HTMLEscape(cmd));
 			q.response.subst("console.results", `HTMLEscape(result));

@@ -310,12 +310,13 @@ function Query(WebRequest Request, WebResponse Response)
 		if (auth.logout(currentQuery.user))
 		{
 			sessions.destroy(currentQuery.session);
-			Response.AddHeader("Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0");
-			Response.AddHeader("Set-Cookie: authcred=; Path="$path$"/; Max-Age=0");
+			response.headers[response.headers.length] = "Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0";
+			response.headers[response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
+			response.headers[response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
 			if (bHttpAuth)
 			{
 				response.Subst("navigation.menu", "");
-				Response.AddHeader("Set-Cookie: forceAuthentication=1; Path="$path$"/");
+				response.headers[response.headers.length] = "Set-Cookie: forceAuthentication=1; Path="$path$"/";
 				addMessage(currentQuery, "To properly log out you will need to close the webbrowser to clear the saved authentication information.", MT_Warning);
 				pageGenericInfo(currentQuery, "");
 				return;
@@ -413,7 +414,7 @@ protected function bool getSession(out WebAdminQuery q)
 	if (q.session == none)
 	{
 		q.session = sessions.create();
-		q.response.headers.AddItem("Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/");
+		q.response.headers[q.response.headers.length] = "Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/";
 	}
 	if (q.session == none)
 	{
@@ -455,6 +456,9 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 				return false;
 			}
 		}
+		else {
+			setAuthCredCookie(q, "", -2);
+		}
 		return true;
 	}
 
@@ -479,7 +483,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 			idx = q.cookies.Find('key', "forceAuthentication");
 			if (idx != INDEX_NONE && q.cookies[idx].value == "1")
 			{
-				q.Response.AddHeader("Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0");
+				q.response.headers[q.response.headers.length] = "Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0";
 				pageAuthentication(q);
 				return false;
 			}
@@ -530,9 +534,8 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		if (len(rememberCookie) > 0)
 		{
 			// unset cookie
-			// for some reason the server crashes when this string is send directly to AddItem
-			rememberCookie = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
-			q.response.headers.AddItem(rememberCookie);
+			q.response.headers[q.response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
+			q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
 			addMessage(q, "Authentication cookie does not contain correct information.", MT_Error);
 			rememberCookie = "";
 		}
@@ -542,14 +545,52 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	q.session.putObject("IWebAdminUser", q.user);
 
 	`if(`WITH_BASE64ENC)
-	if (q.request.GetVariable("remember") == "1")
+	if (q.request.GetVariable("remember") != "")
 	{
 		rememberCookie = q.request.EncodeBase64(username$chr(10)$password);
-		q.response.headers.AddItem("Set-Cookie: authcred="$rememberCookie$"; Path="$path$"/; Max-Age=2678400"); // 2678400 = 1 month
+		setAuthCredCookie(q, rememberCookie, int(q.request.GetVariable("remember")));
 	}
 	`endif
 
 	return true;
+}
+
+function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
+{
+	local int idx;
+	if (timeout == -2)
+	{
+		idx = q.cookies.Find('key', "authtimeout");
+		if (idx != INDEX_NONE)
+		{
+			timeout = int(q.cookies[idx].value);
+		}
+		else {
+			timeout = 0;
+		}
+	}
+	if (len(creddata) == 0)
+	{
+		idx = q.cookies.Find('key', "authcred");
+		if (idx != INDEX_NONE)
+		{
+			creddata = q.cookies[idx].value;
+		}
+	}
+	if (len(creddata) == 0)
+	{
+		return;
+	}
+	if (timeout > 0)
+	{
+		q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/; Max-Age="$timeout;
+		q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout="$timeout$"; Path="$path$"/; Max-Age="$timeout;
+	}
+	else if (timeout == -1)
+	{
+		q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/";
+	}
+	// else don't remember
 }
 
 function WebAdminMessages getMessagesObject(WebAdminQuery q)
