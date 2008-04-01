@@ -457,6 +457,19 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 			}
 		}
 		else {
+			if (q.session.getString("AuthTimeout") == "1")
+			{
+				if (q.cookies.Find('key', "authcred") == INDEX_NONE)
+				{
+					q.session.removeString("AuthTimeout");
+					q.session.removeObject("IWebAdminUser");
+					auth.logout(q.user);
+					q.user = none;
+					addMessage(q, "Session timeout.", MT_Error);
+					pageAuthentication(q);
+					return false;
+				}
+			}
 			setAuthCredCookie(q, "", -2);
 		}
 		return true;
@@ -585,6 +598,7 @@ function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
 	{
 		q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/; Max-Age="$timeout;
 		q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout="$timeout$"; Path="$path$"/; Max-Age="$timeout;
+		q.session.putString("AuthTimeout", "1");
 	}
 	else if (timeout == -1)
 	{
