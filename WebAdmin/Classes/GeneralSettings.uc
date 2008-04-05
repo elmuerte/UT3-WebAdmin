@@ -68,16 +68,50 @@ function save()
 {
 	local int val;
 
-	// Server Information
+	// UTGRI
+	if (GetIntPropertyByName('bForceDefaultCharacter', val))
+	{
+		class'UTGameReplicationInfo'.default.bForceDefaultCharacter = val != 0;
+	}
+	class'UTGameReplicationInfo'.static.StaticSaveConfig();
+
+	// GRI
 	GetStringPropertyByName('ServerName', class'GameReplicationInfo'.default.ServerName);
 	GetStringPropertyByName('ShortName', class'GameReplicationInfo'.default.ShortName);
 	GetStringPropertyByName('AdminName', class'GameReplicationInfo'.default.AdminName);
 	GetStringPropertyByName('AdminEmail', class'GameReplicationInfo'.default.AdminEmail);
 	GetIntPropertyByName('ServerRegion', class'GameReplicationInfo'.default.ServerRegion);
 	GetStringPropertyByName('MessageOfTheDay', class'GameReplicationInfo'.default.MessageOfTheDay);
-	GetIntPropertyByName('ServerSkillLevel', class'UTGame'.default.ServerSkillLevel);
+	class'GameReplicationInfo'.static.StaticSaveConfig();
 
-	// Connection settings
+	// UTTeamGame
+	if (GetIntPropertyByName('bPlayersBalanceTeams', val))
+	{
+		class'UTTeamGame'.default.bPlayersBalanceTeams = val != 0;
+	}
+	class'UTTeamGame'.static.StaticSaveConfig();
+
+	// UTGame
+	GetIntPropertyByName('ServerSkillLevel', class'UTGame'.default.ServerSkillLevel);
+	GetFloatPropertyByName('EndTimeDelay', class'UTGame'.default.EndTimeDelay);
+	GetIntPropertyByName('RestartWait', class'UTGame'.default.RestartWait);
+	if (GetIntPropertyByName('bPlayersMustBeReady', val))
+	{
+		class'UTGame'.default.bPlayersMustBeReady = val != 0;
+	}
+	if (GetIntPropertyByName('bForceRespawn', val))
+	{
+		class'UTGame'.default.bForceRespawn = val != 0;
+	}
+	if (GetIntPropertyByName('bWaitForNetPlayers', val))
+	{
+		class'UTGame'.default.bWaitForNetPlayers = val != 0;
+	}
+	GetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
+	GetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
+	class'UTGame'.static.StaticSaveConfig();
+
+	// GameInfo
 	GetIntPropertyByName('MaxSpectators', class'GameInfo'.default.MaxSpectators);
 	GetIntPropertyByName('MaxPlayers', class'GameInfo'.default.MaxPlayers);
 	if (GetIntPropertyByName('bKickLiveIdlers', val))
@@ -91,59 +125,20 @@ function save()
 	}
 	GetFloatPropertyByName('TimeToWaitForHashKey', class'GameInfo'.default.TimeToWaitForHashKey);
 	`endif
-
-	// Cheat detection settings
 	GetFloatPropertyByName('MaxTimeMargin', class'GameInfo'.default.MaxTimeMargin);
 	GetFloatPropertyByName('TimeMarginSlack', class'GameInfo'.default.TimeMarginSlack);
 	GetFloatPropertyByName('MinTimeMargin', class'GameInfo'.default.MinTimeMargin);
-
-	// Game settings
 	GetFloatPropertyByName('GameDifficulty', class'GameInfo'.default.GameDifficulty);
 	GetIntPropertyByName('GoreLevel', class'GameInfo'.default.GoreLevel);
 	if (GetIntPropertyByName('bChangeLevels', val))
 	{
 		class'GameInfo'.default.bChangeLevels = val != 0;
 	}
-	GetFloatPropertyByName('EndTimeDelay', class'UTGame'.default.EndTimeDelay);
-	GetIntPropertyByName('RestartWait', class'UTGame'.default.RestartWait);
-
-	// Administration settings
 	if (GetIntPropertyByName('bAdminCanPause', val))
 	{
 		class'GameInfo'.default.bAdminCanPause = val != 0;
 	}
-	//SetStringPropertyByName('AdminPassword', class'AccessControl'.default.AdminPassword);
-	//SetStringPropertyByName('GamePassword', class'AccessControl'.default.GamePassword);
-
-	// Player/bot settings
-	if (GetIntPropertyByName('bPlayersMustBeReady', val))
-	{
-		class'UTGame'.default.bPlayersMustBeReady = val != 0;
-	}
-	if (GetIntPropertyByName('bForceRespawn', val))
-	{
-		class'UTGame'.default.bForceRespawn = val != 0;
-	}
-	if (GetIntPropertyByName('bWaitForNetPlayers', val))
-	{
-		class'UTGame'.default.bWaitForNetPlayers = val != 0;
-	}
-	if (GetIntPropertyByName('bPlayersBalanceTeams', val))
-	{
-		class'UTTeamGame'.default.bPlayersBalanceTeams = val != 0;
-	}
-	GetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
-	GetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
-	if (GetIntPropertyByName('bForceDefaultCharacter', val))
-	{
-		class'UTGameReplicationInfo'.default.bForceDefaultCharacter = val != 0;
-	}
-
 	class'GameInfo'.static.StaticSaveConfig();
-	class'UTGame'.static.StaticSaveConfig();
-	class'GameReplicationInfo'.static.StaticSaveConfig();
-	class'UTTeamGame'.static.StaticSaveConfig();
-	class'UTGameReplicationInfo'.static.StaticSaveConfig();
 }
 
 defaultproperties
