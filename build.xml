@@ -6,6 +6,9 @@
   <tstamp>
     <format property="distfile.tstamp" pattern="yyyy-MM-dd" />
   </tstamp>
+  <tstamp>
+    <format property="compile.timestamp" timezone="GMT" pattern="yyyy-MM-dd HH:mm:ss ZZ" />
+  </tstamp>
 
   <target name="clean" description="Clean the distribution and build directories">
     <delete dir="build" />
@@ -16,7 +19,7 @@
 
   <target name="build" description="Build the UT3 WebAdmin">
     <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
-    <exec executable="settimestamp.cmd" dir="${basedir}/WebAdmin" failonerror="true" resolveexecutable="true" />
+    <echo file="${basedir}/WebAdmin/timestamp.uci">`define TIMESTAMP "${compile.timestamp}"</echo>
     <exec executable="cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" vmlauncher="false">
       <arg value="/C" />
       <arg value="ut3.com" />
