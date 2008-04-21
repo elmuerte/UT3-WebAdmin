@@ -1,10 +1,10 @@
-//=============================================================================
-// MessagingSpectator - spectator base class for game helper spectators which receive messages
-//
-//  Ported to UE3 by Josh Markiewicz
-//  © 1998-2008, Epic Games, Inc. All Rights Reserved
-//=============================================================================
-
+/**
+ * MessagingSpectator. Spectator base class for game helper spectators which receive messages
+ *
+ * Copyright 2008 Epic Games, Inc. All Rights Reserved
+ *
+ * @author  Michiel 'elmuerte' Hendriks, Josh Markiewicz
+ */
 class MessagingSpectator extends Admin;
 
 delegate ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type );
@@ -16,6 +16,7 @@ simulated event PostBeginPlay()
 	{
 		InitPlayerReplicationInfo();
 	}
+
 }
 
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )

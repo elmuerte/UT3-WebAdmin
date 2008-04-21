@@ -1,3 +1,7 @@
+v1.2 - 2008-??-??
+-----------------
+- added team chat support to the chat console
+
 v1.1 - 2008-04-06
 -----------------
 - fixed mutator filtering for gametypes

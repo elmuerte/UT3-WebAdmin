@@ -39,8 +39,25 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 
 function init()
 {
+	local TeamChatProxy tcp;
+
 	PC = WorldInfo.Spawn(class'MessagingSpectator');
 	PC.ReceiveMessage = ReceiveMessage;
+
+	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
+	{
+		tcp.AddReceiver(ReceiveMessage);
+	}
+}
+
+event Destroyed()
+{
+	local TeamChatProxy tcp;
+	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
+	{
+		tcp.ClearReceiver(ReceiveMessage);
+	}
+	super.Destroyed();
 }
 
 function setUsername(string username)

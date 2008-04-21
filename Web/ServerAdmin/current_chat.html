@@ -9,6 +9,7 @@
 <div id="chat">
 <form id="chatform" action="<%page.fulluri%>#chat" method="post">
 <p><input type="text" id="chatmessage" name="message" value="" size="80" /><button type="submit">say</button></p>
+<div id="teamsayctrl"><%teamsaycontrols%></div>
 </form>
 </div>
 
@@ -21,10 +22,16 @@ $(document).ready(function(){
 });
 
 $('#chatform').submit(function() {
+    var teamsayval = -1;
+    var teamsayelm = $('#chatform :radio:checked');
+    if (teamsayelm)
+    {
+        teamsayval = teamsayelm.val();
+    }
     $.ajax({
         type: "POST",
         url: '<%page.fulluri%>/data',
-        data: {ajax: 1, message: $('#chatmessage').val()},
+        data: {ajax: 1, message: $('#chatmessage').val(), teamsay: teamsayval},
         success: chatMessage,
         error: ajaxError
     });

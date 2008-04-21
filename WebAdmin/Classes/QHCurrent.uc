@@ -48,15 +48,27 @@ var config bool bAdminConsoleCommandsHack;
 var config string AdminCommandHandlerClass;
 
 /**
- *
+ * if true team chat will be enabled.
+ */
+var config bool bEnableTeamChat;
+
+/**
+ * Instance that handled "Admin" console command aliases.
  */
 var AdminCommandHandler adminCmdHandler;
 
 var string cssVisible;
 var string cssHidden;
 
+/**
+ * Will hold a sorted player replication info list.
+ */
 var array<PlayerReplicationInfo> sortedPRI;
 
+/**
+ * Will hold the url where to switch the game to. Game switching a delayed for
+ * a few ms.
+ */
 var private string newUrl;
 
 struct FactionCharacters
@@ -70,6 +82,7 @@ var array<FactionCharacters> factions;
 function init(WebAdmin webapp)
 {
 	local class<AdminCommandHandler> achc;
+
 	if (Len(AdminCommandHandlerClass) == 0)
 	{
   		AdminCommandHandlerClass = class.getPackageName()$".AdminCommandHandler";
@@ -90,6 +103,40 @@ function init(WebAdmin webapp)
 		if (achc != none)
 		{
 			adminCmdHandler = webadmin.worldinfo.spawn(achc);
+		}
+	}
+
+	if (bEnableTeamChat)
+	{
+		webadmin.WorldInfo.Game.SetTimer(0.1, false, 'CreateTeamChatProxy', self);
+	}
+}
+
+function CreateTeamChatProxy()
+{
+	local TeamChatProxy tcp;
+	local int i;
+	if (bEnableTeamChat && webadmin.WorldInfo.Game.bTeamGame)
+	{
+		if (webadmin.WorldInfo.Game.GameReplicationInfo == none)
+		{
+			webadmin.WorldInfo.Game.SetTimer(0.1, false, 'CreateTeamChatProxy', self);
+			return;
+		}
+
+		`log("Creating team chat proxies",,'WebAdmin');
+
+		for (i = 0; i < webadmin.WorldInfo.Game.GameReplicationInfo.Teams.length; i++)
+		{
+			if (webadmin.WorldInfo.Game.GameReplicationInfo.Teams[i] == none) continue;
+			tcp = webadmin.WorldInfo.Spawn(class'TeamChatProxy',, name("TeamChatProxy__"$i));
+			if (tcp != none)
+			{
+				tcp.PlayerReplicationInfo.Team = webadmin.WorldInfo.Game.GameReplicationInfo.Teams[i];
+			}
+			else {
+				`log("Failed to create TeamChatProxy for team "$i,,'WebAdmin');
+			}
 		}
 	}
 }
@@ -522,24 +569,72 @@ protected function banByHash(PlayerController PC)
 function handleCurrentChat(WebAdminQuery q)
 {
 	local string msg;
+	local int i;
+
 	msg = q.request.getVariable("message");
 	if (len(msg) > 0)
 	{
-		webadmin.WorldInfo.Game.Broadcast(q.user.getPC(), msg, 'Say');
+		i = int(q.request.getVariable("teamsay", "-1"));
+		if (i < 0 || i >= webadmin.WorldInfo.Game.GameReplicationInfo.Teams.length)
+		{
+			webadmin.WorldInfo.Game.Broadcast(q.user.getPC(), msg, 'Say');
+		}
+		else {
+			BroadcastTeam(q.user.getPC(), i, msg, 'TeamSay');
+		}
 	}
 	procChatData(q, 0, "chat.log");
 	q.response.subst("chat.refresh", ChatRefresh);
+	q.response.subst("chat.max", class'BasicWebAdminUser'.default.maxHistory);
+
+	msg = "";
+	if (bEnableTeamChat && webadmin.WorldInfo.Game.bTeamGame)
+	{
+		q.response.subst("team.teamid", -1);
+		q.response.subst("team.name", "Everybody");
+		q.response.subst("team.checked", "checked=\"checked\"");
+		msg $= webadmin.include(q, "current_chat_teamctrl.inc");
+		for (i = 0; i < webadmin.WorldInfo.Game.GameReplicationInfo.Teams.length; i++)
+		{
+			q.response.subst("team.teamid", i);
+			q.response.subst("team.name", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.Teams[i].GetHumanReadableName()));
+			q.response.subst("team.checked", "");
+			msg $= webadmin.include(q, "current_chat_teamctrl.inc");
+		}
+	}
+	q.response.subst("teamsaycontrols", msg);
+
 	webadmin.sendPage(q, "current_chat.html");
+}
+
+function BroadcastTeam( Controller Sender, int teamidx, coerce string Msg, optional name Type )
+{
+	local PlayerController P;
+	foreach webadmin.WorldInfo.AllControllers(class'PlayerController', P)
+	{
+		if (P.PlayerReplicationInfo.Team == webadmin.WorldInfo.Game.GameReplicationInfo.Teams[teamidx])
+		{
+			webadmin.WorldInfo.Game.BroadcastHandler.BroadcastText(Sender.PlayerReplicationInfo, P, Msg, Type);
+		}
+	}
 }
 
 function handleCurrentChatData(WebAdminQuery q)
 {
 	local string msg;
+	local int i;
 
 	msg = q.request.getVariable("message");
 	if (len(msg) > 0)
 	{
-		webadmin.WorldInfo.Game.Broadcast(q.user.getPC(), msg, 'Say');
+		i = int(q.request.getVariable("teamsay", "-1"));
+		if (i < 0 || i >= webadmin.WorldInfo.Game.GameReplicationInfo.Teams.length)
+		{
+			webadmin.WorldInfo.Game.Broadcast(q.user.getPC(), msg, 'Say');
+		}
+		else {
+			BroadcastTeam(q.user.getPC(), i, msg, 'TeamSay');
+		}
 	}
 	q.response.SendStandardHeaders();
 	procChatData(q, int(q.session.getString("chatlog.lastid")));
@@ -556,14 +651,19 @@ function procChatData(WebAdminQuery q, optional int startFrom, optional string s
 
 	foreach history(entry)
 	{
-		if (entry.type == 'say' || entry.type == 'teamsay')
+		if (entry.type == 'say')
 		{
 			template = "current_chat_msg.inc";
+		}
+		else if (entry.type == 'teamsay')
+		{
+			template = "current_chat_teammsg.inc";
 		}
 		else {
 			template = "current_chat_notice.inc";
 		}
 
+		q.response.subst("msg.type", `HTMLEscape(entry.type));
 		q.response.subst("msg.username", `HTMLEscape(entry.senderName));
 		q.response.subst("msg.text", `HTMLEscape(entry.message));
 		if (entry.sender != none && entry.sender.Team != none)

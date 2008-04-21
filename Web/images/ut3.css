@@ -276,9 +276,28 @@ P {
 	padding-right: 0.1em;
 }
 
+#chatlog .teamnotice {
+	font-size: 75%;
+}
+
 .teamcolor  {
 	background-color: silver;
 	padding-left: 0.4em;
+}
+
+.teamchat {
+	border: 1px solid silver;
+	border-width: 1px 0 0 0.6em;
+	padding-left: 55px;
+	text-indent: -50px;
+}
+
+.teamchat .teamcolor {
+	display: none;
+}
+
+#teamsayctrl INPUT {
+	width: auto;
 }
 
 #consoleResults .command {
