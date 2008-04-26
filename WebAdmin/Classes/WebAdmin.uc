@@ -82,6 +82,8 @@ var const string version;
 
 var DataStoreCache dataStoreCache;
 
+var globalconfig bool bChatLog;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -160,6 +162,14 @@ function init()
 	}
 
 	initQueryHandlers();
+}
+
+function CreateChatLog()
+{
+	if (bChatLog)
+	{
+		WorldInfo.Spawn(class'ChatLog');
+	}
 }
 
 function CleanupApp()

@@ -29,6 +29,15 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 	}
 	msgHistory[idx].message = msg;
 	msgHistory[idx].type = type;
+	if (Sender.Team != none)
+	{
+		msgHistory[idx].teamName = Sender.Team.GetHumanReadableName();
+		msgHistory[idx].teamColor = Sender.Team.GetHUDColor();
+		msgHistory[idx].teamId = Sender.Team.TeamIndex;
+	}
+	else {
+		msgHistory[idx].teamId = INDEX_NONE;
+	}
 
 	idx = msgHistory.Length - maxHistory;
 	if (idx > 0)

@@ -10,10 +10,22 @@ interface IWebAdminUser;
 struct MessageEntry
 {
 	var int counter;
+	/**
+	 * Can be none
+	 */
 	var PlayerReplicationInfo sender;
 	var string senderName;
 	var string message;
+	/**
+	 * Say, TeamSay, None
+	 */
 	var name type;
+	var string teamName;
+	var color teamColor;
+	/**
+	 * INDEX_NONE if not a member of a team
+	 */
+	var int teamId;
 };
 
 /**

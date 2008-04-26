@@ -29,13 +29,13 @@ function ClearReceiver(delegate<ReceiveMessage> ReceiveMessageDelegate)
 
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )
 {
-	local int i;
 	local delegate<ReceiveMessage> rm;
 
 	if (type != 'TeamSay') return;
-	for (i = 0; i < receivers.Length; i++)
+	//for (i = 0; i < receivers.Length; i++)
+	foreach receivers(rm)
 	{
-		rm = receivers[i];
+		//rm = receivers[i];
 		rm(pri, s, type);
 	}
 }
