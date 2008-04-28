@@ -11,7 +11,7 @@ class ChatLog extends MessagingSpectator config (WebAdmin);
 var config bool bUnique;
 var config bool bIncludeTimeStamp;
 
-var FileWriter log;
+var FileWriter writer;
 
 var string tab;
 
@@ -27,7 +27,11 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 	else {
 		teamindex = Sender.Team.TeamIndex;
 	}
-	log.Logf(TimeStamp()$tab$Sender.GetPlayerAlias()$tab$uniqueid$tab$type$tab$teamindex$tab$msg);
+	if (writer == none)
+	{
+		CreateFileWriter();
+	}
+	writer.Logf(TimeStamp()$tab$Sender.GetPlayerAlias()$tab$uniqueid$tab$type$tab$teamindex$tab$msg);
 }
 
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )
@@ -35,22 +39,28 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 	ReceiveMessage(pri, s, type);
 }
 
-simulated function PostBeginPlay()
+function CreateFileWriter()
 {
-	local TeamChatProxy tcp;
 	local string serverip;
-
-	super.PostBeginPlay();
-	tab = chr(9);
-	log = spawn(class'FileWriter');
+	writer = spawn(class'FileWriter');
 
 	serverip = WorldInfo.ComputerName;
 	serverip $= "_"$WorldInfo.Game.GetServerPort();
 
-	log.OpenFile("Chatlog_"$serverip, FWFT_Log,, bUnique, bIncludeTimeStamp);
-	log.Logf("--- OPEN "$TimeStamp());
+	writer.OpenFile("Chatlog_"$serverip, FWFT_Log,, bUnique, bIncludeTimeStamp);
+	writer.Logf("--- OPEN "$TimeStamp());
+}
+
+simulated function PostBeginPlay()
+{
+	local TeamChatProxy tcp;
+
+	super.PostBeginPlay();
+	tab = chr(9);
+
 	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
 	{
+		`log(">>>"@tcp);
 		tcp.AddReceiver(ReceiveMessage);
 	}
 }
@@ -58,8 +68,11 @@ simulated function PostBeginPlay()
 event Destroyed()
 {
 	local TeamChatProxy tcp;
-	log.Logf("--- CLOSE "$TimeStamp());
-	log.CloseFile();
+	if (writer != none)
+	{
+		writer.Logf("--- CLOSE "$TimeStamp());
+		writer.CloseFile();
+	}
 	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
 	{
 		tcp.ClearReceiver(ReceiveMessage);

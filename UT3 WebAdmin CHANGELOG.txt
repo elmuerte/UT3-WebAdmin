@@ -1,6 +1,20 @@
 v1.2 - 2008-??-??
 -----------------
-- added team chat support to the chat console
+- added team chat support to the chat console. Can be disabled by setting
+    [WebAdmin.QHCurrent]
+    bEnableTeamChat=false
+- added optional chat logging, to enabled it set the following in the 
+  UTWebAdmin.ini
+    [WebAdmin.WebAdmin]
+    bChatLog=true
+  Team chat will only be logged when bEnableTeamChat was set to true
+  The following config options are available for the chat logging file names:
+    [WebAdmin.Chatlog]
+    ; if true unique file names will be created
+    bUnique=false
+    ; if true a timestamp will be included in the filename
+    bIncludeTimeStamp=true
+    
 
 v1.1 - 2008-04-06
 -----------------

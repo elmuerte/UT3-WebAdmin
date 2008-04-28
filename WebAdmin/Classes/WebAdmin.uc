@@ -94,6 +94,8 @@ function init()
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
 
+    CleanupMsgSpecs();
+
     `if(`WITH_WEBCONX_FIX)
 	WebServer.AcceptClass = class'WebConnectionEx';
     `endif
@@ -170,6 +172,11 @@ function CreateChatLog()
 	{
 		WorldInfo.Spawn(class'ChatLog');
 	}
+}
+
+function CleanupMsgSpecs()
+{
+	WorldInfo.Spawn(class'PCCleanUp');
 }
 
 function CleanupApp()

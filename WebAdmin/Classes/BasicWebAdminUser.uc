@@ -62,6 +62,11 @@ function init()
 event Destroyed()
 {
 	local TeamChatProxy tcp;
+	if (PC != none)
+	{
+		PC.ReceiveMessage = none;
+		PC.Destroy();
+	}
 	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
 	{
 		tcp.ClearReceiver(ReceiveMessage);

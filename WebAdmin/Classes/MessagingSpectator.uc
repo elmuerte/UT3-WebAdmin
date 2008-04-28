@@ -7,11 +7,20 @@
  */
 class MessagingSpectator extends Admin;
 
+// Used to clean up these actors during seamless traveling
+var protected bool bSeamlessDelete;
+
 delegate ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type );
+
+function bool isSeamlessDelete()
+{
+	return bSeamlessDelete;
+}
 
 simulated event PostBeginPlay()
 {
 	super.PostBeginPlay();
+	bSeamlessDelete = true;
 	if (PlayerReplicationInfo == none)
 	{
 		InitPlayerReplicationInfo();
@@ -21,6 +30,7 @@ simulated event PostBeginPlay()
 
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )
 {
+	if (type == 'TeamSay') return; // received through TeamChatProxy
 	if (type != 'Say' && type != 'TeamSay' && type != 'none')
 	{
 		`Log("Received message that is not 'say' or 'teamsay'. Type="$type$" Message= "$s);

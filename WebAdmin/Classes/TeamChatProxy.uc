@@ -32,10 +32,8 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 	local delegate<ReceiveMessage> rm;
 
 	if (type != 'TeamSay') return;
-	//for (i = 0; i < receivers.Length; i++)
 	foreach receivers(rm)
 	{
-		//rm = receivers[i];
 		rm(pri, s, type);
 	}
 }
