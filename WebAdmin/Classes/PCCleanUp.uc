@@ -9,20 +9,37 @@
  */
 class PCCleanUp extends Info;
 
-var array<PlayerController> controllers;
+var array<MessagingSpectator> cleanupControllers;
 
 event PreBeginPlay()
 {
 	local MessagingSpectator specs;
 	super.PreBeginPlay();
+
 	foreach WorldInfo.AllControllers(class'MessagingSpectator', specs)
 	{
 		if (specs.isSeamlessDelete())
 		{
-			specs.Destroy();
+			cleanupControllers[cleanupControllers.length] = specs;
 		}
+	}
+	if (cleanupControllers.length > 0)
+	{
+		`Log("Cleaning up "$cleanupControllers.length$" MessagingSpectator instances");
+		SetTimer(1, false, 'cleanup');
+	}
+	else {
+		Destroy();
+	}
+}
+
+function cleanup()
+{
+	local MessagingSpectator specs;
+	foreach cleanupControllers(specs)
+	{
+		specs.Destroy();
 	}
 	Destroy();
 }
-
 

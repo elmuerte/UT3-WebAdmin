@@ -59,6 +59,11 @@ function init()
 	}
 }
 
+function logout()
+{
+	Destroy();
+}
+
 event Destroyed()
 {
 	local TeamChatProxy tcp;

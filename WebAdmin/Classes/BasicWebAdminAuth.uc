@@ -37,6 +37,11 @@ function init(WorldInfo wi)
 
 function cleanup()
 {
+	local IWebAdminUser user;
+	foreach users(user)
+	{
+		user.logout();
+	}
 	users.remove(0, users.length);
 	worldinfo = none;
 	ac = none;
@@ -70,6 +75,7 @@ function IWebAdminUser authenticate(string username, string password, out string
 
 function bool logout(IWebAdminUser user)
 {
+	user.logout();
 	users.RemoveItem(user);
 	return true;
 }

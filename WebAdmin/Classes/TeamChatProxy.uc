@@ -41,7 +41,7 @@ reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, n
 function InitPlayerReplicationInfo()
 {
 	super.InitPlayerReplicationInfo();
-	PlayerReplicationInfo.PlayerName = "TeamChatProxy";
+	PlayerReplicationInfo.PlayerName = "<<TeamChatProxy>>";
 }
 
 defaultProperties

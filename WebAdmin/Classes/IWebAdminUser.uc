@@ -55,3 +55,8 @@ function PlayerController getPC();
  * Get the message history.
  */
 function messageHistory(out array<MessageEntry> history, optional int startingFrom);
+
+/**
+ * Called when this user is logged out.
+ */
+function logout();

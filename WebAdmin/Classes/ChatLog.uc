@@ -56,11 +56,11 @@ simulated function PostBeginPlay()
 	local TeamChatProxy tcp;
 
 	super.PostBeginPlay();
+	`Log("Chat logging enabled",,'WebAdmin');
 	tab = chr(9);
 
 	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
 	{
-		`log(">>>"@tcp);
 		tcp.AddReceiver(ReceiveMessage);
 	}
 }
@@ -68,14 +68,14 @@ simulated function PostBeginPlay()
 event Destroyed()
 {
 	local TeamChatProxy tcp;
+	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
+	{
+		tcp.ClearReceiver(ReceiveMessage);
+	}
 	if (writer != none)
 	{
 		writer.Logf("--- CLOSE "$TimeStamp());
 		writer.CloseFile();
-	}
-	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
-	{
-		tcp.ClearReceiver(ReceiveMessage);
 	}
 	super.Destroyed();
 }
@@ -83,10 +83,6 @@ event Destroyed()
 function InitPlayerReplicationInfo()
 {
 	super.InitPlayerReplicationInfo();
-	PlayerReplicationInfo.PlayerName = "ChatLogger";
+	PlayerReplicationInfo.PlayerName = "<<ChatLogger>>";
 }
 
-defaultProperties
-{
-
-}

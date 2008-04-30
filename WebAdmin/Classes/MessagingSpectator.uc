@@ -42,7 +42,7 @@ function InitPlayerReplicationInfo()
 {
 	super.InitPlayerReplicationInfo();
 	PlayerReplicationInfo.bIsInactive = true;
-	PlayerReplicationInfo.PlayerName = "WebAdmin";
+	PlayerReplicationInfo.PlayerName = "<<WebAdmin>>";
 	PlayerReplicationInfo.bIsSpectator = true;
 	PlayerReplicationInfo.bOnlySpectator = true;
 	PlayerReplicationInfo.bOutOfLives = true;
@@ -87,8 +87,19 @@ event InitInputSystem()
 	}
 }
 
+event PlayerTick( float DeltaTime )
+{
+	// this is needed because PlayerControllers with no actual player attached
+	// will leak during seamless traveling.
+	if (WorldInfo.NextURL != "" || WorldInfo.IsInSeamlessTravel())
+	{
+		Destroy();
+	}
+}
+
 defaultproperties
 {
 	bIsPlayer=False
 	CameraClass=None
+	bAlwaysTick=true
 }

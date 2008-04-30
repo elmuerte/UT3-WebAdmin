@@ -84,6 +84,8 @@ var DataStoreCache dataStoreCache;
 
 var globalconfig bool bChatLog;
 
+var PCCleanUp pccleanup;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
