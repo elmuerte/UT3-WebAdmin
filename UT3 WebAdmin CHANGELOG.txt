@@ -14,7 +14,8 @@ v1.2 - 2008-??-??
     bUnique=false
     ; if true a timestamp will be included in the filename
     bIncludeTimeStamp=true
-    
+- fixed a memory leak in the non-player PlayerControllers (i.e. 
+  MessagingSpectator) during seamless traveling.
 
 v1.1 - 2008-04-06
 -----------------

@@ -101,6 +101,11 @@ function init()
     `if(`WITH_WEBCONX_FIX)
 	WebServer.AcceptClass = class'WebConnectionEx';
     `endif
+	if (class'WebConnection'.default.MaxValueLength < 1024)
+	{
+		class'WebConnection'.default.MaxValueLength = 1024;
+		class'WebConnection'.static.StaticSaveConfig();
+	}
 
 	super.init();
 
