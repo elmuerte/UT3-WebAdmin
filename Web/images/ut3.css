@@ -476,6 +476,11 @@ DIV.message {
 	white-space: nowrap;
 }
 
+#jsmlctrls BUTTON {
+    margin-bottom: 2px;
+    width: 100%;
+}
+
 .sorting {
 	background-color: #FFE5E5;
 }
