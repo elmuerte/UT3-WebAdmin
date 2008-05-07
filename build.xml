@@ -43,6 +43,7 @@
       <fileset dir="Web/jQuery-Src" includes="**/ui.tabs.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.numeric.js" />
       <fileset dir="Web/jQuery-Src" includes="**/JQuerySpinBtn.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/extra.js" />
     </concat>
     <gzip src="Web/images/jquery.js" destfile="Web/images/jquery.js.gz"/>
   </target>

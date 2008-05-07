@@ -70,10 +70,6 @@ $(document).ready(function() {
     $('#jsallmaps li').draggable({
         helper: 'clone',
         zIndex: 100,
-        //connectToSortable: "#jsmapcycle",
-        toSortable: function() {
-				console.log("I was moved into my sortable");
-			},
         start: function(ev, ui) {
             $(ui.helper).addClass('dragging');
         },

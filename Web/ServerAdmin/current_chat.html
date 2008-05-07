@@ -19,10 +19,10 @@ $(document).ready(function(){
     $('#chatmessage').focus();
     setTimeout('getMessages()', <%chat.refresh%>);
     $('#chat').after('<div><input id="autoupdatechat" type="checkbox" checked="checked" value="true" /><label for="autoupdatechat">Auto update chat log</label></div>');
-    $('#teamsayctrl input').click(function(){
-        
+    $('#teamsayctrl input').click(function(){        
         $('#chatmessage').focus();
-    });    
+    });
+    $('#teamsayctrl label').accessKeys();
 });
 
 $('#chatform').submit(function() {

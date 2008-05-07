@@ -193,7 +193,7 @@ defaultproperties
 	PropertyMappings.Add((Id=31,name="GoreLevel",ColumnHeaderText="Gore Reduction",MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32)),MinVal=0,MaxVal=256,RangeIncrement=1))
 	PropertyMappings.Add((Id=32,name="bChangeLevels",ColumnHeaderText="Change Levels",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=33,Name="EndTimeDelay",ColumnHeaderText="End Game Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=34,Name="RestartWait",ColumnHeaderText="Game Restart Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=34,Name="RestartWait",ColumnHeaderText="Game Restart Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1))
 
 	// Administration settings
 	Properties.Add((PropertyId=40,Data=(Type=SDT_Int32)))
