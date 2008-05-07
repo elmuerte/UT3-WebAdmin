@@ -1,4 +1,4 @@
-v1.2 - 2008-??-??
+v1.2 - 2008-05-07
 -----------------
 - added team chat support to the chat console. Can be disabled by setting
     [WebAdmin.QHCurrent]
@@ -16,6 +16,8 @@ v1.2 - 2008-??-??
     bIncludeTimeStamp=true
 - fixed a memory leak in the non-player PlayerControllers (i.e. 
   MessagingSpectator) during seamless traveling.
+- increased upper limit of RestartWait setting
+- added a "clear" and "add missing" button to the map list editor
 
 v1.1 - 2008-04-06
 -----------------
