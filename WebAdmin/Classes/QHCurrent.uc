@@ -157,6 +157,7 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/current", "Current Game", self, "The current game status.", -100);
 	menu.addMenu("/current/players", "Players", self, "Manage the players currently on the server.");
+	menu.addMenu("/current/players/data", "", self);
 	menu.addMenu("/current/chat", "Chat console", self, "This console allows you to chat with the players on the server.");
 	menu.addMenu("/current/chat/data", "", self);
 	menu.addMenu("/current/change", "Change Game", self, "Change the current game.");
@@ -181,6 +182,9 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/current/players":
 			handleCurrentPlayers(q);
+			return true;
+		case "/current/players/data":
+			handleCurrentPlayersData(q);
 			return true;
 		case "/current/chat":
 			handleCurrentChat(q);
@@ -435,11 +439,11 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.starttime", pri.starttime);
 }
 
-function handleCurrentPlayers(WebAdminQuery q)
+function bool handleCurrentPlayersAction(WebAdminQuery q)
 {
 	local PlayerReplicationInfo PRI;
 	local int idx;
-	local string players, IP, action;
+	local string IP, action;
 	local PlayerController PC;
 
 	action = q.request.getVariable("action");
@@ -491,10 +495,22 @@ function handleCurrentPlayers(WebAdminQuery q)
 				}
 				else {
 					webadmin.addMessage(q, "Player "$PRI.PlayerName$" was removed from the server.");
+					return true;
 				}
 			}
 		}
 	}
+	return false;
+}
+
+function handleCurrentPlayers(WebAdminQuery q)
+{
+	local PlayerReplicationInfo PRI;
+	local int idx;
+	local string players, IP;
+	local PlayerController PC;
+
+	handleCurrentPlayersAction(q);
 
 	buildSortedPRI(q.request.getVariable("sortby", "name"), q.request.getVariable("reverse", "") ~= "true", false);
 	foreach sortedPRI(pri, idx)
@@ -532,6 +548,23 @@ function handleCurrentPlayers(WebAdminQuery q)
 	q.response.subst("players", players);
 
 	webadmin.sendPage(q, "current_players.html");
+}
+
+function handleCurrentPlayersData(WebAdminQuery q)
+{
+	q.response.AddHeader("Content-Type: text/xml");
+	q.response.SendText("<request>");
+	if (handleCurrentPlayersAction(q))
+	{
+		q.response.SendText("<success playerkey=\""$q.request.getVariable("playerkey")$"\"/>");
+	}
+	else {
+		q.response.SendText("<failure/>");
+	}
+	q.response.SendText("<messages><![CDATA[");
+	q.response.SendText(webadmin.renderMessages(q));
+	q.response.SendText("]]></messages>");
+	q.response.SendText("</request>");
 }
 
 protected function banByIP(PlayerController PC)

@@ -18,4 +18,6 @@
 <p id="pageDescription"><%page.description%></p>
 </div>
 
+<div id="messages">
 <%messages%>
+</div>

@@ -12,7 +12,6 @@
     <th title="A unique ID for this game account.">Unique ID</th>
     <th title="A unique ID for the copy of the game the player is using.">Client Hash</th>
     <th>Admin</th>
-    <th></th>
 </tr>
 </thead>
 <tbody>
@@ -31,7 +30,44 @@ $(document).ready(function(){
     });
     $("#players th").wrapInner("<span></span>");
     $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra']});
+    
+    $("#players form").each(function(i){
+        var frm = $(this);
+        frm.submit(function() {
+            $.ajax({
+                type: "POST",
+                url: '<%page.fulluri%>/data',
+                data: {ajax: 1, action: $('[name="action"]', frm).val(), playerkey: $('[name="playerkey"]', frm).val()},
+                success: actionSuccess,
+                error: ajaxError,
+                dataType: 'xml'
+            });
+            return false;
+        });
+    });
 });
+
+function actionSuccess(data, textStatus) {
+    var jdata = $(data);
+    var old = $('#messages *');
+    var newmsg = $(jdata.find('request messages').text());
+    newmsg.hide();
+    $('#messages').prepend(newmsg);
+    newmsg.fadeIn();
+    old.remove();
+    var result = jdata.find('request success');
+    if (result.length > 0)
+    {
+        var playerkey = result.attr('playerkey');
+        $('[name="playerkey"][value="'+playerkey+'"]').parents('tr').fadeOut('normal', function(){$(this).remove()});
+    }
+}
+
+function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
+    if (XMLHttpRequest.status == 403) {
+        document.location = '<%page.fulluri%>';
+    }
+}
 //]]>
 </script>
 
