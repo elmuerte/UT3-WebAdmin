@@ -1,3 +1,7 @@
+v1.3 - 2008-05-??
+-----------------
+- fixed chat functionality when team chat support is disabled
+
 v1.2 - 2008-05-07
 -----------------
 - added team chat support to the chat console. Can be disabled by setting

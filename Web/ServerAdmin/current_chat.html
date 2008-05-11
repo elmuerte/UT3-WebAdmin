@@ -28,7 +28,7 @@ $(document).ready(function(){
 $('#chatform').submit(function() {
     var teamsayval = -1;
     var teamsayelm = $('#chatform :radio:checked');
-    if (teamsayelm)
+    if (teamsayelm.size() > 0)
     {
         teamsayval = teamsayelm.val();
     }
