@@ -1329,4 +1329,21 @@ defaultproperties
 {
 	cssVisible=""
 	cssHidden="display: none;"
+
+	// config
+	ChatRefresh=5000
+	bEnableTeamChat=true
+	denyUrlOptions[0]="GamePassword"
+	denyUrlOptions[1]="AdminPassword"
+	denyUrlOptions[2]="Port"
+	denyUrlOptions[3]="QueryPort"
+	bConsoleEnabled=true
+	bAdminConsoleCommandsHack=true
+	AdminCommandHandlerClass="WebAdmin.AdminCommandHandler"
+	denyConsoleCommands[0]="say"
+	denyConsoleCommands[1]="obj"
+	denyConsoleCommands[2]="debug"
+	denyConsoleCommands[3]="flush"
+	denyConsoleCommands[4]="set"
+	denyConsoleCommands[5]="get engine.accesscontrol"
 }

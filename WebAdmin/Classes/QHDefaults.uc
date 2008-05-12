@@ -1126,3 +1126,9 @@ function handleMapListAdditional(WebAdminQuery q)
 
 	webadmin.sendPage(q, "default_maplist_additional.html");
 }
+
+defaultproperties
+{
+	GeneralSettingsClass="WebAdmin.GeneralSettings"
+	AdditionalMLClass="WebAdmin.AdditionalMapLists"
+}

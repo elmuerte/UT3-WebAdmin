@@ -70,6 +70,10 @@ function IWebAdminUser authenticate(string username, string password, out string
 		return user;
 	}
 	errorMsg = "Invalid credentials.";
+	if (len(worldinfo.game.consolecommand("get engine.accesscontrol adminpassword", false)) == 0)
+	{
+		errorMsg @= "No administrator password has been set for this server. Add an entry \"AdminPassword\" in the section \"[Engine.AccessControl]\" in the UTGame.ini configuration file.";
+	}
 	return none;
 }
 

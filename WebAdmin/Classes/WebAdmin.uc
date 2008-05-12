@@ -101,9 +101,9 @@ function init()
     `if(`WITH_WEBCONX_FIX)
 	WebServer.AcceptClass = class'WebConnectionEx';
     `endif
-	if (class'WebConnection'.default.MaxValueLength < 1024)
+	if (class'WebConnection'.default.MaxValueLength < 4096)
 	{
-		class'WebConnection'.default.MaxValueLength = 1024;
+		class'WebConnection'.default.MaxValueLength = 4096;
 		class'WebConnection'.static.StaticSaveConfig();
 	}
 
@@ -564,10 +564,10 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		return false;
 	}
 	q.user = auth.authenticate(username, password, errorMsg);
-	addMessage(q, errorMsg, MT_Error);
 
 	if (q.user == none)
 	{
+		addMessage(q, errorMsg, MT_Error);
 		if (len(rememberCookie) > 0)
 		{
 			// unset cookie
@@ -748,4 +748,11 @@ defaultproperties
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
 	version="1.3"
+
+	// config
+	bHttpAuth=false
+	bChatLog=false
+	startpage="/current"
+	QueryHandlers[0]="WebAdmin.QHCurrent"
+	QueryHandlers[1]="WebAdmin.QHDefaults"
 }

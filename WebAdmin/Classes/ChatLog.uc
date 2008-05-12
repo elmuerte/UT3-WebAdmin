@@ -135,3 +135,9 @@ function InitPlayerReplicationInfo()
 	PlayerReplicationInfo.PlayerName = "<<ChatLogger>>";
 }
 
+defaultproperties
+{
+	bUnique=false
+	bIncludeTimeStamp=true
+	filename="Chatlog_%i_%p"
+}
