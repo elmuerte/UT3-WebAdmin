@@ -2,8 +2,8 @@ v1.3 - 2008-05-18
 -----------------
 - fixed chat functionality when team chat support is disabled
 - added admin password check
-- changed to the server's name will now take immediate effect and the master
-  server information will be updated
+- changes to the server's name will now take immediate effect and the 
+  master server information will be updated
 
 v1.2 - 2008-05-07
 -----------------
