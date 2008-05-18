@@ -40,13 +40,13 @@ $.fn.accessKeys = function(){
 		
 		for (var j=0; j < $(this).text().length; j++){
 			
-			var char = $(this).text().charAt(j);
+			var chr = $(this).text().charAt(j);
 					
-			if(!find(keys,char.toLowerCase()) && char.match(/[A-Za-z_0-9]/)){
-				regexp = new RegExp(char,"i");
-				$(this).html( $(this).html().replace(regexp,'<u>'+char+'</u>') );
-				$(this).attr( 'accesskey', char.toLowerCase() );
-				keys[i] = char.toLowerCase();
+			if(!find(keys,chr.toLowerCase()) && chr.match(/[A-Za-z_0-9]/)){
+				var regexp = new RegExp(chr,"i");
+				$(this).html( $(this).html().replace(regexp,'<u>'+chr+'</u>') );
+				$(this).attr( 'accesskey', chr.toLowerCase() );
+				keys[i] = chr.toLowerCase();
 				break;
 			};
 			
