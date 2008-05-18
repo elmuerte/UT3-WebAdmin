@@ -633,6 +633,15 @@ function handleSettingsGeneral(WebAdminQuery q)
 				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 				webadmin.addMessage(q, "Settings saved.");
 			}
+			// server name change takes immediate effect
+			if (WebAdmin.WorldInfo.Game.GameReplicationInfo != none	&& WebAdmin.WorldInfo.Game.GameSettings != none
+				&& WebAdmin.WorldInfo.Game.GameInterface != none
+				&& (WebAdmin.WorldInfo.Game.GameReplicationInfo.ServerName != class'GameReplicationInfo'.default.ServerName))
+			{
+				WebAdmin.WorldInfo.Game.GameReplicationInfo.ServerName = class'GameReplicationInfo'.default.ServerName;
+				WebAdmin.WorldInfo.Game.GameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName;
+				WebAdmin.WorldInfo.Game.GameInterface.UpdateOnlineGame(WebAdmin.WorldInfo.Game.GameSettings);
+			}
 		}
 		if (settingsRenderer == none)
 		{
