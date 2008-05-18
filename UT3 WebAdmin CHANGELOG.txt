@@ -1,4 +1,4 @@
-v1.3 - 2008-05-??
+v1.3 - 2008-05-18
 -----------------
 - fixed chat functionality when team chat support is disabled
 - added admin password check
