@@ -62,6 +62,9 @@ function init()
 	SetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
 	SetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
 	SetIntPropertyByName('bForceDefaultCharacter', int(class'UTGameReplicationInfo'.default.bForceDefaultCharacter));
+	`if(`UT3_PATCH_1_3)
+	SetIntPropertyByName('bNoCustomCharacters', int(class'UTGame'.default.bNoCustomCharacters));
+	`endif
 }
 
 function save()
@@ -109,6 +112,12 @@ function save()
 	}
 	GetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
 	GetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
+	`if(`UT3_PATCH_1_3)
+	if (GetIntPropertyByName('bNoCustomCharacters', val))
+	{
+		class'UTGame'.default.bNoCustomCharacters = val != 0;
+	}
+	`endif
 	class'UTGame'.static.StaticSaveConfig();
 
 	// GameInfo
@@ -207,6 +216,7 @@ defaultproperties
 	Properties.Add((PropertyId=54,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=55,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=56,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
 
 	PropertyMappings.Add((Id=50,Name="bPlayersMustBeReady",ColumnHeaderText="Players Must be Ready",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
 	PropertyMappings.Add((Id=51,Name="bForceRespawn",ColumnHeaderText="Force Respawn",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
@@ -214,5 +224,8 @@ defaultproperties
 	PropertyMappings.Add((Id=53,Name="bPlayersBalanceTeams",ColumnHeaderText="Players Balance Teams",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
 	PropertyMappings.Add((Id=54,Name="BotRatio",ColumnHeaderText="Bot/Player Ratio",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=0.1))
 	PropertyMappings.Add((Id=55,Name="MinNetPlayers",ColumnHeaderText="Minimal Players",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
-	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter",ColumnHeaderText="Force Default Character",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
+	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter",ColumnHeaderText="Force default Character",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
+	`if(`UT3_PATCH_1_3)
+	PropertyMappings.Add((Id=57,name="bNoCustomCharacters",ColumnHeaderText="No Custom Characters",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	`endif
 }

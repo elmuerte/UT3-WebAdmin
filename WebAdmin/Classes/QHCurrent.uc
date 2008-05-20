@@ -307,6 +307,11 @@ function buildSortedPRI(string sortkey, optional bool reverse=false, optional bo
 			{
 				continue;
 			}
+			if (DemoRecSpectator(P) != none)
+			{
+				// never mess with this one
+				continue;
+			}
 			inserted = false;
 			foreach sortedPRI(PRI, idx)
 			{

@@ -2,6 +2,8 @@
 
   <property file="build.properties"/>
   <property name="ut3dir.user" value="${user.home}/Documents/My Games/Unreal Tournament 3"/>
+  <property name="ut3dir.script" value="Unpublished/CookedPC/Script"/>
+  <property name="ut3.com" value="ut3.com"/>
 
   <tstamp>
     <format property="distfile.tstamp" pattern="yyyy-MM-dd" />
@@ -18,11 +20,11 @@
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
-    <delete file="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script/WebAdmin.u" />
+    <delete file="${ut3dir.user}/UTGame/${ut3dir.script}/WebAdmin.u" />
     <echo file="${basedir}/WebAdmin/timestamp.uci">`define TIMESTAMP "${compile.timestamp}"</echo>
     <exec executable="cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" vmlauncher="false">
       <arg value="/C" />
-      <arg value="ut3.com" />
+      <arg value="${ut3.com}" />
       <arg value="make" />
       <arg value="-unattended" />
     </exec>
@@ -78,7 +80,7 @@
     
     <mkdir dir="build/UTGame/CookedPC"/>
     <copy todir="build/UTGame/CookedPC">
-      <fileset dir="${ut3dir.user}/UTGame/Unpublished/CookedPC/Script">
+      <fileset dir="${ut3dir.user}/UTGame/${ut3dir.script}">
         <include name="WebAdmin.u" />
       </fileset>
     </copy>

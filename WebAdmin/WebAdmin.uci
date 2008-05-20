@@ -5,6 +5,8 @@
 // workaround for bug #37
 `define WITH_WEBCONX_FIX 1
 
+`define UT3_PATCH_1_3 1
+
 `define HTMLEscape(str) class'WebAdminUtils'.static.HTMLEscape(`str)
 `define Trim(str) class'WebAdminUtils'.static.Trim(`str)
 
