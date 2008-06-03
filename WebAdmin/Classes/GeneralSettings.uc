@@ -13,7 +13,7 @@ function string GetSpecialValue(name PropertyName)
 {
 	if (PropertyName == `{WA_GROUP_SETTINGS})
 	{
-		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60";
+		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60;Map Voting=60,70";
 	}
 }
 
@@ -64,6 +64,17 @@ function init()
 	SetIntPropertyByName('bForceDefaultCharacter', int(class'UTGameReplicationInfo'.default.bForceDefaultCharacter));
 	`if(`UT3_PATCH_1_3)
 	SetIntPropertyByName('bNoCustomCharacters', int(class'UTGame'.default.bNoCustomCharacters));
+	`endif
+
+	// map voting
+	`if(`UT3_PATCH_1_3)
+	SetIntPropertyByName('bAllowMapVoting', int(class'UTGame'.default.bAllowMapVoting));
+	SetIntPropertyByName('bMidGameMapVoting', int(class'UTGame'.default.bMidGameMapVoting));
+	SetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
+	SetIntPropertyByName('MapVotePercentage', class'UTGame'.default.MapVotePercentage);
+	SetIntPropertyByName('MinMapVotes', class'UTGame'.default.MinMapVotes);
+	SetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
+	//SetIntPropertyByName('VoteCollectorClassName', int(class'UTGame'.default.VoteCollectorClassName));
 	`endif
 }
 
@@ -117,6 +128,20 @@ function save()
 	{
 		class'UTGame'.default.bNoCustomCharacters = val != 0;
 	}
+
+	if (GetIntPropertyByName('bAllowMapVoting', val))
+	{
+		class'UTGame'.default.bAllowMapVoting = val != 0;
+	}
+	if (GetIntPropertyByName('bMidGameMapVoting', val))
+	{
+		class'UTGame'.default.bMidGameMapVoting = val != 0;
+	}
+	GetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
+	GetIntPropertyByName('MapVotePercentage', class'UTGame'.default.MapVotePercentage);
+	GetIntPropertyByName('MinMapVotes', class'UTGame'.default.MinMapVotes);
+	GetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
+	//GetStringPropertyByName('VoteCollectorClassName', class'UTGame'.default.VoteCollectorClassName);
 	`endif
 	class'UTGame'.static.StaticSaveConfig();
 
@@ -218,14 +243,31 @@ defaultproperties
 	Properties.Add((PropertyId=56,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
 
-	PropertyMappings.Add((Id=50,Name="bPlayersMustBeReady",ColumnHeaderText="Players Must be Ready",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
+	PropertyMappings.Add((Id=50,name="bPlayersMustBeReady",ColumnHeaderText="Players Must be Ready",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=51,Name="bForceRespawn",ColumnHeaderText="Force Respawn",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
 	PropertyMappings.Add((Id=52,Name="bWaitForNetPlayers",ColumnHeaderText="Wait for Players",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
 	PropertyMappings.Add((Id=53,Name="bPlayersBalanceTeams",ColumnHeaderText="Players Balance Teams",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
-	PropertyMappings.Add((Id=54,Name="BotRatio",ColumnHeaderText="Bot/Player Ratio",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=0.1))
+	PropertyMappings.Add((Id=54,name="BotRatio",ColumnHeaderText="Bot/Player Ratio",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=0.1))
 	PropertyMappings.Add((Id=55,Name="MinNetPlayers",ColumnHeaderText="Minimal Players",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter",ColumnHeaderText="Force default Character",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
 	`if(`UT3_PATCH_1_3)
 	PropertyMappings.Add((Id=57,name="bNoCustomCharacters",ColumnHeaderText="No Custom Characters",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	`endif
+
+	// mapvoting
+	`if(`UT3_PATCH_1_3)
+	Properties.Add((PropertyId=60,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=61,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=62,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=63,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=64,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=65,Data=(Type=SDT_Int32)))
+
+	PropertyMappings.Add((Id=60,name="bAllowMapVoting",ColumnHeaderText="Allow Map Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=61,name="bMidGameMapVoting",ColumnHeaderText="Allow Mid-Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=62,name="VoteDuration",ColumnHeaderText="Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=63,name="MapVotePercentage",ColumnHeaderText="Vote Percentage to Change Map",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=64,name="MinMapVotes",ColumnHeaderText="Minimal Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=65,name="InitialVoteDelay",ColumnHeaderText="Mid-Game Vote Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
 	`endif
 }

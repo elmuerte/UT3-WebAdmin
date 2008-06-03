@@ -3,6 +3,7 @@ v1.4 - 2008-05-??
 - demorec player no longer shows up in the player lists
 UT3 Patch 1.3 additions:
 - added config option for "No Custom Characters" (Settings/General/Players)
+- added settings for map voting (Settings/General/Map Voting)
 
 v1.3 - 2008-05-18
 -----------------

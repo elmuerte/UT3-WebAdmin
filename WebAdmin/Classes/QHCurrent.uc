@@ -57,7 +57,14 @@ var config bool bEnableTeamChat;
  */
 var AdminCommandHandler adminCmdHandler;
 
+/**
+ * CSS code to make things visible.
+ */
 var string cssVisible;
+
+/**
+ * CSS code to make HTML elements hidden.
+ */
 var string cssHidden;
 
 /**
@@ -77,6 +84,10 @@ struct FactionCharacters
 	var FactionInfo fi;
 	var array<CharacterInfo> chars;
 };
+
+/**
+ * List of factions and their characters
+ */
 var array<FactionCharacters> factions;
 
 function init(WebAdmin webapp)
