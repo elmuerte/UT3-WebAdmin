@@ -33,15 +33,11 @@
   <target name="build_jquery" description="Construct the jQuery file(s)">
     <concat destfile="Web/images/jquery.js" force="yes">
       <fileset dir="Web/jQuery-Src" includes="**/jquery-1.2.6.js" />
-      <fileset dir="Web/jQuery-Src" includes="**/ui.mouse.js" />
-      <!--<fileset dir="Web/jQuery-Src" includes="**/jquery.dimensions.js" />-->
+      <fileset dir="Web/jQuery-Src" includes="**/ui.core.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.tablesorter.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.draggable.js" />
-      <fileset dir="Web/jQuery-Src" includes="**/ui.draggable.ext.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.droppable.js" />
-      <fileset dir="Web/jQuery-Src" includes="**/ui.droppable.ext.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.sortable.js" />
-      <fileset dir="Web/jQuery-Src" includes="**/ui.sortable.ext.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.tabs.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.numeric.js" />
       <fileset dir="Web/jQuery-Src" includes="**/JQuerySpinBtn.js" />

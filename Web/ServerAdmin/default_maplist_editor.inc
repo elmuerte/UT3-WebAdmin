@@ -41,7 +41,7 @@ $(document).ready(function() {
         str = jQuery.trim(_allmaps[i]);
         if (str.length > 0)
         {
-            _jsallmaps.append('<li><span class="entry">'+str+'</span></li>');
+            _jsallmaps.append('<li class="mapEntry"><span class="entry">'+str+'</span></li>');
         }
     }
     
@@ -60,6 +60,7 @@ $(document).ready(function() {
     _jsmapcycle.sortable({ 
         axis: "y", 
         containment: "parent",
+        cancel: ".deleteButton",
         start: function(ev, ui) {
             $(ui.helper).addClass('dragging');
         },
@@ -78,10 +79,11 @@ $(document).ready(function() {
         }
     });
     $('#jsmapcycle').parent().droppable({
-        accept: "li",
+        accept: "li.mapEntry",
         hoverClass: "droppable",
         drop: function(ev, ui) {
-            var item = $(ui.draggable).clone();            
+            var item = $(ui.draggable).clone();
+            item.removeClass('mapEntry');            
             getDeleteMe(item);
             _jsmapcycle.append(item);            
             _jsmapcycle.sortable("refresh");

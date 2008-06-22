@@ -64,6 +64,7 @@ $(document).ready(function() {
     jsbotroster.sortable({ 
         axis: "y", 
         containment: "parent",
+        cancel: ".deleteButton",
         start: function(ev, ui) {
             $(ui.helper).addClass('dragging');
         },
@@ -145,6 +146,7 @@ function getDeleteMe(forItem) {
 
 function deleteme() {
     $(this).parent().remove();
+    return true;
 }
 
 function updateTextRoster() {
