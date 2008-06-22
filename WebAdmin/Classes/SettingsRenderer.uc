@@ -25,6 +25,11 @@ var protected string namePrefix;
  */
 var protected string path;
 
+/**
+ * Minimum number of options in a idMapped setting before switching to a listbox
+ */
+var int minOptionListSize;
+
 struct SortedSetting
 {
 	var string txt;
@@ -54,6 +59,7 @@ function init(string basePath, optional string namePre="settings_", optional str
 	prefix = filePrefix;
 	path = basePath;
 	namePrefix = namePre;
+	minOptionListSize=4;
 }
 
 function string getPath()
@@ -293,21 +299,41 @@ function string renderLocalizedSetting(int settingId)
 
 	curSettings.GetStringSettingValue(settingId, selectedValue);
 	curSettings.GetStringSettingValueNames(settingId, values);
-	for (i = 0; i < values.Length; i++)
+	if (values.length >= minOptionListSize)
 	{
-		curResponse.subst("setting.option.value", values[i].id);
-		curResponse.subst("setting.option.text", `HTMLEscape(values[i].name));
-		if (values[i].id == selectedValue)
+		for (i = 0; i < values.Length; i++)
 		{
-			curResponse.subst("setting.option.selected", "selected=\"selected\"");
+			curResponse.subst("setting.option.value", values[i].id);
+			curResponse.subst("setting.option.text", `HTMLEscape(values[i].name));
+			if (values[i].id == selectedValue)
+			{
+				curResponse.subst("setting.option.selected", "selected=\"selected\"");
+			}
+			else {
+				curResponse.subst("setting.option.selected", "");
+			}
+			options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "option.inc");
 		}
-		else {
-			curResponse.subst("setting.option.selected", "");
-		}
-		options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "option.inc");
+		curResponse.subst("setting.options", options);
+		return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
 	}
-	curResponse.subst("setting.options", options);
-	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
+	else {
+		for (i = 0; i < values.Length; i++)
+		{
+			curResponse.subst("setting.radio.index", i);
+			curResponse.subst("setting.radio.value", values[i].id);
+			curResponse.subst("setting.radio.text", `HTMLEscape(values[i].name));
+			if (values[i].id == selectedValue)
+			{
+				curResponse.subst("setting.radio.selected", "checked=\"checked\"");
+			}
+			else {
+				curResponse.subst("setting.radio.selected", "");
+			}
+			options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "radio.inc");
+		}
+		return options;
+	}
 }
 
 /**
@@ -435,21 +461,41 @@ function string renderIdMapped(int settingId, int idx)
 
 	curSettings.GetIntProperty(settingId, selectedValue);
 	values = curSettings.PropertyMappings[idx].ValueMappings;
-	for (i = 0; i < values.Length; i++)
+	if (values.length >= minOptionListSize)
 	{
-		curResponse.subst("setting.option.value", values[i].id);
-		curResponse.subst("setting.option.text", `HTMLEscape(values[i].name));
-		if (values[i].id == selectedValue)
+		for (i = 0; i < values.Length; i++)
 		{
-			curResponse.subst("setting.option.selected", "selected=\"selected\"");
+			curResponse.subst("setting.option.value", values[i].id);
+			curResponse.subst("setting.option.text", `HTMLEscape(values[i].name));
+			if (values[i].id == selectedValue)
+			{
+				curResponse.subst("setting.option.selected", "selected=\"selected\"");
+			}
+			else {
+				curResponse.subst("setting.option.selected", "");
+			}
+			options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "option.inc");
 		}
-		else {
-			curResponse.subst("setting.option.selected", "");
-		}
-		options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "option.inc");
+		curResponse.subst("setting.options", options);
+		return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
 	}
-	curResponse.subst("setting.options", options);
-	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
+	else {
+		for (i = 0; i < values.Length; i++)
+		{
+			curResponse.subst("setting.radio.index", i);
+			curResponse.subst("setting.radio.value", values[i].id);
+			curResponse.subst("setting.radio.text", `HTMLEscape(values[i].name));
+			if (values[i].id == selectedValue)
+			{
+				curResponse.subst("setting.radio.selected", "checked=\"checked\"");
+			}
+			else {
+				curResponse.subst("setting.radio.selected", "");
+			}
+			options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "radio.inc");
+		}
+		return options;
+	}
 }
 
 function string renderRaw(int settingId, int idx)
@@ -515,4 +561,9 @@ function string renderRaw(int settingId, int idx)
 				return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "string.inc");
 			}
 	}
+}
+
+defaultproperties
+{
+	minOptionListSize=4
 }
