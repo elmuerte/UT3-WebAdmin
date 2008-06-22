@@ -7,6 +7,8 @@
  */
 class BasicWebAdminUser extends Info implements(IWebAdminUser);
 
+var class<MessagingSpectator> PCClass;
+
 var MessagingSpectator PC;
 
 var int maxHistory;
@@ -49,10 +51,6 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 function init()
 {
 	local TeamChatProxy tcp;
-
-	PC = WorldInfo.Spawn(class'MessagingSpectator');
-	PC.ReceiveMessage = ReceiveMessage;
-
 	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
 	{
 		tcp.AddReceiver(ReceiveMessage);
@@ -69,8 +67,8 @@ event Destroyed()
 	local TeamChatProxy tcp;
 	if (PC != none)
 	{
-		PC.ReceiveMessage = none;
-		PC.Destroy();
+		PC.ClearReceiver(ReceiveMessage);
+		PC = none;
 	}
 	foreach WorldInfo.AllControllers(class'TeamChatProxy', tcp)
 	{
@@ -81,7 +79,36 @@ event Destroyed()
 
 function setUsername(string username)
 {
+	linkPlayerController(username);
+}
+
+/**
+ * Reuse an existing MessagingSpectator with the same name.
+ */
+protected function linkPlayerController(string username)
+{
+	if (PC != none)
+	{
+		if (PC.PlayerReplicationInfo.PlayerName == username)
+		{
+			return;
+		}
+		PC.ClearReceiver(ReceiveMessage);
+		PC = none;
+	}
+	foreach WorldInfo.AllControllers(class'MessagingSpectator', PC)
+	{
+		if (PC.IsA(PCClass.name) && PC.PlayerReplicationInfo.PlayerName == username)
+		{
+			PC.AddReceiver(ReceiveMessage);
+			return;
+		}
+	}
+
+	//`Log("Creating new MessagingSpectator",,'WebAdmin');
+	PC = WorldInfo.Spawn(PCClass);
 	PC.PlayerReplicationInfo.PlayerName = username;
+	PC.AddReceiver(ReceiveMessage);
 }
 
 function string getUsername()
@@ -112,5 +139,6 @@ function messageHistory(out array<MessageEntry> history, optional int startingFr
 
 defaultproperties
 {
+	PCClass=class'MessagingSpectator'
 	maxHistory = 25
 }

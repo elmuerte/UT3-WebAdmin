@@ -7,26 +7,6 @@
  */
 class TeamChatProxy extends MessagingSpectator;
 
-var array< delegate<ReceiveMessage> > receivers;
-
-function AddReceiver(delegate<ReceiveMessage> ReceiveMessageDelegate)
-{
-	if (receivers.Find(ReceiveMessageDelegate) == INDEX_NONE)
-	{
-		receivers[receivers.Length] = ReceiveMessageDelegate;
-	}
-}
-
-function ClearReceiver(delegate<ReceiveMessage> ReceiveMessageDelegate)
-{
-	local int RemoveIndex;
-	RemoveIndex = receivers.Find(ReceiveMessageDelegate);
-	if (RemoveIndex != INDEX_NONE)
-	{
-		receivers.Remove(RemoveIndex,1);
-	}
-}
-
 reliable client event TeamMessage( PlayerReplicationInfo PRI, coerce string S, name Type, optional float MsgLifeTime  )
 {
 	local delegate<ReceiveMessage> rm;
@@ -46,5 +26,5 @@ function InitPlayerReplicationInfo()
 
 defaultProperties
 {
-
+	bKeepAlive=true
 }

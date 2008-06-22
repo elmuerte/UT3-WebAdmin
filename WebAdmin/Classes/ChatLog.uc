@@ -137,6 +137,7 @@ function InitPlayerReplicationInfo()
 
 defaultproperties
 {
+	bKeepAlive=true
 	bUnique=false
 	bIncludeTimeStamp=true
 	filename="Chatlog_%i_%p"
