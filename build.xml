@@ -32,7 +32,7 @@
   
   <target name="build_jquery" description="Construct the jQuery file(s)">
     <concat destfile="Web/images/jquery.js" force="yes">
-      <fileset dir="Web/jQuery-Src" includes="**/jquery-1.2.3.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/jquery-1.2.6.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.mouse.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.dimensions.js" />
       <fileset dir="Web/jQuery-Src" includes="**/jquery.tablesorter.js" />
