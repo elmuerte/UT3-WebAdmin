@@ -34,7 +34,7 @@
     <concat destfile="Web/images/jquery.js" force="yes">
       <fileset dir="Web/jQuery-Src" includes="**/jquery-1.2.6.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.mouse.js" />
-      <fileset dir="Web/jQuery-Src" includes="**/jquery.dimensions.js" />
+      <!--<fileset dir="Web/jQuery-Src" includes="**/jquery.dimensions.js" />-->
       <fileset dir="Web/jQuery-Src" includes="**/jquery.tablesorter.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.draggable.js" />
       <fileset dir="Web/jQuery-Src" includes="**/ui.draggable.ext.js" />
