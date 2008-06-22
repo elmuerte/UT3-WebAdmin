@@ -133,9 +133,11 @@ function updateSelection(elm, isChecked) {
     }
 }
 
-$('#btnupdate').remove();
-$('#gametype').after(' <div id="throbber"><span>Loading...</span></div>');
-$('#throbber').hide();
+$(document).ready(function(){
+    $('#btnupdate').remove();
+    $('#gametype').after(' <div id="throbber"><span>Loading...</span></div>');
+    $('#throbber').hide();
+});
 //]]>
 </script>
 

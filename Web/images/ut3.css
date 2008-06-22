@@ -408,7 +408,7 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	width: 100%;
 	height: 100%;
 	z-index: 100;
-	display: none;
+	/*display: none;*/
 	cursor: wait;
 	opacity: 0.75;
 	filter: alpha(opacity=75);
