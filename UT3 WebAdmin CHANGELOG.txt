@@ -1,4 +1,4 @@
-v1.5 - 2008-06-??
+v1.5 - 2008-08-??
 -----------------
 Note: Patch 1.3 is required
 - Upgraded to jQuery 1.2.6 and jQuery UI 1.5
@@ -44,7 +44,7 @@ v1.1 - 2008-04-06
 -----------------
 - fixed mutator filtering for gametypes
 - Admin* console commands are now supported in the management console
-- Changed the login form to allow different timeouts. "Tell next map load" was
+- Changed the login form to allow different timeouts. "Till next map load" was
   the previous behavior when you didn't check "remember me". In now defaults to
   "session" which will remember the authentication for the browser session.
   This does not apply when using bHttpAuth

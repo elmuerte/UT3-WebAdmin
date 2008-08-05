@@ -833,6 +833,7 @@ function handleCurrentChange(WebAdminQuery q)
  	class'UTGame'.static.RemoveOption(curmiscurl, "Game");
  	class'UTGame'.static.RemoveOption(curmiscurl, "Team");
  	class'UTGame'.static.RemoveOption(curmiscurl, "Name");
+ 	class'UTGame'.static.RemoveOption(curmiscurl, "Class");
  	for (i = 0; i < denyUrlOptions.length; i++)
  	{
  		class'UTGame'.static.RemoveOption(curmiscurl, denyUrlOptions[i]);
