@@ -9,11 +9,10 @@
  *
  * Depends:
  *	ui.core.js
- *
  */
 (function($) {
 
-$.widget("ui.draggable", $.extend($.ui.mouse, {
+$.widget("ui.draggable", $.extend({}, $.ui.mouse, {
 	init: function() {
 		
 		//Initialize needed constants
@@ -141,7 +140,7 @@ $.widget("ui.draggable", $.extend($.ui.mouse, {
 				+ this.offset.relative.top	* mod										// Only for relative positioned nodes: Relative offset from element to offset parent
 				+ this.offset.parent.top * mod											// The offsetParent's offset without borders (offset + border)
 				- (this.cssPosition == "fixed" || (this.cssPosition == "absolute" && this.offsetParent[0] == document.body) ? 0 : this.offsetParent[0].scrollTop) * mod	// The offsetParent's scroll position, not if the element is fixed
-				+ (this.cssPosition == "fixed" ? this.offsetParent[0].scrollTop : 0) * mod
+				+ (this.cssPosition == "fixed" ? $(document).scrollTop() : 0) * mod
 				+ this.margins.top * mod												//Add the margin (you don't want the margin counting in intersection methods)
 			),
 			left: (
@@ -149,7 +148,7 @@ $.widget("ui.draggable", $.extend($.ui.mouse, {
 				+ this.offset.relative.left	* mod										// Only for relative positioned nodes: Relative offset from element to offset parent
 				+ this.offset.parent.left * mod											// The offsetParent's offset without borders (offset + border)
 				- (this.cssPosition == "fixed" || (this.cssPosition == "absolute" && this.offsetParent[0] == document.body) ? 0 : this.offsetParent[0].scrollLeft) * mod	// The offsetParent's scroll position, not if the element is fixed
-				+ (this.cssPosition == "fixed" ? this.offsetParent[0].scrollLeft : 0) * mod
+				+ (this.cssPosition == "fixed" ? $(document).scrollLeft() : 0) * mod
 				+ this.margins.left * mod												//Add the margin (you don't want the margin counting in intersection methods)
 			)
 		};
@@ -164,7 +163,7 @@ $.widget("ui.draggable", $.extend($.ui.mouse, {
 				- this.offset.relative.top												// Only for relative positioned nodes: Relative offset from element to offset parent
 				- this.offset.parent.top												// The offsetParent's offset without borders (offset + border)
 				+ (this.cssPosition == "fixed" || (this.cssPosition == "absolute" && this.offsetParent[0] == document.body) ? 0 : this.offsetParent[0].scrollTop)	// The offsetParent's scroll position, not if the element is fixed
-				- (this.cssPosition == "fixed" ? this.offsetParent[0].scrollTop : 0)
+				- (this.cssPosition == "fixed" ? $(document).scrollTop() : 0)
 			),
 			left: (
 				e.pageX																	// The absolute mouse position
@@ -172,7 +171,7 @@ $.widget("ui.draggable", $.extend($.ui.mouse, {
 				- this.offset.relative.left												// Only for relative positioned nodes: Relative offset from element to offset parent
 				- this.offset.parent.left												// The offsetParent's offset without borders (offset + border)
 				+ (this.cssPosition == "fixed" || (this.cssPosition == "absolute" && this.offsetParent[0] == document.body) ? 0 : this.offsetParent[0].scrollLeft)	// The offsetParent's scroll position, not if the element is fixed
-				- (this.cssPosition == "fixed" ? this.offsetParent[0].scrollLeft : 0)
+				- (this.cssPosition == "fixed" ? $(document).scrollLeft() : 0)
 			)
 		};
 		
@@ -217,10 +216,11 @@ $.widget("ui.draggable", $.extend($.ui.mouse, {
 	mouseStop: function(e) {
 		
 		//If we are using droppables, inform the manager about the drop
+		var dropped = false;
 		if ($.ui.ddmanager && !this.options.dropBehaviour)
-			$.ui.ddmanager.drop(this, e);
-			
-		if(this.options.revert) {
+			var dropped = $.ui.ddmanager.drop(this, e);		
+		
+		if((this.options.revert == "invalid" && !dropped) || (this.options.revert == "valid" && dropped) || this.options.revert === true) {
 			var self = this;
 			$(this.helper).animate(this.originalPosition, parseInt(this.options.revert, 10) || 500, function() {
 				self.propagate("stop", e);
@@ -253,6 +253,7 @@ $.widget("ui.draggable", $.extend($.ui.mouse, {
 	},
 	propagate: function(n,e) {
 		$.ui.plugin.call(this, n, [e, this.uiHash()]);
+		if(n == "drag") this.positionAbs = this.convertPositionTo("absolute"); //The absolute position has to be recalculated after plugins
 		return this.element.triggerHandler(n == "drag" ? n : "drag"+n, [e, this.uiHash()], this.options[n]);
 	},
 	destroy: function() {
@@ -266,9 +267,9 @@ $.extend($.ui.draggable, {
 	defaults: {
 		appendTo: "parent",
 		axis: false,
-		cancel: ":input,button",
+		cancel: ":input",
 		delay: 0,
-		distance: 0,
+		distance: 1,
 		helper: "original"
 	}
 });
@@ -444,7 +445,7 @@ $.ui.plugin.add("draggable", "connectToSortable", {
 					instance: sortable,
 					shouldRevert: sortable.options.revert
 				});
-				sortable.refresh();	//Do a one-time refresh at start to refresh the containerCache	
+				sortable.refreshItems();	//Do a one-time refresh at start to refresh the containerCache	
 				sortable.propagate("activate", e, inst);
 			}
 		});
@@ -503,7 +504,7 @@ $.ui.plugin.add("draggable", "connectToSortable", {
 					this.instance.options.helper = function() { return ui.helper[0]; };
 				
 					e.target = this.instance.currentItem[0];
-					this.instance.mouseCapture(e, true, true);
+					this.instance.mouseCapture(e, true);
 					this.instance.mouseStart(e, true, true);
 
 					//Because the browser event is way off the new appended portlet, we modify a couple of variables to reflect the changes
@@ -532,7 +533,7 @@ $.ui.plugin.add("draggable", "connectToSortable", {
 					
 					//Now we remove our currentItem, the list group clone again, and the placeholder, and animate the helper back to it's original size
 					this.instance.currentItem.remove();
-					this.instance.placeholder.remove();
+					if(this.instance.placeholder) this.instance.placeholder.remove();
 					
 					inst.propagate("fromSortable", e);
 				}

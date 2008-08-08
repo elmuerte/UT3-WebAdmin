@@ -9,7 +9,6 @@
  *
  * Depends:
  *	ui.core.js
- *
  */
 (function($) {
 
@@ -25,7 +24,7 @@ function contains(a, b) {
     return false; 
 };
 
-$.widget("ui.sortable", $.extend($.ui.mouse, {
+$.widget("ui.sortable", $.extend({}, $.ui.mouse, {
 	init: function() {
 
 		var o = this.options;
@@ -70,7 +69,7 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		
 		items.each(function() {
 			var res = ($(this).attr(o.attribute || 'id') || '').match(o.expression || (/(.+)[-=_](.+)/));
-			if(res) str.push((o.key || res[1])+'[]='+(o.key ? res[1] : res[2]));
+			if(res) str.push((o.key || res[1])+'[]='+(o.key && o.expression ? res[1] : res[2]));
 		});
 		
 		return str.join('&');
@@ -93,7 +92,7 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		var l = item.left, r = l + item.width, 
 		t = item.top, b = t + item.height;
 
-		if(this.options.tolerance == "pointer" || (this.options.tolerance == "guess" && this.helperProportions[this.floating ? 'width' : 'height'] > item[this.floating ? 'width' : 'height'])) {
+		if(this.options.tolerance == "pointer" || this.options.forcePointerForContainers || (this.options.tolerance == "guess" && this.helperProportions[this.floating ? 'width' : 'height'] > item[this.floating ? 'width' : 'height'])) {
 			return (y1 + this.offset.click.top > t && y1 + this.offset.click.top < b && x1 + this.offset.click.left > l && x1 + this.offset.click.left < r);
 		} else {
 		
@@ -152,15 +151,16 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		this.items = [];
 		this.containers = [this];
 		var items = this.items;
-		var queries = [$.isFunction(this.options.items) ? this.options.items.call(this.element) : $(this.options.items, this.element)];
-		
+		var self = this;
+		var queries = [[$.isFunction(this.options.items) ? this.options.items.call(this.element, null, { options: this.options, item: this.currentItem }) : $(this.options.items, this.element), this]];
+	
 		if(this.options.connectWith) {
 			for (var i = this.options.connectWith.length - 1; i >= 0; i--){
 				var cur = $(this.options.connectWith[i]);
 				for (var j = cur.length - 1; j >= 0; j--){
 					var inst = $.data(cur[j], 'sortable');
 					if(inst && !inst.options.disabled) {
-						queries.push($.isFunction(inst.options.items) ? inst.options.items.call(inst.element) : $(inst.options.items, inst.element));
+						queries.push([$.isFunction(inst.options.items) ? inst.options.items.call(inst.element) : $(inst.options.items, inst.element), inst]);
 						this.containers.push(inst);
 					}
 				};
@@ -168,10 +168,11 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		}
 
 		for (var i = queries.length - 1; i >= 0; i--){
-			queries[i].each(function() {
-				$.data(this, 'sortable-item', true); // Data for target checking (mouse manager)
+			queries[i][0].each(function() {
+				$.data(this, 'sortable-item', queries[i][1]); // Data for target checking (mouse manager)
 				items.push({
 					item: $(this),
+					instance: queries[i][1],
 					width: 0, height: 0,
 					left: 0, top: 0
 				});
@@ -180,21 +181,44 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 
 	},
 	refreshPositions: function(fast) {
-		for (var i = this.items.length - 1; i >= 0; i--){
-			var t = this.items[i].item;
-			if(!fast) this.items[i].width = (this.options.toleranceElement ? $(this.options.toleranceElement, t) : t).outerWidth();
-			if(!fast) this.items[i].height = (this.options.toleranceElement ? $(this.options.toleranceElement, t) : t).outerHeight();
-			var p = (this.options.toleranceElement ? $(this.options.toleranceElement, t) : t).offset();
+
+		//This has to be redone because due to the item being moved out/into the offsetParent, the offsetParent's position will change
+		if(this.offsetParent) {
+			var po = this.offsetParent.offset();
+			this.offset.parent = { top: po.top + this.offsetParentBorders.top, left: po.left + this.offsetParentBorders.left };
+		}
+
+		for (var i = this.items.length - 1; i >= 0; i--){		
+			
+			//We ignore calculating positions of all connected containers when we're not over them
+			if(this.items[i].instance != this.currentContainer && this.currentContainer && this.items[i].item[0] != this.currentItem[0])
+				continue;
+				
+			var t = this.options.toleranceElement ? $(this.options.toleranceElement, this.items[i].item) : this.items[i].item;
+			
+			if(!fast) {
+				this.items[i].width = t[0].offsetWidth;
+				this.items[i].height = t[0].offsetHeight;
+			}
+			
+			var p = t.offset();
 			this.items[i].left = p.left;
 			this.items[i].top = p.top;
+			
 		};
-		for (var i = this.containers.length - 1; i >= 0; i--){
-			var p =this.containers[i].element.offset();
-			this.containers[i].containerCache.left = p.left;
-			this.containers[i].containerCache.top = p.top;
-			this.containers[i].containerCache.width	= this.containers[i].element.outerWidth();
-			this.containers[i].containerCache.height = this.containers[i].element.outerHeight();
-		};
+
+		if(this.options.custom && this.options.custom.refreshContainers) {
+			this.options.custom.refreshContainers.call(this);
+		} else {
+			for (var i = this.containers.length - 1; i >= 0; i--){
+				var p =this.containers[i].element.offset();
+				this.containers[i].containerCache.left = p.left;
+				this.containers[i].containerCache.top = p.top;
+				this.containers[i].containerCache.width	= this.containers[i].element.outerWidth();
+				this.containers[i].containerCache.height = this.containers[i].element.outerHeight();
+			};
+		}
+
 	},
 	destroy: function() {
 		this.element
@@ -255,11 +279,10 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 							this.placeholder = null;;
 						}
 						
-						
-						itemWithLeastDistance ? this.rearrange(e, itemWithLeastDistance) : this.rearrange(e, null, this.containers[i].element);
+						this.currentContainer = this.containers[i];
+						itemWithLeastDistance ? this.rearrange(e, itemWithLeastDistance, null, true) : this.rearrange(e, null, this.containers[i].element, true);
 						this.propagate("change", e); //Call plugins and callbacks
 						this.containers[i].propagate("change", e, this); //Call plugins and callbacks
-						this.currentContainer = this.containers[i];
 
 					}
 					
@@ -276,21 +299,25 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		};			
 	},
 	mouseCapture: function(e, overrideHandle) {
-		
+	
 		if(this.options.disabled || this.options.type == 'static') return false;
 
+		//We have to refresh the items data once first
+		this.refreshItems();
+
 		//Find out if the clicked node (or one of its parents) is a actual item in this.items
-		var currentItem = null, nodes = $(e.target).parents().each(function() {	
-			if($.data(this, 'sortable-item')) {
+		var currentItem = null, self = this, nodes = $(e.target).parents().each(function() {	
+			if($.data(this, 'sortable-item') == self) {
 				currentItem = $(this);
 				return false;
 			}
 		});
-		if($.data(e.target, 'sortable-item')) currentItem = $(e.target);
-	
+		if($.data(e.target, 'sortable-item') == self) currentItem = $(e.target);
+
 		if(!currentItem) return false;
 		if(this.options.handle && !overrideHandle) {
 			var validHandle = false;
+			
 			$(this.options.handle, currentItem).find("*").andSelf().each(function() { if(this == e.target) validHandle = true; });
 			if(!validHandle) return false;
 		}
@@ -304,11 +331,12 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		var o = this.options;
 		this.currentContainer = this;
 
-		this.refresh();
+		//We only need to call refreshPositions, because the refreshItems call has been moved to mouseCapture
+		this.refreshPositions();
 
 		//Create and append the visible helper			
 		this.helper = typeof o.helper == 'function' ? $(o.helper.apply(this.element[0], [e, this.currentItem])) : this.currentItem.clone();
-		if(!this.helper.parents('body').length) this.helper.appendTo((o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)); //Add the helper to the DOM if that didn't happen already
+		if (!this.helper.parents('body').length) $(o.appendTo != 'parent' ? o.appendTo : this.currentItem[0].parentNode)[0].appendChild(this.helper[0]); //Add the helper to the DOM if that didn't happen already
 		this.helper.css({ position: 'absolute', clear: 'both' }).addClass('ui-sortable-helper'); //Position it absolutely and add a helper class
 
 		/*
@@ -332,15 +360,28 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 			top: e.pageY - this.offset.top
 		};
 		
-		this.offsetParent = this.helper.offsetParent(); var po = this.offsetParent.offset();			//Get the offsetParent and cache its position
+		this.offsetParent = this.helper.offsetParent();													//Get the offsetParent and cache its position
+		var po = this.offsetParent.offset();			
 
+		this.offsetParentBorders = {
+			top: (parseInt(this.offsetParent.css("borderTopWidth"),10) || 0),
+			left: (parseInt(this.offsetParent.css("borderLeftWidth"),10) || 0)
+		};
 		this.offset.parent = {																			//Store its position plus border
-			top: po.top + (parseInt(this.offsetParent.css("borderTopWidth"),10) || 0),
-			left: po.left + (parseInt(this.offsetParent.css("borderLeftWidth"),10) || 0)
+			top: po.top + this.offsetParentBorders.top,
+			left: po.left + this.offsetParentBorders.left
 		};
 	
 		this.originalPosition = this.generatePosition(e);												//Generate the original position
+		this.domPosition = { prev: this.currentItem.prev()[0], parent: this.currentItem.parent()[0] };  //Cache the former DOM position
+		
+		//If o.placeholder is used, create a new element at the given position with the class
 		this.helperProportions = { width: this.helper.outerWidth(), height: this.helper.outerHeight() };//Cache the helper size
+		if(o.placeholder) this.createPlaceholder();
+		
+		//Call plugins and callbacks
+		this.propagate("start", e);
+		this.helperProportions = { width: this.helper.outerWidth(), height: this.helper.outerHeight() };//Recache the helper size
 		
 		if(o.cursorAt) {
 			if(o.cursorAt.left != undefined) this.offset.click.left = o.cursorAt.left;
@@ -348,8 +389,6 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 			if(o.cursorAt.top != undefined) this.offset.click.top = o.cursorAt.top;
 			if(o.cursorAt.bottom != undefined) this.offset.click.top = this.helperProportions.height - o.cursorAt.bottom;
 		}
-
-		this.domPosition = this.currentItem.prev()[0];													//Cache the former DOM position
 
 		/*
 		 * - Position constraining -
@@ -377,18 +416,14 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 				];
 			}
 		}
-		
-		//If o.placeholder is used, create a new element at the given position with the class
-		if(o.placeholder) this.createPlaceholder();
-		
-		//Call plugins and callbacks
-		this.propagate("start", e);
-		this.helperProportions = { width: this.helper.outerWidth(), height: this.helper.outerHeight() };//Recache the helper size
 
-		if(this.options.placeholder != 'clone') this.currentItem.css('visibility', 'hidden'); //Set the original element visibility to hidden to still fill out the white space
+		//Set the original element visibility to hidden to still fill out the white space
+		if(this.options.placeholder != 'clone')
+			this.currentItem.css('visibility', 'hidden');
 		
+		//Post 'activate' events to possible containers
 		if(!noActivation) {
-			 for (var i = this.containers.length - 1; i >= 0; i--) { this.containers[i].propagate("activate", e, this); } //Post 'activate' events to possible containers
+			 for (var i = this.containers.length - 1; i >= 0; i--) { this.containers[i].propagate("activate", e, this); }
 		}
 		
 		//Prepare possible droppables
@@ -463,10 +498,19 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 	},
 	mouseDrag: function(e) {
 
-
 		//Compute the helpers position
 		this.position = this.generatePosition(e);
 		this.positionAbs = this.convertPositionTo("absolute");
+
+		//Call the internal plugins
+		$.ui.plugin.call(this, "sort", [e, this.ui()]);
+		
+		//Regenerate the absolute position used for position checks
+		this.positionAbs = this.convertPositionTo("absolute");
+		
+		//Set the helper's position
+		this.helper[0].style.left = this.position.left+'px';
+		this.helper[0].style.top = this.position.top+'px';
 
 		//Rearrange
 		for (var i = this.items.length - 1; i >= 0; i--) {
@@ -489,17 +533,32 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		//Post events to containers
 		this.contactContainers(e);
 		
-		 //Call plugins and callbacks
-		this.propagate("sort", e);
-
-		if(!this.options.axis || this.options.axis == "x") this.helper[0].style.left = this.position.left+'px';
-		if(!this.options.axis || this.options.axis == "y") this.helper[0].style.top = this.position.top+'px';
-		
 		//Interconnect with droppables
 		if($.ui.ddmanager) $.ui.ddmanager.drag(this, e);
 
+		//Call callbacks
+		this.element.triggerHandler("sort", [e, this.ui()], this.options["sort"]);
+
 		return false;
 		
+	},
+	rearrange: function(e, i, a, hardRefresh) {
+		a ? a[0].appendChild(this.currentItem[0]) : i.item[0].parentNode.insertBefore(this.currentItem[0], (this.direction == 'down' ? i.item[0] : i.item[0].nextSibling));
+		
+		//Various things done here to improve the performance:
+		// 1. we create a setTimeout, that calls refreshPositions
+		// 2. on the instance, we have a counter variable, that get's higher after every append
+		// 3. on the local scope, we copy the counter variable, and check in the timeout, if it's still the same
+		// 4. this lets only the last addition to the timeout stack through
+		this.counter = this.counter ? ++this.counter : 1;
+		var self = this, counter = this.counter;
+
+		window.setTimeout(function() {
+			if(counter == self.counter) self.refreshPositions(!hardRefresh); //Precompute after each DOM insertion, NOT on mousemove
+		},0);
+		
+		if(this.options.placeholder)
+			this.options.placeholder.update.call(this.element, this.currentItem, this.placeholder);
 	},
 	mouseStop: function(e, noPropagation) {
 
@@ -518,11 +577,9 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 				left: cur.left - this.offset.parent.left - self.margins.left + (this.offsetParent[0] == document.body ? 0 : this.offsetParent[0].scrollLeft),
 				top: cur.top - this.offset.parent.top - self.margins.top + (this.offsetParent[0] == document.body ? 0 : this.offsetParent[0].scrollTop)
 			}, parseInt(this.options.revert, 10) || 500, function() {
-				self.propagate("stop", e, null, noPropagation);
 				self.clear(e);
 			});
 		} else {
-			this.propagate("stop", e, null, noPropagation);
 			this.clear(e, noPropagation);
 		}
 
@@ -531,9 +588,8 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 	},
 	clear: function(e, noPropagation) {
 
-		if(this.domPosition != this.currentItem.prev().not(".ui-sortable-helper")[0]) this.propagate("update", e, null, noPropagation); //Trigger update callback if the DOM position has changed
+		if(this.domPosition.prev != this.currentItem.prev().not(".ui-sortable-helper")[0] || this.domPosition.parent != this.currentItem.parent()[0]) this.propagate("update", e, null, noPropagation); //Trigger update callback if the DOM position has changed
 		if(!contains(this.element[0], this.currentItem[0])) { //Node was moved out of the current element
-			if(this.domPosition == this.currentItem.prev().not(".ui-sortable-helper")[0]) this.propagate("update", e, null, noPropagation); //Trigger update callback, if it wasn't triggered before, because that is definitely an update
 			this.propagate("remove", e, null, noPropagation);
 			for (var i = this.containers.length - 1; i >= 0; i--){
 				if(contains(this.containers[i].element[0], this.currentItem[0])) {
@@ -553,28 +609,32 @@ $.widget("ui.sortable", $.extend($.ui.mouse, {
 		}
 		
 		this.dragging = false;
-		if(this.cancelHelperRemoval) return false;
+		if(this.cancelHelperRemoval) {
+			this.propagate("stop", e, null, noPropagation);
+			return false;
+		}
+		
 		$(this.currentItem).css('visibility', '');
 		if(this.placeholder) this.placeholder.remove();
-		this.helper.remove();
+		this.helper.remove(); this.helper = null;
+		this.propagate("stop", e, null, noPropagation);
 		
 		return true;
 		
-	},
-	rearrange: function(e, i, a) {
-		a ? a.append(this.currentItem) : i.item[this.direction == 'down' ? 'before' : 'after'](this.currentItem);
-		this.refreshPositions(true); //Precompute after each DOM insertion, NOT on mousemove
-		if(this.options.placeholder) this.options.placeholder.update.call(this.element, this.currentItem, this.placeholder);
 	}
 }));
 
 $.extend($.ui.sortable, {
 	getter: "serialize toArray",
 	defaults: {
+		helper: "clone",
 		tolerance: "guess",
-		distance: 0,
+		distance: 1,
 		delay: 0,
-		cancel: ":input,button",
+		scroll: true,
+		scrollSensitivity: 20,
+		scrollSpeed: 20,
+		cancel: ":input",
 		items: '> *',
 		zIndex: 1000,
 		dropOnEmpty: true,
@@ -623,8 +683,6 @@ $.ui.plugin.add("sortable", "scroll", {
 	start: function(e, ui) {
 		var o = ui.options;
 		var i = $(this).data("sortable");
-		o.scrollSensitivity	= o.scrollSensitivity || 20;
-		o.scrollSpeed		= o.scrollSpeed || 20;
 	
 		i.overflowY = function(el) {
 			do { if(/auto|scroll/.test(el.css('overflow')) || (/auto|scroll/).test(el.css('overflow-y'))) return el; el = el.parent(); } while (el[0].parentNode);
@@ -667,6 +725,17 @@ $.ui.plugin.add("sortable", "scroll", {
 			if($(window).width() - (e.pageX - $(document).scrollLeft()) < o.scrollSensitivity)
 				$(document).scrollLeft($(document).scrollLeft() + o.scrollSpeed);
 		}
+		
+	}
+});
+
+$.ui.plugin.add("sortable", "axis", {
+	sort: function(e, ui) {
+		
+		var i = $(this).data("sortable");
+		
+		if(ui.options.axis == "y") i.position.left = i.originalPosition.left;
+		if(ui.options.axis == "x") i.position.top = i.originalPosition.top;
 		
 	}
 });

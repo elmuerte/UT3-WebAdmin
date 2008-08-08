@@ -1,12 +1,11 @@
 /*
- * jQuery UI 1.5
+ * jQuery UI 1.5.2
  *
  * Copyright (c) 2008 Paul Bakaus (ui.jquery.com)
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
  * http://docs.jquery.com/UI
- *
  */
 ;(function($) {
 
@@ -33,7 +32,7 @@ $.ui = {
 	cssCache: {},
 	css: function(name) {
 		if ($.ui.cssCache[name]) { return $.ui.cssCache[name]; }
-		var tmp = $('<div class="ui-resizable-gen">').addClass(name).css({position:'absolute', top:'-5000px', left:'-5000px', display:'block'}).appendTo('body');
+		var tmp = $('<div class="ui-gen">').addClass(name).css({position:'absolute', top:'-5000px', left:'-5000px', display:'block'}).appendTo('body');
 		
 		//if (!$.browser.safari)
 			//tmp.appendTo('body'); 
@@ -47,15 +46,11 @@ $.ui = {
 		try { $('body').get(0).removeChild(tmp.get(0));	} catch(e){}
 		return $.ui.cssCache[name];
 	},
-	disableSelection: function(e) {
-		e.unselectable = "on";
-		e.onselectstart = function() { return false; };
-		if (e.style) { e.style.MozUserSelect = "none"; }
+	disableSelection: function(el) {
+		$(el).attr('unselectable', 'on').css('MozUserSelect', 'none');
 	},
-	enableSelection: function(e) {
-		e.unselectable = "off";
-		e.onselectstart = function() { return true; };
-		if (e.style) { e.style.MozUserSelect = ""; }
+	enableSelection: function(el) {
+		$(el).attr('unselectable', 'off').css('MozUserSelect', '');
 	},
 	hasScroll: function(e, a) {
 		var scroll = /top/.test(a||"top") ? 'scrollTop' : 'scrollLeft', has = false;
@@ -70,7 +65,7 @@ $.ui = {
 
 var _remove = $.fn.remove;
 $.fn.remove = function() {
-	$("*", this).add(this).trigger("remove");
+	$("*", this).add(this).triggerHandler("remove");
 	return _remove.apply(this, arguments );
 };
 
@@ -115,7 +110,7 @@ $.widget = function(name, prototype) {
 		this.widgetName = name;
 		this.widgetBaseClass = namespace + '-' + name;
 		
-		this.options = $.extend({ disabled: false }, $[namespace][name].defaults, options);
+		this.options = $.extend({}, $.widget.defaults, $[namespace][name].defaults, options);
 		this.element = $(element)
 			.bind('setData.' + name, function(e, key, value) {
 				return self.setData(key, value);
@@ -159,6 +154,10 @@ $.widget.prototype = {
 	}
 };
 
+$.widget.defaults = {
+	disabled: false
+};
+
 
 /** Mouse Interaction Plugin **/
 
@@ -197,7 +196,7 @@ $.ui.mouse = {
 		
 		var self = this,
 			btnIsLeft = (e.which == 1),
-			elIsCancel = (typeof this.options.cancel == "string" ? $(e.target).is(this.options.cancel) : false);
+			elIsCancel = (typeof this.options.cancel == "string" ? $(e.target).parents().add(e.target).filter(this.options.cancel).length : false);
 		if (!btnIsLeft || elIsCancel || !this.mouseCapture(e)) {
 			return true;
 		}
@@ -211,7 +210,10 @@ $.ui.mouse = {
 		
 		if (this.mouseDistanceMet(e) && this.mouseDelayMet(e)) {
 			this._mouseStarted = (this.mouseStart(e) !== false);
-			if (!this._mouseStarted) { e.preventDefault(); return true; }
+			if (!this._mouseStarted) {
+				e.preventDefault();
+				return true;
+			}
 		}
 		
 		// these delegates are required to keep context
