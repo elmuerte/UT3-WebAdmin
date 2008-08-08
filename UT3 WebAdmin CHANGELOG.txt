@@ -1,9 +1,10 @@
-v1.5 - 2008-08-??
+v1.5 - 2008-08-08
 -----------------
 Note: Patch 1.3 is required
-- Upgraded to jQuery 1.2.6 and jQuery UI 1.5
+- Upgraded to jQuery 1.2.6 and jQuery UI 1.5.2
 - playercontrollers created for the webadmin users are now shared between admins
   using the same name. This is a resource optimization fix
+- some UI tweaks  
 
 v1.4 - 2008-06-03
 -----------------
