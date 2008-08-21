@@ -1,3 +1,7 @@
+v1.6 - 2008-08-??
+-----------------
+- fixed bug #52: Hard to remove bots from bot roster 
+
 v1.5 - 2008-08-08
 -----------------
 Note: Patch 1.3 is required
