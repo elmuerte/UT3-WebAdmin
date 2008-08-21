@@ -16,14 +16,15 @@ $(document).ready(function(){
 });
 
 function checkMapLoaded() {
+    setTimeout('checkMapLoaded()', 1000);
     $.ajax({
         type: "POST",
         url: '<%page.fulluri%>/check',
         data: {ajax: 1},
         success: ajaxSuccess,
-        error: ajaxError
+        error: ajaxError,
+        timeout: 900
     });
-    setTimeout('checkMapLoaded()', 1000);
 }
 
 function ajaxSuccess(data, textStatus) {
@@ -31,6 +32,7 @@ function ajaxSuccess(data, textStatus) {
 }
 
 function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
+    if (textStatus == 'timeout') return;
     if (XMLHttpRequest.status == 403) {
         document.location = '<%webadmin.path%>';
     }

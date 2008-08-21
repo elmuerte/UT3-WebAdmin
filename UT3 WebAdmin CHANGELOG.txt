@@ -1,6 +1,7 @@
 v1.6 - 2008-08-??
 -----------------
 - fixed bug #52: Hard to remove bots from bot roster 
+- addressed bug #51: Page does not refresh after changing game (IE6) 
 
 v1.5 - 2008-08-08
 -----------------
