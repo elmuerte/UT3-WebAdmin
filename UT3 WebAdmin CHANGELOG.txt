@@ -1,7 +1,9 @@
-v1.6 - 2008-08-??
+v1.6 - 2008-08-23
 -----------------
 - fixed bug #52: Hard to remove bots from bot roster 
-- addressed bug #51: Page does not refresh after changing game (IE6) 
+- addressed bug #51: Page does not refresh after changing game (IE6)
+- "game deficulty" is now presented as a list of predefined values (0 to 7), 
+  custom values can still be entered. 
 
 v1.5 - 2008-08-08
 -----------------

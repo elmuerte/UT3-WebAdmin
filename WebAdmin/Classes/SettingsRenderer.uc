@@ -364,6 +364,7 @@ function string renderPredefinedValues(int settingId, int idx)
 	local int i;
 	local array<SettingsData> values;
 
+	local bool usedPreDef, selected;
 	local string svalue;
 	local int ivalue;
 	local float fvalue;
@@ -372,6 +373,7 @@ function string renderPredefinedValues(int settingId, int idx)
 
 	selectedValue = curSettings.GetPropertyAsString(settingId);
 	values = curSettings.PropertyMappings[idx].PredefinedValues;
+	usedPreDef = false;
 	for (i = 0; i < values.Length; i++)
 	{
 		switch (values[i].Type)
@@ -382,25 +384,28 @@ function string renderPredefinedValues(int settingId, int idx)
 				curResponse.subst("setting.option.value", string(ivalue));
 				curResponse.subst("setting.option.text", string(ivalue));
 				svalue = string(ivalue);
+				selected = (ivalue == int(selectedValue));
 				break;
 			case SDT_Double:
 			case SDT_Float:
 				fvalue = curSettings.GetSettingsDataFloat(values[i]);
 				curResponse.subst("setting.option.value", string(fvalue));
 				curResponse.subst("setting.option.text", string(fvalue));
-				svalue = string(fvalue);
+				selected = (fvalue ~= float(selectedValue));
 				break;
 			case SDT_String:
 				svalue = curSettings.GetSettingsDataString(values[i]);
 				curResponse.subst("setting.option.value", `HTMLEscape(svalue));
 				curResponse.subst("setting.option.text", `HTMLEscape(svalue));
+				selected = (svalue ~= selectedValue);
 				break;
 			default:
 				`Log("Unsupported data type",,'WebAdmin');
 				return "";
 		}
-		if (svalue ~= selectedValue)
+		if (selected)
 		{
+			usedPreDef = true;
 			curResponse.subst("setting.option.selected", "selected=\"selected\"");
 		}
 		else {
@@ -408,17 +413,23 @@ function string renderPredefinedValues(int settingId, int idx)
 		}
 		options $= curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "option.inc");
 	}
-	curResponse.subst("setting.options", options);
+	if (usedPreDef)
+	{
+		curResponse.subst("setting.options", options);
 
-	part1 = curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
-	curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settingId)$"_raw");
-	part2 = renderRaw(settingId, idx);
+		part1 = curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "select.inc");
+		curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settingId)$"_raw");
+		part2 = renderRaw(settingId, idx);
 
-	curResponse.subst("mutlisetting.predef", part1);
-	curResponse.subst("mutlisetting.raw", part2);
-	curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settingId));
+		curResponse.subst("mutlisetting.predef", part1);
+		curResponse.subst("mutlisetting.raw", part2);
+		curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settingId));
 
-	return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "multisetting.inc");
+		return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "multisetting.inc");
+	}
+	else {
+		return renderRaw(settingId, idx);
+	}
 }
 
 function string renderRanged(int settingId)
@@ -500,12 +511,13 @@ function string renderIdMapped(int settingId, int idx)
 
 function string renderRaw(int settingId, int idx)
 {
-	local float min, max;
+	local float min, max, incr;
 	curResponse.subst("setting.type", "raw");
 	curResponse.subst("setting.value", `HTMLEscape(curSettings.GetPropertyAsString(settingId)));
 
 	min = curSettings.PropertyMappings[idx].MinVal;
 	max = curSettings.PropertyMappings[idx].MaxVal;
+	incr = curSettings.PropertyMappings[idx].RangeIncrement;
 	switch(curSettings.GetPropertyType(settingId))
 	{
 		case SDT_Empty:
@@ -521,6 +533,10 @@ function string renderRaw(int settingId, int idx)
 				curResponse.subst("setting.maxval", "Number.NaN");
 				curResponse.subst("setting.minval", "Number.NaN");
 			}
+			if (incr > 0)
+			{
+				curResponse.subst("setting.increment", string(int(incr)));
+			}
 			curResponse.subst("setting.asint", "true");
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "int.inc");
 		case SDT_Double:
@@ -533,6 +549,10 @@ function string renderRaw(int settingId, int idx)
 			else {
 				curResponse.subst("setting.maxval", "Number.NaN");
 				curResponse.subst("setting.minval", "Number.NaN");
+			}
+			if (incr > 0)
+			{
+				curResponse.subst("setting.increment", string(incr));
 			}
 			curResponse.subst("setting.asint", "false");
 			return curResponse.LoadParsedUHTM(path $ "/" $ prefix $ "float.inc");

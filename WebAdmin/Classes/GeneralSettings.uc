@@ -223,7 +223,7 @@ defaultproperties
 	Properties.Add((PropertyId=33,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=34,Data=(Type=SDT_Int32)))
 
-	PropertyMappings.Add((Id=30,Name="GameDifficulty",ColumnHeaderText="Game Difficulty",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=30,name="GameDifficulty",ColumnHeaderText="Game Difficulty",MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32),(Value1=2,Type=SDT_Int32),(Value1=3,Type=SDT_Int32),(Value1=4,Type=SDT_Int32),(Value1=5,Type=SDT_Int32),(Value1=6,Type=SDT_Int32),(Value1=7,Type=SDT_Int32)),MinVal=0,MaxVal=999,RangeIncrement=1))
 	PropertyMappings.Add((Id=31,name="GoreLevel",ColumnHeaderText="Gore Reduction",MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32)),MinVal=0,MaxVal=256,RangeIncrement=1))
 	PropertyMappings.Add((Id=32,name="bChangeLevels",ColumnHeaderText="Change Levels",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=33,Name="EndTimeDelay",ColumnHeaderText="End Game Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
