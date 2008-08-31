@@ -17,6 +17,12 @@ function string GetSpecialValue(name PropertyName)
 	}
 }
 
+`if(`UT3_PATCH_1_4)
+`define MAP_VOTE_CONFIG class'UTVoteCollector'
+`else
+`define MAP_VOTE_CONFIG class'UTGame'
+`endif
+
 function init()
 {
 	// Server Information
@@ -68,14 +74,19 @@ function init()
 
 	// map voting
 	`if(`UT3_PATCH_1_3)
-	SetIntPropertyByName('bAllowMapVoting', int(class'UTGame'.default.bAllowMapVoting));
-	SetIntPropertyByName('bMidGameMapVoting', int(class'UTGame'.default.bMidGameMapVoting));
-	SetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
-	SetIntPropertyByName('MapVotePercentage', class'UTGame'.default.MapVotePercentage);
-	SetIntPropertyByName('MinMapVotes', class'UTGame'.default.MinMapVotes);
-	SetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
-	//SetIntPropertyByName('VoteCollectorClassName', int(class'UTGame'.default.VoteCollectorClassName));
+	SetIntPropertyByName('bAllowMapVoting', int(`{MAP_VOTE_CONFIG}.default.bAllowMapVoting));
+	SetIntPropertyByName('bMidGameMapVoting', int(`{MAP_VOTE_CONFIG}.default.bMidGameMapVoting));
+	SetIntPropertyByName('VoteDuration', `{MAP_VOTE_CONFIG}.default.VoteDuration);
+	SetIntPropertyByName('MapVotePercentage', `{MAP_VOTE_CONFIG}.default.MapVotePercentage);
+	SetIntPropertyByName('MinMapVotes', `{MAP_VOTE_CONFIG}.default.MinMapVotes);
+	SetIntPropertyByName('InitialVoteDelay', `{MAP_VOTE_CONFIG}.default.InitialVoteDelay);
 	`endif
+
+	// TODO:
+	// UTVoteCollection settings
+	// MapListManagerClassName
+
+	// session ban
 }
 
 function save()
@@ -131,17 +142,19 @@ function save()
 
 	if (GetIntPropertyByName('bAllowMapVoting', val))
 	{
-		class'UTGame'.default.bAllowMapVoting = val != 0;
+		`{MAP_VOTE_CONFIG}.default.bAllowMapVoting = val != 0;
 	}
 	if (GetIntPropertyByName('bMidGameMapVoting', val))
 	{
-		class'UTGame'.default.bMidGameMapVoting = val != 0;
+		`{MAP_VOTE_CONFIG}.default.bMidGameMapVoting = val != 0;
 	}
-	GetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
-	GetIntPropertyByName('MapVotePercentage', class'UTGame'.default.MapVotePercentage);
-	GetIntPropertyByName('MinMapVotes', class'UTGame'.default.MinMapVotes);
-	GetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
-	//GetStringPropertyByName('VoteCollectorClassName', class'UTGame'.default.VoteCollectorClassName);
+	GetIntPropertyByName('VoteDuration', `{MAP_VOTE_CONFIG}.default.VoteDuration);
+	GetIntPropertyByName('MapVotePercentage', `{MAP_VOTE_CONFIG}.default.MapVotePercentage);
+	GetIntPropertyByName('MinMapVotes', `{MAP_VOTE_CONFIG}.default.MinMapVotes);
+	GetIntPropertyByName('InitialVoteDelay', `{MAP_VOTE_CONFIG}.default.InitialVoteDelay);
+	`if(`UT3_PATCH_1_4)
+	`{MAP_VOTE_CONFIG}.static.StaticSaveConfig();
+	`endif
 	`endif
 	class'UTGame'.static.StaticSaveConfig();
 

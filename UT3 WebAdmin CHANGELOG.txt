@@ -1,3 +1,10 @@
+v1.7 - 2008-09-??
+-----------------
+Note: Patch 1.4 is required
+- added sessionban functionality
+- added spawn protection time setting for gametypes
+
+
 v1.6 - 2008-08-23
 -----------------
 - fixed bug #52: Hard to remove bots from bot roster 

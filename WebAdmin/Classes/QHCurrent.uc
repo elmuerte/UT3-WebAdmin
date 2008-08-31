@@ -505,6 +505,21 @@ function bool handleCurrentPlayersAction(WebAdminQuery q)
 					banByHash(PC);
 				}
 				`endif
+				`if(`UT3_PATCH_1_4)
+				else if (action ~= "sessionban" || action ~= "session ban")
+				{
+					if (webadmin.WorldInfo.Game.AccessControl.IsAdmin(PC))
+					{
+						webadmin.addMessage(q, "Unable to session ban the player "$PRI.PlayerName$". Logged in admins can not be removed.", MT_Error);
+						return false;
+					}
+					else {
+						webadmin.WorldInfo.Game.AccessControl.SessionBanPlayer(PC);
+						webadmin.addMessage(q, "Player "$PRI.PlayerName$" was banned for this session.");
+						return true;
+					}
+				}
+				`endif
 				if (!webadmin.WorldInfo.Game.AccessControl.KickPlayer(PC, webadmin.WorldInfo.Game.AccessControl.DefaultKickReason))
 				{
 					webadmin.addMessage(q, "Unable to kick the player "$PRI.PlayerName$". Logged in admins can not be kicked.", MT_Error);

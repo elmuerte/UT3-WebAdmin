@@ -7,6 +7,8 @@
  */
 class AdminCommandHandler extends Info;
 
+`include(WebAdmin.uci)
+
 /**
  * Returns true when it was handled
  */
@@ -77,6 +79,13 @@ function bool execute(string cmd, out string result, PlayerController pc)
 		WorldInfo.Game.AccessControl.KickBan(args);
 		return true;
 	}
+	`if(`UT3_PATCH_1_4)
+	else if (cmd ~= "AdminSessionBan" || cmd ~= "SessionBan")
+	{
+		WorldInfo.Game.AccessControl.SessionBan(args);
+		return true;
+	}
+	`endif
 	else if (cmd ~= "AdminLogin")
 	{
 		result = "AdminLogin is not available";

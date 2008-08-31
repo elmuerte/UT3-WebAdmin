@@ -7,6 +7,7 @@
 <tr>
     <th>&nbsp;</th>
     <th><a href="<%page.fulluri%>?sortby=name&amp;reverse=<%reverse.name%>" class="sortable <%sorted.name%>">Player name</a></th>
+    <th>&nbsp;</th>
     <th><a href="<%page.fulluri%>?sortby=ping&amp;reverse=<%reverse.ping%>" class="sortable <%sorted.ping%>">Ping</a></th>
     <th>IP</th>
     <th title="A unique ID for this game account.">Unique ID</th>
@@ -29,7 +30,7 @@ $(document).ready(function(){
         jthis.remove();
     });
     $("#players th").wrapInner("<span></span>");
-    $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra']});
+    $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra'], headers: { 2: {sorter: false} }});
     
     $("#players form").each(function(i){
         var frm = $(this);
