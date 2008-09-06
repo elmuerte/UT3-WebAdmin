@@ -3,7 +3,7 @@ v1.7 - 2008-09-??
 Note: Patch 1.4 is required
 - added sessionban functionality
 - added spawn protection time setting for gametypes
-
+- fixed bot roster editing when the roster was empty
 
 v1.6 - 2008-08-23
 -----------------
