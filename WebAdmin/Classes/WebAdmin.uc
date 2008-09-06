@@ -86,6 +86,8 @@ var globalconfig bool bChatLog;
 
 var PCCleanUp pccleanup;
 
+var globalconfig int cfgver;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -93,8 +95,10 @@ function init()
 	local class<Actor> aclass;
 	local IpAddr ipaddr;
 	local int i;
+	local bool doSaveConfig;
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
+    doSaveConfig = false;
 
     CleanupMsgSpecs();
 
@@ -113,6 +117,18 @@ function init()
 	{
 		QueryHandlers[0] = class.getPackageName()$".QHCurrent";
 		QueryHandlers[1] = class.getPackageName()$".QHDefaults";
+		doSaveConfig = true;
+	}
+	if (cfgver < 1)
+	{
+		QueryHandlers[QueryHandlers.length] = class.getPackageName()$".QHVoting";
+
+		doSaveConfig = true;
+		cfgver=1;
+	}
+
+	if (doSaveConfig)
+	{
 		SaveConfig();
 	}
 

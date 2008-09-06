@@ -13,7 +13,7 @@ function string GetSpecialValue(name PropertyName)
 {
 	if (PropertyName == `{WA_GROUP_SETTINGS})
 	{
-		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60;Map Voting=60,70";
+		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60;Voting=60,80";
 	}
 }
 
@@ -80,6 +80,17 @@ function init()
 	SetIntPropertyByName('MapVotePercentage', `{MAP_VOTE_CONFIG}.default.MapVotePercentage);
 	SetIntPropertyByName('MinMapVotes', `{MAP_VOTE_CONFIG}.default.MinMapVotes);
 	SetIntPropertyByName('InitialVoteDelay', `{MAP_VOTE_CONFIG}.default.InitialVoteDelay);
+
+	`if(`UT3_PATCH_1_4)
+	SetIntPropertyByName('bAllowGameVoting', int(class'UTVoteCollector'.default.bAllowGameVoting));
+	SetIntPropertyByName('bAllowMutatorVoting', int(class'UTVoteCollector'.default.bAllowMutatorVoting));
+	SetIntPropertyByName('MutatorVotePercentage', class'UTVoteCollector'.default.MutatorVotePercentage);
+
+	SetIntPropertyByName('bAllowKickVoting', int(class'UTVoteCollector'.default.bAllowKickVoting));
+	SetIntPropertyByName('bAnonymousKickVoting', int(class'UTVoteCollector'.default.bAnonymousKickVoting));
+	SetIntPropertyByName('MinKickVotes', class'UTVoteCollector'.default.MinKickVotes);
+	SetIntPropertyByName('KickVotePercentage', class'UTVoteCollector'.default.KickVotePercentage);
+	`endif
 	`endif
 
 	// TODO:
@@ -152,9 +163,31 @@ function save()
 	GetIntPropertyByName('MapVotePercentage', `{MAP_VOTE_CONFIG}.default.MapVotePercentage);
 	GetIntPropertyByName('MinMapVotes', `{MAP_VOTE_CONFIG}.default.MinMapVotes);
 	GetIntPropertyByName('InitialVoteDelay', `{MAP_VOTE_CONFIG}.default.InitialVoteDelay);
+
 	`if(`UT3_PATCH_1_4)
+	if (GetIntPropertyByName('bAllowGameVoting', val))
+	{
+		class'UTVoteCollector'.default.bAllowGameVoting = val != 0;
+	}
+	if (GetIntPropertyByName('bAllowMutatorVoting', val))
+	{
+		class'UTVoteCollector'.default.bAllowMutatorVoting = val != 0;
+	}
+	GetIntPropertyByName('MutatorVotePercentage', class'UTVoteCollector'.default.MutatorVotePercentage);
+
+	if (GetIntPropertyByName('bAllowKickVoting', val))
+	{
+		class'UTVoteCollector'.default.bAllowKickVoting = val != 0;
+	}
+	if (GetIntPropertyByName('bAnonymousKickVoting', val))
+	{
+		class'UTVoteCollector'.default.bAnonymousKickVoting = val != 0;
+	}
+	GetIntPropertyByName('MinKickVotes', class'UTVoteCollector'.default.MinKickVotes);
+	GetIntPropertyByName('KickVotePercentage', class'UTVoteCollector'.default.KickVotePercentage);
 	`{MAP_VOTE_CONFIG}.static.StaticSaveConfig();
 	`endif
+
 	`endif
 	class'UTGame'.static.StaticSaveConfig();
 
@@ -282,5 +315,23 @@ defaultproperties
 	PropertyMappings.Add((Id=63,name="MapVotePercentage",ColumnHeaderText="Vote Percentage to Change Map",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
 	PropertyMappings.Add((Id=64,name="MinMapVotes",ColumnHeaderText="Minimal Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=65,name="InitialVoteDelay",ColumnHeaderText="Mid-Game Vote Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+
+	`if(`UT3_PATCH_1_4)
+	Properties.Add((PropertyId=66,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=67,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=68,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=69,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=70,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=71,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=72,Data=(Type=SDT_Int32)))
+
+	PropertyMappings.Add((Id=66,name="bAllowGameVoting",ColumnHeaderText="Allow Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=67,name="bAllowMutatorVoting",ColumnHeaderText="Allow Mutator Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=68,name="MutatorVotePercentage",ColumnHeaderText="Mutator Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=69,name="bAllowKickVoting",ColumnHeaderText="Allow Kick Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=70,name="bAnonymousKickVoting",ColumnHeaderText="Allow Anonymous Kick Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=71,name="MinKickVotes",ColumnHeaderText="Minimal Kick Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=72,name="KickVotePercentage",ColumnHeaderText="Kick Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	`endif
 	`endif
 }

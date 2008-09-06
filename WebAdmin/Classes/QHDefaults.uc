@@ -49,9 +49,11 @@ var WebAdmin webadmin;
 
 var SettingsRenderer settingsRenderer;
 
-var config string AdditionalMLClass;
+var `if(`UT3_PATCH_1_4)deprecated`endif
+	config string AdditionalMLClass;
 
-var AdditionalMapLists additionalML;
+var `if(`UT3_PATCH_1_4)deprecated`endif
+	AdditionalMapLists additionalML;
 
 function init(WebAdmin webapp)
 {
@@ -60,11 +62,13 @@ function init(WebAdmin webapp)
 		GeneralSettingsClass = class.getPackageName()$".GeneralSettings";
 		SaveConfig();
 	}
+	`if(`notdefined(UT3_PATCH_1_4))
 	if (Len(AdditionalMLClass) == 0)
 	{
 		AdditionalMLClass = class.getPackageName()$".AdditionalMapLists";
 		SaveConfig();
 	}
+	`endif
 	webadmin = webapp;
 }
 
@@ -122,12 +126,14 @@ function bool handleQuery(WebAdminQuery q)
 		case "/settings/mutators":
 			handleSettingsMutators(q);
 			return true;
+		`if(`notdefined(UT3_PATCH_1_4))
 		case "/settings/maplist":
 			handleMapList(q);
 			return true;
 		case "/settings/maplist/additional":
 			handleMapListAdditional(q);
 			return true;
+		`endif
 	}
 	return false;
 }
@@ -149,8 +155,10 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.");
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.");
 	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level.");
+	`if(`notdefined(UT3_PATCH_1_4))
 	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. Each game type can have a single map cycle.");
 	menu.addMenu("/settings/maplist/additional", "Additional Map Cycles", self, "Manage additional map cycle configurations.");
+	`endif
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -878,6 +886,7 @@ function handleSettingsMutators(WebAdminQuery q)
 	webadmin.sendPage(q, "default_settings_mutators.html");
 }
 
+`if(`notdefined(UT3_PATCH_1_4))
 function handleMapList(WebAdminQuery q)
 {
 	local string currentGameType, substvar;
@@ -1202,6 +1211,7 @@ function handleMapListAdditional(WebAdminQuery q)
 
 	webadmin.sendPage(q, "default_maplist_additional.html");
 }
+`endif
 
 defaultproperties
 {
