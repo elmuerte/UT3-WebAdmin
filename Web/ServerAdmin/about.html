@@ -47,7 +47,7 @@ function versionUpdate(versionData) {
         $('#versioncheck').append('<em>Error retrieving version information</em>');
         return;
     }
-    $('#webadmininfo').append('<dt>Latest version</dt><dd><em>v'+versionData.version+' &ndash; '+versionData.date+'</em> <br /><a href="'+versionData.url+'">Download</a></dd>');
+    $('#webadmininfo').append('<dt>Latest version</dt><dd><em>v'+versionData.version+' &ndash; '+versionData.date+'</em> <br /><a rel="external" href="'+versionData.url+'">Download</a></dd>');
 }
 //]]>
 </script>
