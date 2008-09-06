@@ -90,14 +90,10 @@ function init()
 	SetIntPropertyByName('bAnonymousKickVoting', int(class'UTVoteCollector'.default.bAnonymousKickVoting));
 	SetIntPropertyByName('MinKickVotes', class'UTVoteCollector'.default.MinKickVotes);
 	SetIntPropertyByName('KickVotePercentage', class'UTVoteCollector'.default.KickVotePercentage);
+
+	SetIntPropertyByName('MapReplayLimit', class'UTMapListManager'.default.MapReplayLimit);
 	`endif
 	`endif
-
-	// TODO:
-	// UTVoteCollection settings
-	// MapListManagerClassName
-
-	// session ban
 }
 
 function save()
@@ -185,7 +181,10 @@ function save()
 	}
 	GetIntPropertyByName('MinKickVotes', class'UTVoteCollector'.default.MinKickVotes);
 	GetIntPropertyByName('KickVotePercentage', class'UTVoteCollector'.default.KickVotePercentage);
-	`{MAP_VOTE_CONFIG}.static.StaticSaveConfig();
+	class'UTVoteCollector'.static.StaticSaveConfig();
+
+	GetIntPropertyByName('MapReplayLimit', class'UTMapListManager'.default.MapReplayLimit);
+	class'UTMapListManager'.static.StaticSaveConfig();
 	`endif
 
 	`endif
@@ -324,6 +323,7 @@ defaultproperties
 	Properties.Add((PropertyId=70,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=71,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=72,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=73,Data=(Type=SDT_Int32)))
 
 	PropertyMappings.Add((Id=66,name="bAllowGameVoting",ColumnHeaderText="Allow Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=67,name="bAllowMutatorVoting",ColumnHeaderText="Allow Mutator Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
@@ -332,6 +332,7 @@ defaultproperties
 	PropertyMappings.Add((Id=70,name="bAnonymousKickVoting",ColumnHeaderText="Allow Anonymous Kick Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=71,name="MinKickVotes",ColumnHeaderText="Minimal Kick Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=72,name="KickVotePercentage",ColumnHeaderText="Kick Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=73,name="MapReplayLimit",ColumnHeaderText="Map Replay Limit",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=1))
 	`endif
 	`endif
 }
