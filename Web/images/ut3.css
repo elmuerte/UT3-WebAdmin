@@ -628,3 +628,39 @@ UL.charlist LI {
 .ui-tabs-hide {
 	display: none;
 }
+
+#creditRoll {
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.creditHead {
+	background-image: url(ut3-logo.png) !important;
+	background-image: url(ut3-logo-ie6.png);
+	background-repeat: no-repeat;
+	background-position: 20px 0px;
+	
+	font-size: 2em;
+	font-weight: bold;
+	padding-top: 200px;
+	padding-left: 20px;
+	color: white;
+	margin-bottom: 150px;
+}
+
+.creditSection {
+	margin-top: 50px;
+	margin-bottom: 10px;
+	width: 200px;
+	padding: 20px;
+	color: white;
+	font-size: 1.3em;
+}
+
+.creditItem {
+	padding-left: 270px;
+	font-size: 1.5em;
+	margin-bottom: 10px;
+}

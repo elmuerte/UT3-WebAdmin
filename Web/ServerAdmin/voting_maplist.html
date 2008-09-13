@@ -1,0 +1,20 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<form method="post" action="<%page.fulluri%>">
+<fieldset>
+<legend>Map lists</legend>
+    <select id="maplistid" name="maplistid">
+    <%maplists%>
+    </select>
+    <button type="submit" id="btnselect">edit map list</button>
+</fieldset>
+</form>
+
+<%editor%>
+
+</div>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->

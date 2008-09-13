@@ -137,6 +137,7 @@ function init()
 	menu = new(Self) class'WebAdminMenu';
 	menu.webadmin = self;
 	menu.addMenu("/about", "", none,, MaxInt-1);
+	menu.addMenu("/credits", "", none,, MaxInt-1);
 	menu.addMenu("/logout", "Log out", none, "Log out from the webadmin and clear all authentication information.", MaxInt);
 
 	if (len(AuthenticationClass) != 0)
@@ -370,6 +371,11 @@ function Query(WebRequest Request, WebResponse Response)
 	else if (request.URI == "/about")
 	{
 		pageAbout(currentQuery);
+		return;
+	}
+	else if (request.URI == "/credits")
+	{
+		pageCredits(currentQuery);
 		return;
 	}
 
@@ -756,6 +762,13 @@ function pageAbout(WebAdminQuery q)
 	else q.response.Subst("client.remember", "False");
 	q.response.Subst("client.sessionid", q.session.getId());
 	sendPage(q, "about.html");
+}
+
+function pageCredits(WebAdminQuery q)
+{
+	q.response.Subst("page.title", "Credits");
+	q.response.Subst("credits", Localize("Credits", "01", "UTGameCredits"));
+	sendPage(q, "credits.html");
 }
 
 defaultproperties
