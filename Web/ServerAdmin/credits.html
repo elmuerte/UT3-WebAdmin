@@ -23,6 +23,10 @@ $('#nojs').remove();
 $('#header').remove();
 $('#menu').remove();
 
+var score = 0;
+var scoreMax = 0;
+var bullets = 0;
+
 $(document).ready(function(){
     $('#footer').remove();
     $('body').css('overflow', 'hidden');
@@ -43,7 +47,8 @@ $(document).ready(function(){
             inSection = true;
         }
         else {
-            roll.append('<div class="creditItem">'+creditData[i]+'</div>');
+            roll.append('<div class="creditItem"><span>'+creditData[i]+'</span>&nbsp;</div>');
+            ++scoreMax;
         }
     }
     roll.css('top', $(window).height());
@@ -54,6 +59,24 @@ $(document).ready(function(){
     
     $('#content').append(broll);
     $('#content').append(roll);
+    
+    $('* span', roll).click(function(){
+        if (bullets <= 0) return;
+        fireGun();
+        var x = $(this);
+        var c = $('<div class="creditItem" style="margin: 0; padding: 0;">'+x.text()+'</div>');
+        var loc = x.parent().offset();
+        c.css('position', 'absolute').css('top', loc.top).css('left', loc.left+x.parent().css('padding-left'));
+        $('#content').append(c);
+        c.hide('explode', {pieces: 16}, 500, function(){
+            ++score;
+        });
+        x.remove();
+    });
+    
+    $('#content').append('<div id="creditAmmo" title="Reload!"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></div>');
+    $('#creditAmmo').click(reload);
+    reload();
     
     broll.fadeTo(0, 0.2, function (){rollit(roll, broll)});
 });
@@ -70,7 +93,20 @@ function rollit(roll, broll) {
     }, creditData.length*1000, 'linear');
 }
 
+function fireGun() {
+    $('#creditAmmo span:visible:first').hide();
+    bullets = $('#creditAmmo span:visible').length;
+}
+
+function reload() {
+    $('#creditAmmo span').show();
+    bullets = $('#creditAmmo span:visible').length;
+}
+
 function returnHome() {
+    if (score > 0) {
+        alert("Congratulations!\nYou scored "+Math.round(score/scoreMax*100)+"%");
+    }
     window.location = '<%webadmin.path%>';
 }
 

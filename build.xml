@@ -42,6 +42,9 @@
       <fileset dir="Web/jQuery-Src" includes="**/jquery.numeric.js" />
       <fileset dir="Web/jQuery-Src" includes="**/JQuerySpinBtn.js" />
       <fileset dir="Web/jQuery-Src" includes="**/extra.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/effects.core.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/effects.explode.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/effects.shake.js" />
     </concat>
     <gzip src="Web/images/jquery.js" destfile="Web/images/jquery.js.gz"/>
   </target>

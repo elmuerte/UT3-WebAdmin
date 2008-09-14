@@ -615,6 +615,7 @@ UL.charlist LI {
 }
 .ui-tabs-panel {
     border-top: 1px solid #530000;
+	 padding-top: 5px;
 }
 
 /* Additional IE specific bug fixes... */
@@ -634,6 +635,7 @@ UL.charlist LI {
 	top: 0;
 	left: 0;
 	overflow: hidden;
+	cursor: default;
 }
 
 .creditHead {
@@ -663,4 +665,29 @@ UL.charlist LI {
 	padding-left: 270px;
 	font-size: 1.5em;
 	margin-bottom: 10px;
+}
+
+.creditItem SPAN {
+	cursor: crosshair;
+}
+
+#creditAmmo {
+	position: absolute;	
+	top: 63px;
+	right: 0;
+	padding: 7px;
+	padding-left: 15px;
+	background-image: url(hbar.png);
+	background-repeat: no-repeat;
+	height: 40px;
+	cursor: default;
+}
+
+#creditAmmo SPAN {
+	display: block;
+	float: left;
+	width: 16px;
+	height: 16px;
+	background-image: url(delete.png);
+	background-repeat: no-repeat;
 }
