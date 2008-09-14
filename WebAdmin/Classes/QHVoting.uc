@@ -77,6 +77,9 @@ function bool handleQuery(WebAdminQuery q)
 			q.response.Redirect(WebAdmin.Path$"/settings/general#SettingsGroup6");
 			return true;
 		case "/voting/maplist":
+			if (MapListManager == none) {
+				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+			}
 			handleMaplist(q);
 			return true;
 		case "/voting/mutators":
@@ -108,14 +111,14 @@ function bool unhandledQuery(WebAdminQuery q)
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/voting", "Voting", self, "Generic voting settings");
-	menu.addMenu("/voting/maplist", "Maps", self, "...");
-	menu.addMenu("/voting/mutators", "Mutators", self, "...");
 	menu.addMenu("/voting/profiles", "Game Profiles", self, "...");
+	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles");
+	menu.addMenu("/voting/mutators", "Mutators", self, "...");
 }
 
 function handleMaplist(WebAdminQuery q)
 {
-	local int i;
+	local int i, j;
 	local string tmp, tmp2, editMLname;
 	local UTMapList ml;
 
@@ -126,6 +129,55 @@ function handleMaplist(WebAdminQuery q)
 
 	editMLname = q.request.getVariable("maplistid");
 
+	if (q.request.getVariable("action") ~= "create")
+	{
+		if (len(editMLname) > 0)
+		{
+			tmp = editMLname;
+			editMLname = repl(editMLname, " ", "_");
+			editMLname -= "[";
+			editMLname -= "]";
+			editMLname = string(name(editMLname));
+			if ((MapListManager != none) && (maplists.find('name', editMLname) == INDEX_NONE))
+			{
+				ml = MapListManager.GetMapListByName(name(editMLname), true);
+				if (ml != none)
+				{
+					ml.SaveConfig();
+					for (i = 0; i < maplists.length; i++)
+					{
+						if (caps(tmp) < caps(maplists[i].friendlyName))
+						{
+							maplists.insert(i, 1);
+							maplists[i].name = editMLname;
+							maplists[i].friendlyName = tmp;
+							break;
+						}
+					}
+					if (i == maplists.length)
+					{
+						maplists.length = i+1;
+						maplists[i].name = editMLname;
+						maplists[i].friendlyName = tmp;
+					}
+					webadmin.addMessage(q, "Created the map list "$tmp, MT_Error);
+				}
+				else {
+					webadmin.addMessage(q, "Error creating map list: "$tmp, MT_Error);
+					editMLname = "";
+				}
+			}
+			else {
+				webadmin.addMessage(q, "There is already a map list with the name: "$tmp, MT_Error);
+				editMLname = "";
+			}
+		}
+		else {
+			webadmin.addMessage(q, "Map list name can not be empty", MT_Error);
+		}
+	}
+
+	tmp = "";
 	for (i = 0; i < maplists.length; i++)
 	{
 		q.response.subst("maplist.id", `HTMLEscape(maplists[i].name));
@@ -156,6 +208,10 @@ function handleMaplist(WebAdminQuery q)
 		ml = MapListManager.GetMapListByName(name(editMLname), false);
 		if (ml != none)
 		{
+			/*
+				TODO: handle input data
+			*/
+
 			q.response.subst("maplistid", `HTMLEscape(editMLname));
 			i = maplists.find('name', editMLname);
 			if (i != INDEX_NONE)
@@ -164,14 +220,27 @@ function handleMaplist(WebAdminQuery q)
 			}
 			q.response.subst("autoloadprefixes", `HTMLEscape(repl(ml.AutoLoadPrefixes, ",", chr(10)$chr(13))));
 
+			tmp = "";
+			for (i = 0; i < ml.maps.length; i++)
+			{
+    			if (len(tmp) > 0) tmp $= chr(10);
+				tmp $= ml.maps[i].Map;
+				for (j = 0; j < ml.maps[i].ExtraData.length; j++)
+				{
+					tmp $= "?"$ml.maps[i].ExtraData[j].key;
+					if (ml.maps[i].ExtraData[j].value != "")
+					{
+						tmp $= "="$ml.maps[i].ExtraData[j].value;
+					}
+				}
+			}
+			q.response.subst("mapcycle", `HTMLEscape(tmp));
+
 			q.response.subst("editor", webadmin.include(q, "voting_maplist_editor.inc"));
 		}
 		else {
 			webadmin.addMessage(q, "No map list available with the id: "$editMLname, MT_Error);
 		}
-	}
-	else {
-		webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
 	}
 
 	webadmin.sendPage(q, "voting_maplist.html");

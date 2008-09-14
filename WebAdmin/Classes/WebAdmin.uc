@@ -138,6 +138,7 @@ function init()
 	menu.webadmin = self;
 	menu.addMenu("/about", "", none,, MaxInt-1);
 	menu.addMenu("/credits", "", none,, MaxInt-1);
+	menu.addMenu("/data", "", none,, MaxInt-1);
 	menu.addMenu("/logout", "Log out", none, "Log out from the webadmin and clear all authentication information.", MaxInt);
 
 	if (len(AuthenticationClass) != 0)
@@ -376,6 +377,11 @@ function Query(WebRequest Request, WebResponse Response)
 	else if (request.URI == "/credits")
 	{
 		pageCredits(currentQuery);
+		return;
+	}
+	else if (request.URI == "/data")
+	{
+		pageData(currentQuery);
 		return;
 	}
 
@@ -771,12 +777,66 @@ function pageCredits(WebAdminQuery q)
 	sendPage(q, "credits.html");
 }
 
+function pageData(WebAdminQuery q)
+{
+	local string tmp;
+	local int i;
+
+	local UTUIDataProvider_GameModeInfo gametype;
+	local array<UTUIDataProvider_MapInfo> maps;
+
+	q.response.AddHeader("Content-Type: text/xml");
+	q.response.SendText("<request>");
+
+	tmp = q.request.getVariable("type");
+	if (tmp == "gametypes") {
+		dataStoreCache.loadGameTypes();
+		q.response.SendText("<gametypes>");
+		foreach dataStoreCache.gametypes(gametype)
+	 	{
+ 			if (gametype.bIsCampaign)
+ 			{
+ 				continue;
+	 		}
+	 		q.response.SendText("<gametype>");
+	 		q.response.SendText("<class>"$`HTMLEscape(gametype.GameMode)$"</class>");
+	 		q.response.SendText("<friendlyname>"$`HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName))$"</friendlyname>");
+ 			q.response.SendText("</gametype>");
+	 	}
+		q.response.SendText("</gametypes>");
+	}
+	else if (tmp == "maps") {
+		q.response.SendText("<maps>");
+		maps = dataStoreCache.getMaps(q.request.getVariable("gametype"));
+ 		for (i = 0; i < maps.length; i++)
+ 		{
+ 			q.response.SendText("<map>");
+ 			q.response.SendText("<name>"$`HTMLEscape(maps[i].MapName)$"</name>");
+ 			q.response.SendText("<friendlyname>"$`HTMLEscape(class'WebAdminUtils'.static.getLocalized(maps[i].FriendlyName))$"</friendlyname>");
+ 			q.response.SendText("</map>");
+ 		}
+ 		q.response.SendText("</maps>");
+	}
+	else if (tmp == "mutators") {
+		q.response.SendText("<mutators>");
+		q.response.SendText("</mutators>");
+	}
+	else {
+		addMessage(q, "Requested unknown data type: "$tmp, MT_Error);
+	}
+
+	q.response.SendText("<messages><![CDATA[");
+	q.response.SendText(renderMessages(q));
+	q.response.SendText("]]></messages>");
+	q.response.SendText("</request>");
+}
+
 defaultproperties
 {
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
-	version="1.6"
+	version="1.7"
 
 	// config
 	bHttpAuth=false
