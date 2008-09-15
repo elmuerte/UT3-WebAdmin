@@ -118,9 +118,10 @@ function registerMenuItems(WebAdminMenu menu)
 
 function handleMaplist(WebAdminQuery q)
 {
-	local int i, j;
+	local int i, j, n;
 	local string tmp, tmp2, editMLname;
 	local UTMapList ml;
+	local array<string> tmpa, tmpb;
 
 	if (mapLists.length == 0)
 	{
@@ -160,7 +161,7 @@ function handleMaplist(WebAdminQuery q)
 						maplists[i].name = editMLname;
 						maplists[i].friendlyName = tmp;
 					}
-					webadmin.addMessage(q, "Created the map list "$tmp, MT_Error);
+					webadmin.addMessage(q, "Created the map list "$tmp);
 				}
 				else {
 					webadmin.addMessage(q, "Error creating map list: "$tmp, MT_Error);
@@ -175,6 +176,27 @@ function handleMaplist(WebAdminQuery q)
 		else {
 			webadmin.addMessage(q, "Map list name can not be empty", MT_Error);
 		}
+	}
+
+	if (q.request.getVariable("action") ~= "delete")
+	{
+		ml = MapListManager.GetMapListByName(name(editMLname), false);
+		if (ml != none)
+		{
+			ml.ClearConfig();
+			ml = none;
+			i = maplists.find('name', editMLname);
+			if (i != INDEX_NONE)
+			{
+				editMLname = maplists[i].friendlyName;
+				maplists.remove(i, 1);
+			}
+			webadmin.addMessage(q, "Removed the map list: "$editMLname);
+		}
+		else {
+			webadmin.addMessage(q, "No map list available with the id: "$editMLname, MT_Error);
+		}
+		editMLname = "";
 	}
 
 	tmp = "";
@@ -208,9 +230,51 @@ function handleMaplist(WebAdminQuery q)
 		ml = MapListManager.GetMapListByName(name(editMLname), false);
 		if (ml != none)
 		{
-			/*
-				TODO: handle input data
-			*/
+			if (q.request.getVariable("action") ~= "save")
+			{
+				tmp = q.request.getVariable("autoloadprefixes");
+				ParseStringIntoArray(tmp, tmpa, chr(10), true);
+				tmp = "";
+				for (i = 0; i < tmpa.length; i++)
+				{
+					tmp2 = `Trim(tmpa[i]);
+					if (len(tmp2) > 0)
+					{
+						if (len(tmp) > 0) tmp $= ",";
+						tmp $= tmp2;
+					}
+				}
+				ml.AutoLoadPrefixes = tmp;
+
+				ParseStringIntoArray(q.request.getVariable("mapcycle"), tmpa, chr(10), true);
+				ml.Maps.length = 0;
+				for (i = 0; i < tmpa.length; i++)
+				{
+					tmp = `Trim(tmpa[i]);
+					if (len(tmp) == 0) continue;
+					ParseStringIntoArray(tmp, tmpb, "?", true);
+					if (tmpb.length == 0) continue;
+					ml.Maps.length = ml.Maps.length+1;
+					ml.Maps[ml.Maps.length-1].Map = tmpb[0];
+					for (j = 1; j < tmpb.length; j++)
+					{
+						tmp2 = tmpb[j];
+						n = InStr(tmp2, "=");
+						if (n != INDEX_NONE)
+						{
+							ml.Maps[ml.Maps.length-1].ExtraData.length = j;
+							ml.Maps[ml.Maps.length-1].ExtraData[j-1].Key = name(Left(tmp2, n));
+							ml.Maps[ml.Maps.length-1].ExtraData[j-1].Value = Mid(tmp2, n+1);
+						}
+						else {
+							ml.Maps[ml.Maps.length-1].ExtraData[j-1].Key = name(tmp2);
+						}
+					}
+				}
+
+				ml.SaveConfig();
+				webadmin.addMessage(q, "Changes saved");
+			}
 
 			q.response.subst("maplistid", `HTMLEscape(editMLname));
 			i = maplists.find('name', editMLname);
@@ -218,7 +282,7 @@ function handleMaplist(WebAdminQuery q)
 			{
 				q.response.subst("friendlyname", `HTMLEscape(maplists[i].friendlyName));
 			}
-			q.response.subst("autoloadprefixes", `HTMLEscape(repl(ml.AutoLoadPrefixes, ",", chr(10)$chr(13))));
+			q.response.subst("autoloadprefixes", `HTMLEscape(repl(ml.AutoLoadPrefixes, ",", chr(10))));
 
 			tmp = "";
 			for (i = 0; i < ml.maps.length; i++)

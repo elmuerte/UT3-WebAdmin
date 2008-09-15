@@ -1,5 +1,5 @@
 
-<form method="post" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>" id="maplistform">
 <fieldset>
   <legend><%friendlyname%></legend>
   <input type="hidden" name="maplistid" value="<%maplistid%>" />
@@ -285,12 +285,13 @@ function populateMaps(data, textStatus) {
 }
 
 function handleMessages(jdata, textStatus) {
-    var old = $('#messages *');
+    var old = $('#messages .oldMessage');
     var newmsg = $(jdata.find('request messages').text());
     newmsg.hide();
     $('#messages').prepend(newmsg);
     newmsg.fadeIn();
     old.remove();
+    $('#messages *').addClass('oldMessage');
 }
 
 //]]>

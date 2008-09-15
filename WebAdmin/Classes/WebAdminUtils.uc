@@ -42,7 +42,7 @@ static final function String Trim(coerce string inp)
 		if (Asc(Mid(inp, b, 1)) > 32) break;
 		b++;
 	}
-	while (e > b)
+	while (e >= b)
 	{
 		if (Asc(Mid(inp, e, 1)) > 32) break;
 		e--;
