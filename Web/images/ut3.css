@@ -205,7 +205,7 @@ P {
 	background-position: 0 -255px;
 	color: #ffffff;
 	width: 200px;
-	padding-left: 25px;
+	padding-left: 5px;
 	float: left;
 	position: absolute;
 	top: 225px;
@@ -231,6 +231,7 @@ P {
 
 #menu A {
 	padding: 0.2em;
+	padding-left: 20px;
 	display: block;
 	color: white;
 	text-decoration: none;
@@ -238,6 +239,16 @@ P {
 
 #menu A:Hover {
 	text-decoration: underline;
+}
+
+#menu A.active {
+	background-image: url(active.png);
+	background-position: left 6px;
+	background-repeat: no-repeat;
+}
+
+#menu A:Hover.active {
+	text-decoration: none;
 }
 
 #footer {

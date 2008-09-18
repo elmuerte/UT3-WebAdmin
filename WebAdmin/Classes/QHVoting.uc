@@ -111,7 +111,7 @@ function bool unhandledQuery(WebAdminQuery q)
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/voting", "Voting", self, "Generic voting settings");
-	menu.addMenu("/voting/profiles", "Game Profiles", self, "...");
+	menu.addMenu("/voting/profiles", "Game Profiles", self, "...", -1);
 	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles");
 	menu.addMenu("/voting/mutators", "Mutators", self, "...");
 }

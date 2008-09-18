@@ -19,6 +19,7 @@ $(document).ready(function(){
       });
     });
   } /* end if */
+  $('#menu a[href='+window.location.pathname+']').addClass('active');
 });
 // -->
 </script>
