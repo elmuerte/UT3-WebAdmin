@@ -33,7 +33,6 @@
   <div id="mlactions">
   <br />
   <button type="submit" name="action" value="save">save</button>
-  <button type="submit" name="action" value="activate" title="Make this map cycle the active map cycle for the gametype">activate</button>
   <button type="submit" name="action" value="delete">delete</button>
   </div>
 
@@ -175,9 +174,8 @@ function fancyMlEditor() {
     });
     
     $('#mleditor table thead tr').append("<td></td>");
-    $('#jsmlctrls').append(manualAddBtn).append("<br />").append(addMissingMapsBtn).append("<br />").append(clearMapListBtn);
+    $('#jsmlctrls').append(manualAddBtn).append("<br />").append(addMissingMapsBtn).append("<br />").append(clearMapListBtn).append("<br />").append(simpleEditBtn);
     
-    $('#mlactions').append(simpleEditBtn).append(" ");
     $('#maplistform').submit(function () {
         updateTextMapList();
         return true;
