@@ -4,8 +4,9 @@
 
 <fieldset id="mloverview">
 <legend>Map lists</legend>
-<form method="post" action="<%page.fulluri%>">
+<form id="editlist" method="post" action="<%page.fulluri%>">
     <select id="maplistid" name="maplistid">
+    <option value="" />
     <%maplists%>
     </select>
     <button type="submit" id="btnselect">edit map list</button>
@@ -26,6 +27,9 @@
 //<![CDATA[
 
 $(document).ready(function(){
+    $('#maplistid').change(function(){
+        $('#editlist').submit();
+    });
     $('#newlist').submit(function() {
         var nlid = jQuery.trim($(this.maplistid).val());
         var isValid = true;

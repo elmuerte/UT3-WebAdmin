@@ -252,22 +252,25 @@ function handleMaplist(WebAdminQuery q)
 				{
 					tmp = `Trim(tmpa[i]);
 					if (len(tmp) == 0) continue;
-					ParseStringIntoArray(tmp, tmpb, "?", true);
-					if (tmpb.length == 0) continue;
 					ml.Maps.length = ml.Maps.length+1;
-					ml.Maps[ml.Maps.length-1].Map = tmpb[0];
-					for (j = 1; j < tmpb.length; j++)
+					j = InStr(tmp, " ");
+					if (j == INDEX_NONE) j = Len(tmp);
+					ml.Maps[ml.Maps.length-1].Map = Left(tmp, j);
+
+					ParseStringIntoArray(`Trim(mid(tmp, j)), tmpb, "?", true);
+					for (j = 0; j < tmpb.length; j++)
 					{
-						tmp2 = tmpb[j];
+						tmp2 = `Trim(tmpb[j]);
+						//if (len(tmp2) == 0) continue;
 						n = InStr(tmp2, "=");
+						ml.Maps[ml.Maps.length-1].ExtraData.length = j+1;
 						if (n != INDEX_NONE)
 						{
-							ml.Maps[ml.Maps.length-1].ExtraData.length = j;
-							ml.Maps[ml.Maps.length-1].ExtraData[j-1].Key = name(Left(tmp2, n));
-							ml.Maps[ml.Maps.length-1].ExtraData[j-1].Value = Mid(tmp2, n+1);
+							ml.Maps[ml.Maps.length-1].ExtraData[j].Key = name(Left(tmp2, n));
+							ml.Maps[ml.Maps.length-1].ExtraData[j].Value = Mid(tmp2, n+1);
 						}
 						else {
-							ml.Maps[ml.Maps.length-1].ExtraData[j-1].Key = name(tmp2);
+							ml.Maps[ml.Maps.length-1].ExtraData[j].Key = name(tmp2);
 						}
 					}
 				}
@@ -289,8 +292,10 @@ function handleMaplist(WebAdminQuery q)
 			{
     			if (len(tmp) > 0) tmp $= chr(10);
 				tmp $= ml.maps[i].Map;
+
 				for (j = 0; j < ml.maps[i].ExtraData.length; j++)
 				{
+					if (j == 0) tmp $= " ";
 					tmp $= "?"$ml.maps[i].ExtraData[j].key;
 					if (ml.maps[i].ExtraData[j].value != "")
 					{

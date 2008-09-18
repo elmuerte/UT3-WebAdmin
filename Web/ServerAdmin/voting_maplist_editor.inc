@@ -101,11 +101,17 @@ function fancyMlEditor() {
     for (i = 0; i < _mapcycle.length; i++)
     {
         str = jQuery.trim(_mapcycle[i]);
+        var splt = str.indexOf(' ');
+        var xtra = new Array();
+        if (splt > -1) {
+          xtra = str.substring(splt, str.length).split('?');
+          str = str.substring(0, splt);
+        }
         if (str.length > 0)
         {
             var item = jQuery('<li><span class="entry">'+str+'</span></li>');
             _jsmapcycle.append(item);
-            getDeleteMe($(item));
+            addModButtons($(item));
         }
     }
     _jsmapcycle.sortable({ 
@@ -125,7 +131,7 @@ function fancyMlEditor() {
         drop: function(ev, ui) {
             var item = $(ui.draggable).clone();
             item.removeClass('mapEntry');            
-            getDeleteMe(item);
+            addModButtons(item);
             _jsmapcycle.append(item);            
             _jsmapcycle.sortable("refresh");
             _jsmapcycle.sortable("refreshPositions");
@@ -152,7 +158,7 @@ function fancyMlEditor() {
         var res = jQuery.trim(prompt("Enter the map name (without extension) to be added to the map cycle. \nHint: you can include URL options like ?LinkSetup=...", ""));
         if (res != "") {
             item = jQuery('<li><span class="entry">'+res+'</span></li>');
-            getDeleteMe($(item));
+            addModButtons($(item));
             _jsmapcycle.append(item);
             _jsmapcycle.sortable("refresh");
             _jsmapcycle.sortable("refreshPositions");
@@ -182,11 +188,17 @@ function fancyMlEditor() {
     });
 }
 
-function getDeleteMe(forItem) {
+function addModButtons(forItem) {
     var res = jQuery('<span class="deleteButton" title="delete this map"></span>');
     res = $(res);
-    res.click(deleteme);
+    res.click(deleteEntry);
     forItem.prepend(res);
+    
+    res = jQuery('<span class="editButton" title="edit additional information"></span>');
+    res = $(res);
+    res.click(function(){editEntry(forItem);});
+    //forItem.prepend(res);
+    
     forItem.hover(function() {
         $(this).addClass('sorting');
     }, function() {
@@ -194,8 +206,12 @@ function getDeleteMe(forItem) {
     });
 }
 
-function deleteme() {
+function deleteEntry() {
     $(this).parent().remove();
+}
+
+function editEntry(item) {
+    alert('not supported');
 }
 
 function updateTextMapList() {
@@ -223,7 +239,7 @@ function addMissingMaps() {
         var item = jQuery.trim($('.entry', maplist.get(i)).text());
         if (jQuery.inArray(item, maps) == -1) {
             var item = jQuery('<li><span class="entry">'+item+'</span></li>');
-            getDeleteMe($(item));
+            addModButtons($(item));
             _jsmapcycle.append(item);
         }
     }

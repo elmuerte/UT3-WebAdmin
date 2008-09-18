@@ -2,11 +2,11 @@
 
 <div id="content">
 
-<form method="post" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>" id="mutatorselect">
 <fieldset>
 <legend>Mutator selection</legend>
     <select id="mutator" name="mutator">
-    <option></option>
+    <option value=""/>
     <%mutators%>
     </select>
     <button type="submit" name="action" value="select" id="btnselect">edit mutator</button>
@@ -16,6 +16,18 @@
 <%settings%>
 
 </div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+    $('#mutator').change(function(){
+        $('#mutatorselect').submit();
+    });
+});
+    
+//]]>
+</script>
 
 <!-- #include file="navigation.inc" -->
 <!-- #include file="footer.inc" -->

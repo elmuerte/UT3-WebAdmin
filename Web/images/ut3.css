@@ -509,7 +509,7 @@ DIV.message {
     background-color: #FFF2F2;
 }
 
-.deleteButton {
+.deleteButton, .editButton {
 	display: block;
 	width: 14px;
 	height: 1em;
@@ -524,7 +524,11 @@ DIV.message {
 	background-image: url(delete.png);	
 }
 
-.dragging .deleteButton {
+.sorting .editButton {
+	background-image: url(delete.png);	
+}
+
+.dragging .deleteButton, .dragging .editButton {
 	display: none;
 }
 
@@ -697,8 +701,8 @@ UL.charlist LI {
 #creditAmmo SPAN {
 	display: block;
 	float: left;
-	width: 16px;
+	width: 20px;
 	height: 16px;
-	background-image: url(delete.png);
+	background-image: url(active.png);
 	background-repeat: no-repeat;
 }

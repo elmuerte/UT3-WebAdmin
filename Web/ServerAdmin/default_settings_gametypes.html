@@ -2,10 +2,11 @@
 
 <div id="content">
 
-<form method="post" action="<%page.fulluri%>">
+<form method="post" action="<%page.fulluri%>" id="gametypeselect">
 <fieldset>
 <legend>Gametype selection</legend>
     <select id="gametype" name="gametype">
+    <option value=""/>
     <%gametypes%>
     </select>
     <button type="submit" name="action" value="select" id="btnselect">edit gametype</button>
@@ -24,6 +25,18 @@
 </form>
 
 </div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+    $('#gametype').change(function(){
+        $('#gametypeselect').submit();
+    });
+});
+    
+//]]>
+</script>
 
 <!-- #include file="navigation.inc" -->
 <!-- #include file="footer.inc" -->

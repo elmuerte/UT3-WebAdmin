@@ -1,0 +1,39 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<fieldset id="profoverview">
+<legend>Map lists</legend>
+<form id="editprofile" method="post" action="<%page.fulluri%>">
+    <select id="profilename" name="profilename">
+    <option value="" />
+    <%profiles%>
+    </select>
+    <button type="submit" id="btnselect">edit map list</button>
+</form>
+<form id="newprofile" method="post" action="<%page.fulluri%>">
+    <br />
+    <label for="newprofilename">Profile name:</label>
+    <input type="text" id="newprofilename" name="newprofilename" value=""/>
+    <button type="submit" name="action" value="create">create new profile</button>
+</form>
+</fieldset>
+
+<%editor%>
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+    $('#profilename').change(function(){
+        $('#editprofile').submit();
+    });
+});
+
+//]]>
+</script>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->
