@@ -253,11 +253,11 @@ function handleMaplist(WebAdminQuery q)
 					tmp = `Trim(tmpa[i]);
 					if (len(tmp) == 0) continue;
 					ml.Maps.length = ml.Maps.length+1;
-					j = InStr(tmp, " ");
+					j = InStr(tmp, "extra:");
 					if (j == INDEX_NONE) j = Len(tmp);
 					ml.Maps[ml.Maps.length-1].Map = Left(tmp, j);
 
-					ParseStringIntoArray(`Trim(mid(tmp, j)), tmpb, "?", true);
+					ParseStringIntoArray(`Trim(mid(tmp, j+6)), tmpb, "?", true);
 					for (j = 0; j < tmpb.length; j++)
 					{
 						tmp2 = `Trim(tmpb[j]);
@@ -295,8 +295,14 @@ function handleMaplist(WebAdminQuery q)
 
 				for (j = 0; j < ml.maps[i].ExtraData.length; j++)
 				{
-					if (j == 0) tmp $= " ";
-					tmp $= "?"$ml.maps[i].ExtraData[j].key;
+					if (j == 0)
+					{
+						tmp $= "    extra:";
+					}
+					else {
+						tmp $= "?";
+					}
+					tmp $= ml.maps[i].ExtraData[j].key;
 					if (ml.maps[i].ExtraData[j].value != "")
 					{
 						tmp $= "="$ml.maps[i].ExtraData[j].value;

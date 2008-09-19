@@ -11,7 +11,12 @@
       
       <textarea rows="15" cols="60" name="mapcycle" id="mapcycle"><%mapcycle%></textarea>
         
-      <p id="noscriptHint"><em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser. Enter one map per line, you can include URL options like ?LinkSetup=...</p>
+      <p id="noscriptHint">
+        <em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser. 
+        Enter one map per line, you can include URL options like <code>?LinkSetup=...</code>. 
+        The data after the map name starting with <code>&nbsp;extra:</code> is additional information about this map used by the
+        map list manager to select the next map. It is safe to remove or alter this.
+      </p>
 
     </div>
     
@@ -101,15 +106,16 @@ function fancyMlEditor() {
     for (i = 0; i < _mapcycle.length; i++)
     {
         str = jQuery.trim(_mapcycle[i]);
-        var splt = str.indexOf(' ');
+        var splt = str.indexOf('extra:');
         var xtra = new Array();
         if (splt > -1) {
-          xtra = str.substring(splt, str.length).split('?');
+          xtra = str.substring(splt+6, str.length).split('?');
           str = str.substring(0, splt);
         }
         if (str.length > 0)
         {
             var item = jQuery('<li><span class="entry">'+str+'</span></li>');
+            createDataObject(xtra, item);
             _jsmapcycle.append(item);
             addModButtons($(item));
         }
@@ -169,6 +175,19 @@ function fancyMlEditor() {
     addMissingMapsBtn = $(addMissingMapsBtn);
     addMissingMapsBtn.click(addMissingMaps);
     
+    var resetCntBtn = jQuery('<button type="button" id="resetCntBtn" title="reset the play counters for all maps">reset counters</button>');
+    resetCntBtn = $(resetCntBtn);
+    resetCntBtn.click(function(){
+      for (var i = 0; i < extraData.length; i++) {
+        for (var j = extraData[i].data.length-1; j >= 0; j--) {
+          if (extraData[i].data[j].key == 'LastPlayIdx' || extraData[i].data[j].key == 'PlayCount') {
+            extraData[i].data[j].key = '';
+            extraData[i].data[j].value = '';
+          }
+        }         	
+      }
+    });
+    
     var clearMapListBtn = jQuery('<button type="button" id="clearMapList" title="clear the current map list">clear</button>');
     clearMapListBtn = $(clearMapListBtn);
     clearMapListBtn.click(function () {
@@ -180,12 +199,39 @@ function fancyMlEditor() {
     });
     
     $('#mleditor table thead tr').append("<td></td>");
-    $('#jsmlctrls').append(manualAddBtn).append("<br />").append(addMissingMapsBtn).append("<br />").append(clearMapListBtn).append("<br />").append(simpleEditBtn);
+    $('#jsmlctrls').append(manualAddBtn).append("<br />").append(addMissingMapsBtn).append("<br />").append(clearMapListBtn).append("<br />").append(resetCntBtn).append("<br />").append("<br />").append(simpleEditBtn);
     
     $('#maplistform').submit(function () {
         updateTextMapList();
         return true;
     });
+}
+
+var extraData = new Array();
+
+function createDataObject(data, foritem) {
+  var adata = new Array();
+  for (var i = 0; i < data.length; i++) {
+    var itm = jQuery.trim(data[i]);
+    if (itm.length == 0) continue;
+    var idx = data[i].indexOf('=');
+    if (idx == -1) {
+      idx = data[i].length;
+    }
+    var item = {'key': data[i].substring(0, idx), 'value': data[i].substring(idx+1, data[i].length)};
+    adata[adata.length] = item;
+  }
+  if (adata.length == 0) return;
+  var idx = extraData.length;
+  extraData[idx] = {entry: foritem, data: adata};
+  foritem.attr('extraMapData', idx);
+}
+
+function getExtraData(foritem) {
+  var data = foritem.attr('extraMapData');
+  if (data == undefined || data == "") return new Array();
+  var idx = parseInt(data);
+  return extraData[idx].data;
 }
 
 function addModButtons(forItem) {
@@ -211,7 +257,7 @@ function deleteEntry() {
 }
 
 function editEntry(item) {
-    alert('not supported');
+  alert('not implemented'); 
 }
 
 function updateTextMapList() {
@@ -222,8 +268,20 @@ function updateTextMapList() {
     }
     var maplist = $('#jsmapcycle li');
     var txtlist = "";
-    for (i = 0; i < maplist.size(); i++) {
-        txtlist += jQuery.trim($('.entry', maplist.get(i)).text())+'\n';
+    for (var i = 0; i < maplist.size(); i++) {
+        txtlist += jQuery.trim($('.entry', maplist.get(i)).text());
+        var extra = getExtraData(jQuery(maplist.get(i)));
+        if (extra.length > 0) {
+          txtlist += '    extra:';
+          for (var j = 0; j < extra.length; j++) {
+            if (extra[j].key == '') continue;
+            if (j > 0) txtlist += '?';
+            txtlist += extra[j].key;
+            txtlist += '=';
+            txtlist += extra[j].value;
+          }
+        }
+        txtlist += '\n';
     }
     $('#mapcycle').val(txtlist);
 }

@@ -133,6 +133,14 @@ P {
     margin-bottom: 0.5em;
 }
 
+CODE {
+	background-color: #FFE3E3;
+	border: 1px solid #FFBFBF;
+	padding: 0 2px 0 2px;
+	border-top: none;
+	border-bottom: none;
+}
+
 #header {
 	background-image: url(header.gif);
 	background-repeat: no-repeat;
@@ -525,7 +533,7 @@ DIV.message {
 }
 
 .sorting .editButton {
-	background-image: url(delete.png);	
+	background-image: url(edit.png);	
 }
 
 .dragging .deleteButton, .dragging .editButton {
