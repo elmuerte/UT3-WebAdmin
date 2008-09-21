@@ -1,3 +1,7 @@
+v1.7 - 2008-09-21
+-----------------
+- security bug fix
+
 v1.6 - 2008-08-23
 -----------------
 - fixed bug #52: Hard to remove bots from bot roster 
