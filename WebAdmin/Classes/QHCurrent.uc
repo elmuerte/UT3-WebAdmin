@@ -245,7 +245,7 @@ function handleCurrent(WebAdminQuery q)
 	local PlayerReplicationInfo pri;
 	local int idx;
 	local mutator mut;
-	local string tmp;
+	local string tmp, tmp2;
 
 	q.response.subst("game.name", `HTMLEscape(webadmin.WorldInfo.Game.GameName));
 	q.response.subst("game.type", webadmin.WorldInfo.Game.class.getPackageName()$"."$webadmin.WorldInfo.Game.class);
@@ -254,12 +254,25 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("map.author", `HTMLEscape(webadmin.WorldInfo.Author));
 	q.response.subst("map.name", webadmin.WorldInfo.GetPackageName());
 
+	webadmin.dataStoreCache.loadMutators();
 	mut = webadmin.WorldInfo.Game.BaseMutator;
 	tmp = "";
 	while (mut != none)
 	{
 		if (len(tmp) > 0) tmp $= ", ";
-		tmp $= mut.class.getPackageName()$"."$mut.class;
+		tmp2 = mut.class.getPackageName()$"."$mut.class;
+		for (idx = 0; idx < webadmin.dataStoreCache.mutators.Length; ++idx)
+		{
+			if (webadmin.dataStoreCache.mutators[idx].ClassName ~= tmp2)
+			{
+				tmp $= webadmin.dataStoreCache.mutators[idx].FriendlyName;
+				break;
+			}
+		}
+		if (idx == webadmin.dataStoreCache.mutators.Length)
+		{
+			tmp $= tmp2;
+		}
 		mut = mut.NextMutator;
 	}
 	q.response.subst("mutators", tmp);

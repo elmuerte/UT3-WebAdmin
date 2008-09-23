@@ -372,6 +372,9 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 	local array<MutatorGroup> result;
 	local MutatorGroup group;
 	local class<UTGame> GameModeClass;
+	local bool findGameType;
+
+	findGameType = true;
 
 	// Why is this needed?
 	gametype = Repl(gametype, "UTGameContent.", "UTGame.");
@@ -392,8 +395,9 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 				}
 			}
 			else {
-				if (GameModeClass == none)
+				if (GameModeClass == none && findGameType)
 				{
+					findGameType = false;
 					GameModeClass = class<UTGame>(DynamicLoadObject(gametype, class'class'));
 					if (GameModeClass == none)
 					{

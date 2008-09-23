@@ -836,7 +836,7 @@ defaultproperties
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 	timestamp=`{TIMESTAMP}
-	version="1.7"
+	version="1.8"
 
 	// config
 	bHttpAuth=false

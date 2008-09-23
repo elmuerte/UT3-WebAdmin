@@ -5,6 +5,7 @@ Note: Patch 1.4 is required
 - added spawn protection time setting for gametypes
 - fixed bot roster editing when the roster was empty
 - konami code
+- new voting configuration functionality
 
 v1.7 - 2008-09-21
 -----------------

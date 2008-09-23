@@ -2,7 +2,7 @@
 <div id="footer">
 Copyright 2008 Epic Games, Inc.
 &mdash;
-<a href="<%webadmin.path%>/about">About the UT3 WebAdmin</a>
+<a href="<%webadmin.path%>/about" title="v<%build.version%> - <%build.timestamp%>">About the UT3 WebAdmin</a>
 </div>
 
 <script type="text/javascript">

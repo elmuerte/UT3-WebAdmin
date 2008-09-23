@@ -51,7 +51,12 @@ function init(WebAdmin webapp)
 		MapListManager = UTGame(webadmin.WorldInfo.Game).MapListManager;
 	}
 
-	//TODO import legacy data
+	if (bImportLegacyMaplists && MapListManager != none)
+	{
+		bImportLegacyMaplists = false;
+		SaveConfig();
+		convertLegacyMaplists();
+	}
 }
 
 /**
@@ -114,6 +119,48 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/voting/profiles", "Game Profiles", self, "...", -1);
 	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles");
 	menu.addMenu("/voting/mutators", "Mutators", self, "...");
+}
+
+function convertLegacyMaplists()
+{
+	local AdditionalMapLists ml;
+	local class<AdditionalMapLists> amlClass;
+	local int i, j;
+	local UTMapList newMl;
+	local string mlName, basename;
+	local array<string> listnames;
+
+	GetPerObjectConfigSections(Class'UTMapList', listnames);
+
+ 	amlClass = class<AdditionalMapLists>(DynamicLoadObject(class'QHDefaults'.default.AdditionalMLClass, class'class'));
+	if (amlClass == none)
+	{
+		return;
+	}
+	ml = new amlClass;
+	for (i = 0; i < ml.mapCycles.length; i++)
+	{
+		mlName = repl(ml.mapCycles[i].FriendlyName, " ", "_");
+		mlName -= "[";
+		mlName -= "]";
+		basename = mlName;
+		j = 1;
+		while (listnames.find(mlName) != INDEX_NONE)
+		{
+			++j;
+			mlName = basename$"_"$j;
+		}
+
+		newMl = MapListManager.GetMapListByName(name(mlName), true);
+		newMl.Maps.length = ml.mapCycles[i].cycle.Maps.length;
+		for (j = 0; j < ml.mapCycles[i].cycle.Maps.length; j++)
+		{
+			newMl.Maps[j].Map = ml.mapCycles[i].cycle.Maps[j];
+		}
+		newMl.SaveConfig();
+		listnames[listnames.length] = mlName;
+	}
+	`log("Converted "$ml.mapCycles.length$" additional map lists to new voting map lists",,'WebAdmin');
 }
 
 function handleMaplist(WebAdminQuery q)
