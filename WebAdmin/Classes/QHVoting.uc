@@ -84,14 +84,25 @@ function bool handleQuery(WebAdminQuery q)
 		case "/voting/maplist":
 			if (MapListManager == none) {
 				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+				webadmin.sendPage(q, "message.html");
+				return true;
 			}
 			handleMaplist(q);
 			return true;
 		case "/voting/mutators":
-			// ...
+			if (MapListManager == none) {
+				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+				webadmin.sendPage(q, "message.html");
+				return true;
+			}
 			return true;
 		case "/voting/profiles":
-			// ...
+			if (MapListManager == none) {
+				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+				webadmin.sendPage(q, "message.html");
+				return true;
+			}
+			handleProfiles(q);
 			return true;
 	}
 	return false;
@@ -116,8 +127,8 @@ function bool unhandledQuery(WebAdminQuery q)
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/voting", "Voting", self, "Generic voting settings");
-	menu.addMenu("/voting/profiles", "Game Profiles", self, "...", -1);
-	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles");
+	menu.addMenu("/voting/profiles", "Game Profiles", self, "Game profiles are votable preconfigured game types. Here you can manage the various profiles.", -1);
+	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles.");
 	menu.addMenu("/voting/mutators", "Mutators", self, "...");
 }
 
@@ -407,6 +418,73 @@ static final function parseSectionName(string sectionName, name ClsName, out str
 		objName = left(sectionName, InStr(sectionName, " "));
 	}
 	friendlyName = repl(objName, "_", " ");
+}
+
+function handleProfiles(WebAdminQuery q)
+{
+	local int i, idx;
+	local string tmp, tmp2, editProfile;
+
+	editProfile = q.request.getVariable("profilename");
+	if (len(editProfile) == 0) editProfile = MapListManager.ActiveGameProfileName;
+
+	tmp = "";
+	for (i = 0; i < MapListManager.GameProfiles.length; i++)
+	{
+		q.response.subst("profile.id", `HTMLEscape(MapListManager.GameProfiles[i].GameName));
+		if (editProfile == MapListManager.GameProfiles[i].GameName)
+		{
+			q.response.subst("profile.selected", "selected=\"selected\"");
+		}
+		else {
+			q.response.subst("profile.selected", "");
+		}
+		tmp2 = `HTMLEscape(MapListManager.GameProfiles[i].GameName);
+		if (MapListManager != none)
+		{
+			if (MapListManager.GameProfiles[i].GameName == MapListManager.ActiveGameProfileName)
+			{
+				tmp2 $= " (currently in use)";
+			}
+		}
+		q.response.subst("profile.friendlyname", tmp2);
+		tmp $= webadmin.include(q, "voting_profile_select.inc");
+	}
+	q.response.subst("profiles", tmp);
+
+	q.response.subst("editor", "");
+ 	idx = MapListManager.GameProfiles.find('GameName', editProfile);
+ 	if (idx != INDEX_NONE)
+ 	{
+ 		q.response.subst("profilename", `HTMLEscape(MapListManager.GameProfiles[idx].GameClass));
+ 		q.response.subst("profile.friendlyname", `HTMLEscape(MapListManager.GameProfiles[idx].GameClass));
+ 		q.response.subst("profile.gameclass", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
+ 		q.response.subst("profile.maplist", `HTMLEscape(MapListManager.GameProfiles[idx].MapListName));
+ 		q.response.subst("profile.options", `HTMLEscape(MapListManager.GameProfiles[idx].Options));
+ 		q.response.subst("profile.mutators", `HTMLEscape(repl(MapListManager.GameProfiles[idx].Mutators, ",", chr(10))));
+ 		q.response.subst("profile.excludedmuts", `HTMLEscape(repl(MapListManager.GameProfiles[idx].ExcludedMuts, ",", chr(10))));
+
+ 		tmp = "";
+		for (i = 0; i < maplists.length; i++)
+		{
+			q.response.subst("maplist.id", `HTMLEscape(maplists[i].name));
+			if (MapListManager.GameProfiles[idx].MapListName == name(maplists[i].name))
+			{
+				q.response.subst("maplist.selected", "selected=\"selected\"");
+			}
+			else {
+				q.response.subst("maplist.selected", "");
+			}
+			q.response.subst("maplist.friendlyname", `HTMLEscape(maplists[i].friendlyName));
+			tmp $= webadmin.include(q, "voting_maplist_select.inc");
+		}
+		q.response.subst("maplists", tmp);
+
+
+		q.response.subst("editor", webadmin.include(q, "voting_profile_editor.inc"));
+	}
+
+	webadmin.sendPage(q, "voting_profile.html");
 }
 
 defaultproperties
