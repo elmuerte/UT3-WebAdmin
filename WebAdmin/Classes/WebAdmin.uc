@@ -780,10 +780,11 @@ function pageCredits(WebAdminQuery q)
 function pageData(WebAdminQuery q)
 {
 	local string tmp;
-	local int i;
+	local int i, j;
 
 	local UTUIDataProvider_GameModeInfo gametype;
 	local array<UTUIDataProvider_MapInfo> maps;
+	local array<MutatorGroup> mutators;
 
 	q.response.AddHeader("Content-Type: text/xml");
 	q.response.SendText("<request>");
@@ -818,8 +819,22 @@ function pageData(WebAdminQuery q)
  		q.response.SendText("</maps>");
 	}
 	else if (tmp == "mutators") {
-		q.response.SendText("<mutators>");
-		q.response.SendText("</mutators>");
+		mutators = dataStoreCache.getMutators(q.request.getVariable("gametype"));
+ 		for (i = 0; i < mutators.length; i++)
+ 		{
+ 			q.response.SendText("<mutatorGroup>");
+			q.response.SendText("<name>"$`HTMLEscape(mutators[i].GroupName)$"</name>");
+			q.response.SendText("<mutators>");
+			for (j = 0; j < mutators[i].mutators.length; j++)
+	 		{
+	 			q.response.SendText("<mutator>");
+	 			q.response.SendText("<class>"$`HTMLEscape(mutators[i].mutators[j].ClassName)$"</class>");
+	 			q.response.SendText("<friendlyname>"$`HTMLEscape(mutators[i].mutators[j].FriendlyName)$"</friendlyname>");
+	 			q.response.SendText("</mutator>");
+	 		}
+			q.response.SendText("</mutators>");
+ 			q.response.SendText("</mutatorGroup>");
+ 		}
 	}
 	else {
 		addMessage(q, "Requested unknown data type: "$tmp, MT_Error);

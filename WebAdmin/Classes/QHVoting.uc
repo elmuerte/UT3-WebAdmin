@@ -424,6 +424,8 @@ function handleProfiles(WebAdminQuery q)
 {
 	local int i, idx;
 	local string tmp, tmp2, editProfile;
+	local UTUIDataProvider_GameModeInfo gametype;
+	local array<string> tmpArray;
 
 	editProfile = q.request.getVariable("profilename");
 	if (len(editProfile) == 0) editProfile = MapListManager.ActiveGameProfileName;
@@ -456,15 +458,42 @@ function handleProfiles(WebAdminQuery q)
  	idx = MapListManager.GameProfiles.find('GameName', editProfile);
  	if (idx != INDEX_NONE)
  	{
- 		q.response.subst("profilename", `HTMLEscape(MapListManager.GameProfiles[idx].GameClass));
- 		q.response.subst("profile.friendlyname", `HTMLEscape(MapListManager.GameProfiles[idx].GameClass));
- 		q.response.subst("profile.gameclass", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
+ 		q.response.subst("profilename", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
+ 		q.response.subst("profile.friendlyname", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
+ 		q.response.subst("profile.gameclass", `HTMLEscape(MapListManager.GameProfiles[idx].GameClass));
  		q.response.subst("profile.maplist", `HTMLEscape(MapListManager.GameProfiles[idx].MapListName));
  		q.response.subst("profile.options", `HTMLEscape(MapListManager.GameProfiles[idx].Options));
  		q.response.subst("profile.mutators", `HTMLEscape(repl(MapListManager.GameProfiles[idx].Mutators, ",", chr(10))));
  		q.response.subst("profile.excludedmuts", `HTMLEscape(repl(MapListManager.GameProfiles[idx].ExcludedMuts, ",", chr(10))));
 
+		tmp = "";
+		webadmin.dataStoreCache.loadGameTypes();
+		foreach webadmin.dataStoreCache.gametypes(gametype)
+	 	{
+ 			if (gametype.bIsCampaign)
+ 			{
+ 				continue;
+	 		}
+ 			q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
+ 			q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+	 		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
+ 			q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+ 			if (MapListManager.GameProfiles[idx].GameClass ~= gametype.GameMode)
+	 		{
+ 				q.response.subst("gametype.selected", "selected=\"selected\"");
+	 		}
+ 			else {
+ 				q.response.subst("gametype.selected", "");
+	 		}
+ 			tmp $= webadmin.include(q, "current_change_gametype.inc");
+	 	}
+ 		q.response.subst("gametypes", tmp);
+
  		tmp = "";
+ 		if (mapLists.length == 0)
+		{
+			populateListNames();
+		}
 		for (i = 0; i < maplists.length; i++)
 		{
 			q.response.subst("maplist.id", `HTMLEscape(maplists[i].name));
@@ -480,6 +509,26 @@ function handleProfiles(WebAdminQuery q)
 		}
 		q.response.subst("maplists", tmp);
 
+		tmp = "";
+		webadmin.dataStoreCache.loadMutators();
+		ParseStringIntoArray(MapListManager.GameProfiles[idx].ExcludedMuts, tmpArray, ",", true);
+ 		for (i = 0; i < webadmin.dataStoreCache.mutators.length; i++)
+ 		{
+ 			q.response.subst("mutator.fieldname", "excludedmut_"$i);
+ 			q.response.subst("mutator.classname", `HTMLEscape(webadmin.dataStoreCache.mutators[i].ClassName));
+			q.response.subst("mutator.friendlyname", `HTMLEscape(webadmin.dataStoreCache.mutators[i].friendlyName));
+			q.response.subst("mutator.description", `HTMLEscape(webadmin.dataStoreCache.mutators[i].description));
+			if (tmpArray.find(Locs(webadmin.dataStoreCache.mutators[i].ClassName)) != INDEX_NONE)
+			{
+				q.response.subst("mutator.checked", "checked=\"checked\"");
+			}
+			else {
+				q.response.subst("mutator.checked", "");
+			}
+			tmp $= webadmin.include(q, "voting_profile_editor_excludedmut.inc");
+ 		}
+ 		q.response.subst("excludedmutcount", string(webadmin.dataStoreCache.mutators.length));
+		q.response.subst("excludedmuts", tmp);
 
 		q.response.subst("editor", webadmin.include(q, "voting_profile_editor.inc"));
 	}

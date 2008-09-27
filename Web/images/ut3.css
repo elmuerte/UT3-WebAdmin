@@ -540,6 +540,18 @@ DIV.message {
 	display: none;
 }
 
+.inlineEdit {
+    background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+    background-image: url(edit.png);
+    padding-left: 20px;
+}
+
+.inlineEdit SPAN {
+    display: none;
+}
+
 INPUT.spin-button {
 	padding-right: 20px;
 	background-repeat: no-repeat;
