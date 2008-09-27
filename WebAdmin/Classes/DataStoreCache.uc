@@ -377,8 +377,12 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 	findGameType = true;
 
 	// Why is this needed?
-	gametype = Repl(gametype, "UTGameContent.", "UTGame.");
-	gametype = Repl(gametype, "_Content", "");
+	if (InStr(gametype, "UTGameContent.") == 0 || InStr(gametype, "UT3Gold.") == 0)
+	{
+		gametype = Repl(gametype, "UTGameContent.", "UTGame.");
+		gametype = Repl(gametype, "UT3Gold.", "UTGame.");
+		gametype = Repl(gametype, "_Content", "");
+	}
 
 	for (i = 0; i < source.length; i++)
 	{
