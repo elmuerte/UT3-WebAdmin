@@ -14,15 +14,16 @@
     <dd><select id="maplist" name="maplist"><%maplists%></select></dd>
   
     <dt><label for="options">Options</label></dt>
-    <dd><textarea id="options" name="options" cols="40" rows="4"><%profile.options%></textarea></dd>
+    <dd><textarea id="options" name="options" cols="60" rows="2"><%profile.options%></textarea></dd>
     
     <dt><label for="mutators">Mutators</label></dt>
-    <dd><textarea id="mutators" name="mutators" cols="40" rows="4"><%profile.mutators%></textarea></dd>
+    <dd id="mutatorField"><%mutators%></dd>
     
-    <dt title="A list of mutators which are disallowed when playing under this game profile">Excluded mutators</dt>
-    <dd><%excludedmuts%></dd>
+    <dt>Excluded mutators</dt>
+    <dd><p>A list of mutators which are disallowed when playing under this game profile.</p><%excludedmuts%></dd>
   
   </dl>
+  <input type="hidden" name="mutatorcount" value="<%mutatorcount%>" />
   <input type="hidden" name="excludedmutcount" value="<%excludedmutcount%>" />
   
   <div id="pfactions">
@@ -35,8 +36,6 @@
 
 <script type="text/javascript">
 //<![CDATA[
-
-var mutatorData;
 
 $(document).ready(function() {
   $('#pfactions button[value="delete"]').click(function () {
@@ -51,16 +50,71 @@ $(document).ready(function() {
   });
   $('#friendlyname').hide().before('<span id="rofriendlyname">'+$('#friendlyname').val()+'</span> ').after(btn);
   
-  $('#mutators').after('<ul id="mutatorsJs"></ul>').hide();
-  
-  $.ajax({
-    type: "POST",
-    url: '<%webadmin.path%>/data',
-    data: {ajax: 1, type: 'mutators'},
-    success: populateMutatorData,
-    error: ajaxError
+  $('.mutatorGroup input:radio, .mutatorGroup input:checkbox').click(function(){
+    changeHistory = new Array();
+    updateSelection(this, this.checked);
   });
+  $('.extmutator input:checkbox').click(function(){
+    updateExtSelection(this, this.checked);
+  });
+  $('.extmutator input:checkbox').each(function() {
+    updateExtSelection(this, this.checked)
+  });
+  
+  $('#gameclass').change(function() {
+        requestData = {ajax: 1, gametype: $('#gameclass').val()};
+        requestData.mutatorcount = $('input[name="mutatorcount"]').val();
+        $('input[name^="mutgroup"]:checked').each(function() {
+            requestData[this.name] = this.value;
+        });
+        $.ajax({
+            type: "POST",
+            url: '<%page.fulluri%>/data',
+            data: requestData,
+            success: mutatorListUpdate,
+            error: ajaxError
+        });
+    });
 });
+
+var changeHistory;
+function updateSelection(elm, isChecked) {
+    if (jQuery.inArray(elm, changeHistory) != -1) return;
+    changeHistory[changeHistory.length] = elm;
+    // check elements with the same value
+    if (elm.value != "") {
+        jQuery.each($('.mutatorGroup input[value="'+elm.value+'"]'), function(idx,obj) {
+            obj.checked = isChecked;
+            updateSelection(obj, isChecked);
+        });
+    }
+    // uncheck elements in this group
+    if (isChecked) {
+        jQuery.each($('.mutatorGroup input[name="'+elm.name+'"]'), function(idx,obj) {
+            if (obj == elm) return;
+            if (obj.value == "") return;
+            updateSelection(obj, false);
+        });
+    }
+    // select 'none' if none selected
+    if ($('.mutatorGroup input[name="'+elm.name+'"]:checked').length == 0 && $('input[name="'+elm.name+'"]').length > 1) {
+        $('.mutatorGroup input[name="'+elm.name+'"]:first').attr("checked", "checked");
+    }
+}
+
+function updateExtSelection(elm, isChecked) {
+  changeHistory = new Array();
+  // check elements with the same value
+  if (elm.value != "") {
+    jQuery.each($('.mutatorGroup input[value="'+elm.value+'"]'), function(idx,obj) {
+      obj.disabled = isChecked;
+      if (isChecked) {
+        obj.checked = false;
+        updateSelection(obj, false);
+      }
+    });
+  }
+}
 
 function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
   if (XMLHttpRequest.status == 403) {
@@ -78,30 +132,25 @@ function handleMessages(jdata, textStatus) {
     $('#messages *').addClass('oldMessage');
 }
 
-function populateMutatorData(data, textStatus) {
-  if (data.length == 0) {
-    alert("Network error during updating.");
-  }
-  var jdata = $(data);
-  handleMessages(jdata, textStatus);
-  
-  mutatorData = jdata.find('request mutatorGroup');
-  populateMutatorList($('#mutators').val(), $('#mutatorsJs'));
-}
-
-function populateMutatorList(source, target) {
-  $('li', target).remove();
-  var items = source.split("\n");
-  for (var i = 0; i < items.length; i++) {
-    var txt = jQuery.trim(items[i]);
-    if (txt.length == 0) continue;
-    var x = mutatorData.find('class:contains("'+txt+'")').parent();
-    if (x.size() > 0)
-    {
-      txt = $(x.get(0)).find('friendlyname').text();
+function mutatorListUpdate(data, textStatus) {
+    if (data.length == 0) {
+        alert("Network error during updating.");
     }
-    target.append('<li>'+txt+'</li>');
-  }
+    var jdata = $('<div>'+data+'</div>');
+    $('#mutatorField fieldset').remove();
+    x = jdata.children('#mutators');
+    $('#mutatorField').append(x.contents().clone()).hide().fadeIn('normale');
+        
+    x = jdata.children('#mutatorcount');
+    $('input[name="mutatorcount"]').val(x.val());
+        
+    $('.mutatorGroup input:radio, .mutatorGroup input:checkbox').click(function(){
+        changeHistory = new Array();
+        updateSelection(this, this.checked);
+    });
+    $('.extmutator input:checkbox').each(function() {
+      updateExtSelection(this, this.checked)
+    });
 }
 
 //]]>

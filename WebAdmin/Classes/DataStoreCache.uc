@@ -371,7 +371,7 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 	local int i, j, k;
 	local array<MutatorGroup> result;
 	local MutatorGroup group;
-	local class<UTGame> GameModeClass;
+	local class<GameInfo> GameModeClass;
 	local bool findGameType;
 
 	findGameType = true;
@@ -402,7 +402,7 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 				if (GameModeClass == none && findGameType)
 				{
 					findGameType = false;
-					GameModeClass = class<UTGame>(DynamicLoadObject(gametype, class'class'));
+					GameModeClass = class<GameInfo>(DynamicLoadObject(gametype, class'class'));
 					if (GameModeClass == none)
 					{
 						`Log("DataStoreCache::filterMutators() - Unable to find game class: "$gametype);

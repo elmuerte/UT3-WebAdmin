@@ -416,6 +416,21 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	height: 1px;
 }
 
+.extmutator {
+    display: inline;
+	vertical-align: top;
+	margin-bottom: 0em;
+	margin-right: 0.5em;
+	border: 0;
+	padding: 0;
+}
+
+.extmutator SPAN.padding {
+    display: block;
+    width: 200px;
+	height: 1px;
+}
+
 #throbber {
 	background-image: url(uthrobber.gif);
 	background-position: center;

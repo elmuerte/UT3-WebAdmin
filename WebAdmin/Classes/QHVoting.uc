@@ -104,6 +104,9 @@ function bool handleQuery(WebAdminQuery q)
 			}
 			handleProfiles(q);
 			return true;
+		case "/voting/profiles/data":
+			handleProfilesData(q);
+			return true;
 	}
 	return false;
 }
@@ -128,6 +131,7 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/voting", "Voting", self, "Generic voting settings");
 	menu.addMenu("/voting/profiles", "Game Profiles", self, "Game profiles are votable preconfigured game types. Here you can manage the various profiles.", -1);
+	menu.addMenu("/voting/profiles/data", "", self);
 	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles.");
 	menu.addMenu("/voting/mutators", "Mutators", self, "...");
 }
@@ -509,6 +513,13 @@ function handleProfiles(WebAdminQuery q)
 		}
 		q.response.subst("maplists", tmp);
 
+		ParseStringIntoArray(MapListManager.GameProfiles[idx].Mutators, tmpArray, ",", true);
+		tmp = "";
+		i = 0;
+		procVotingMutators(q, MapListManager.GameProfiles[idx].GameClass, tmpArray, tmp, i);
+		q.response.subst("mutatorcount", i);
+		q.response.subst("mutators", tmp);
+
 		tmp = "";
 		webadmin.dataStoreCache.loadMutators();
 		ParseStringIntoArray(MapListManager.GameProfiles[idx].ExcludedMuts, tmpArray, ",", true);
@@ -534,6 +545,149 @@ function handleProfiles(WebAdminQuery q)
 	}
 
 	webadmin.sendPage(q, "voting_profile.html");
+}
+
+function procVotingMutators(WebAdminQuery q, string currentGameType, array<string> currentMutators,
+	out string outMutators, out int outMutatorGroups)
+{
+	local string substvar2, substvar3, mutname;
+	local int idx, i, j, k;
+	local array<MutatorGroup> mutators;
+	local array<string> seenSingleMuts;
+
+	outMutators = "";
+	outMutatorGroups = 0;
+ 	if (currentGameType != "")
+ 	{
+ 		mutators = webadmin.dataStoreCache.getMutators(currentGameType);
+ 		idx = 0;
+ 		for (i = 0; i < mutators.length; i++)
+ 		{
+ 			if ((mutators[i].mutators.Length == 1) || len(mutators[i].GroupName) == 0)
+ 			{
+ 				for (j = 0; j < mutators[i].mutators.Length; j++)
+ 				{
+ 					if (seenSingleMuts.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
+ 					{
+ 						continue;
+ 					}
+ 					seenSingleMuts[seenSingleMuts.length] = mutators[i].mutators[j].ClassName;
+
+ 					q.response.subst("mutator.formtype", "checkbox");
+	 				q.response.subst("mutator.groupid", "mutgroup"$(mutators.Length+outMutatorGroups));
+ 					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
+ 					q.response.subst("mutator.id", "mutfield"$(++idx));
+ 					mutname = mutators[i].mutators[j].FriendlyName;
+ 					if (len(mutname) == 0) mutname = mutators[i].mutators[j].ClassName;
+ 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutname));
+ 					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
+	 				if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
+ 					{
+ 						q.response.subst("mutator.selected", "checked=\"checked\"");
+		 			}
+ 					else {
+		 				q.response.subst("mutator.selected", "");
+	 				}
+ 					substvar3 $= webadmin.include(q, "current_change_mutator.inc");
+ 					outMutatorGroups++;
+ 				}
+ 			}
+ 			else {
+ 				substvar2 = "";
+ 				k = INDEX_NONE;
+
+	 			for (j = 0; j < mutators[i].mutators.Length; j++)
+ 				{
+ 					q.response.subst("mutator.formtype", "radio");
+	 				q.response.subst("mutator.groupid", "mutgroup"$i);
+ 					q.response.subst("mutator.classname", `HTMLEscape(mutators[i].mutators[j].ClassName));
+ 					q.response.subst("mutator.id", "mutfield"$(++idx));
+ 					mutname = mutators[i].mutators[j].FriendlyName;
+ 					if (len(mutname) == 0) mutname = mutators[i].mutators[j].ClassName;
+ 					q.response.subst("mutator.friendlyname", `HTMLEscape(mutname));
+ 					q.response.subst("mutator.description", `HTMLEscape(mutators[i].mutators[j].Description));
+					if (currentMutators.find(mutators[i].mutators[j].ClassName) != INDEX_NONE)
+ 					{
+ 						k = j;
+ 						q.response.subst("mutator.selected", "checked=\"checked\"");
+			 		}
+ 					else {
+			 			q.response.subst("mutator.selected", "");
+ 					}
+	 				substvar2 $= webadmin.include(q, "current_change_mutator.inc");
+ 				}
+
+ 				q.response.subst("mutator.formtype", "radio");
+	 			q.response.subst("mutator.groupid", "mutgroup"$i);
+ 				q.response.subst("mutator.classname", "");
+ 				q.response.subst("mutator.id", "mutfield"$(++idx));
+ 				q.response.subst("mutator.friendlyname", "none");
+ 				q.response.subst("mutator.description", "");
+ 				if (k == INDEX_NONE)
+ 				{
+ 					q.response.subst("mutator.selected", "checked=\"checked\"");
+			 	}
+ 				else {
+			 		q.response.subst("mutator.selected", "");
+ 				}
+ 				substvar2 = webadmin.include(q, "current_change_mutator.inc")$substvar2;
+
+ 				q.response.subst("group.id", "mutgroup"$i);
+ 				q.response.subst("group.name", Locs(mutators[i].GroupName));
+ 				q.response.subst("group.mutators", substvar2);
+	 			outMutators $= webadmin.include(q, "current_change_mutator_group.inc");
+	 		}
+ 		}
+ 		if (len(substvar3) > 0)
+ 		{
+ 			q.response.subst("group.id", "mutgroup0");
+	 		q.response.subst("group.name", "");
+ 			q.response.subst("group.mutators", substvar3);
+ 			outMutators = webadmin.include(q, "current_change_mutator_nogroup.inc")$outMutators;
+ 		}
+ 	}
+ 	outMutatorGroups = outMutatorGroups+mutators.Length;
+}
+
+function handleProfilesData(WebAdminQuery q)
+{
+	local string currentGameType;
+	local array<string> currentMutators;
+	local string substMutators, tmp;
+	local int idx;
+
+	currentGameType = q.request.getVariable("gametype");
+	currentMutators.length = 0;
+
+	webadmin.dataStoreCache.loadGameTypes();
+	idx = webadmin.dataStoreCache.resolveGameType(currentGameType);
+ 	if (idx > INDEX_NONE)
+ 	{
+ 		currentGameType = webadmin.dataStoreCache.gametypes[idx].GameMode;
+ 	}
+ 	else {
+ 		currentGameType = "";
+ 	}
+
+ 	for (idx = 0; idx < int(q.request.getVariable("mutatorcount", "0")); idx++)
+ 	{
+ 		tmp = q.request.getVariable("mutgroup"$idx, "");
+ 		if (len(tmp) > 0)
+ 		{
+ 			if (currentMutators.find(tmp) == INDEX_NONE)
+ 			{
+ 				currentMutators.addItem(tmp);
+ 			}
+ 		}
+ 	}
+
+	procVotingMutators(q, currentGameType, currentMutators, substMutators, idx);
+
+	q.response.SendText("<div id=\"mutators\">");
+	q.response.SendText(substMutators);
+	q.response.SendText("</div>");
+
+	q.response.SendText("<input type=\"hidden\" id=\"mutatorcount\" value=\""$idx$"\" />");
 }
 
 defaultproperties
