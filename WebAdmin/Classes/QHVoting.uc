@@ -223,15 +223,15 @@ function handleMaplist(WebAdminQuery q)
 						maplists[i].name = editMLname;
 						maplists[i].friendlyName = tmp;
 					}
-					webadmin.addMessage(q, "Created the map list "$tmp);
+					webadmin.addMessage(q, "Created the map list "$`HTMLEscape(tmp));
 				}
 				else {
-					webadmin.addMessage(q, "Error creating map list: "$tmp, MT_Error);
+					webadmin.addMessage(q, "Error creating map list: "$`HTMLEscape(tmp), MT_Error);
 					editMLname = "";
 				}
 			}
 			else {
-				webadmin.addMessage(q, "There is already a map list with the name: "$tmp, MT_Error);
+				webadmin.addMessage(q, "There is already a map list with the name: "$`HTMLEscape(tmp), MT_Error);
 				editMLname = "";
 			}
 		}
@@ -256,7 +256,7 @@ function handleMaplist(WebAdminQuery q)
 			webadmin.addMessage(q, "Removed the map list: "$editMLname);
 		}
 		else {
-			webadmin.addMessage(q, "No map list available with the id: "$editMLname, MT_Error);
+			webadmin.addMessage(q, "No map list available with the id: "$`HTMLEscape(editMLname), MT_Error);
 		}
 		editMLname = "";
 	}
@@ -376,7 +376,7 @@ function handleMaplist(WebAdminQuery q)
 			q.response.subst("editor", webadmin.include(q, "voting_maplist_editor.inc"));
 		}
 		else {
-			webadmin.addMessage(q, "No map list available with the id: "$editMLname, MT_Error);
+			webadmin.addMessage(q, "No map list available with the id: "$`HTMLEscape(editMLname), MT_Error);
 		}
 	}
 
@@ -433,8 +433,86 @@ function handleProfiles(WebAdminQuery q)
 
 	editProfile = q.request.getVariable("profilename");
 	if (len(editProfile) == 0) editProfile = MapListManager.ActiveGameProfileName;
+	idx = MapListManager.GameProfiles.find('GameName', editProfile);
+
+	if (q.request.getVariable("action") ~= "create" || q.request.getVariable("action") ~= "create new profile")
+	{
+		tmp = q.request.getVariable("newprofilename");
+		idx = INDEX_NONE;
+		for (i = 0; i < MapListManager.GameProfiles.length; i++)
+		{
+			if (MapListManager.GameProfiles[i].GameName ~= tmp)
+			{
+				idx = i;
+				break;
+			}
+		}
+
+		if (idx != INDEX_NONE)
+		{
+			webadmin.addMessage(q, "There is already a game profile with the name: "$`HTMLEscape(tmp), MT_Error);
+		}
+		else {
+			idx = MapListManager.GameProfiles.length;
+			MapListManager.GameProfiles.length = idx+1;
+			MapListManager.GameProfiles[idx].GameName = tmp;
+			//TODO: gametype thingy
+			MapListManager.SaveConfig();
+			webadmin.addMessage(q, "Created game profile: "$`HTMLEscape(tmp));
+			editProfile = tmp;
+		}
+	}
+	else if (q.request.getVariable("action") ~= "save")
+	{
+		if (idx != INDEX_NONE)
+		{
+			tmp = q.request.getVariable("friendlyname");
+			if (len(tmp) > 0 && tmp != editProfile)
+			{
+				MapListManager.GameProfiles[idx].GameName = tmp;
+				if (editProfile == MapListManager.ActiveGameProfileName)
+				{
+					MapListManager.ActiveGameProfileName = tmp;
+				}
+				webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' renamed to '"$`HTMLEscape(tmp)$"'");
+				editProfile = tmp;
+			}
+			MapListManager.GameProfiles[idx].GameClass = q.request.getVariable("gameclass");
+			MapListManager.GameProfiles[idx].MapListName = name(q.request.getVariable("maplist"));
+			tmp = Repl(q.request.getVariable("options"), chr(10), ",");
+			tmp -= " ";
+			tmp -= chr(13);
+			MapListManager.GameProfiles[idx].options = tmp;
+
+
+			// ...
+			MapListManager.SaveConfig();
+			webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' saved");
+		}
+		else {
+			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
+		}
+	}
+	else if (q.request.getVariable("action") ~= "delete")
+	{
+		if (idx != INDEX_NONE)
+		{
+			MapListManager.GameProfiles.remove(idx, 1);
+			if (editProfile == MapListManager.ActiveGameProfileName)
+			{
+				MapListManager.ActiveGameProfileName = "";
+			}
+			MapListManager.SaveConfig();
+   			idx = INDEX_NONE;
+			webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' deleted");
+		}
+		else {
+			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
+		}
+	}
 
 	tmp = "";
+	// TODO: sort this list
 	for (i = 0; i < MapListManager.GameProfiles.length; i++)
 	{
 		q.response.subst("profile.id", `HTMLEscape(MapListManager.GameProfiles[i].GameName));
@@ -459,7 +537,6 @@ function handleProfiles(WebAdminQuery q)
 	q.response.subst("profiles", tmp);
 
 	q.response.subst("editor", "");
- 	idx = MapListManager.GameProfiles.find('GameName', editProfile);
  	if (idx != INDEX_NONE)
  	{
  		q.response.subst("profilename", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
