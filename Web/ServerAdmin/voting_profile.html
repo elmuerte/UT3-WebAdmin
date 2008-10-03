@@ -15,6 +15,8 @@
     <br />
     <label for="newprofilename">Profile name:</label>
     <input type="text" id="newprofilename" name="newprofilename" value=""/>
+    <label for="newgameclass">Game type</label>
+    <select id="newgameclass" name="newgameclass"><%newgametypes%></select>
     <button type="submit" name="action" value="create">create new profile</button>
 </form>
 </fieldset>
@@ -29,6 +31,19 @@
 $(document).ready(function(){
     $('#profilename').change(function(){
         $('#editprofile').submit();
+    });
+    
+    $('#newprofile').submit(function(){
+        var profname = jQuery.trim($('#newprofilename').val());
+        var res = true;
+        $('#profilename option').each(function() {
+            if ($(this).text() == profname) {
+                res = false;
+                window.alert("There is already a profile with the name "+profname);
+                $('#newprofilename').focus();
+            }
+        });
+        return res;
     });
 });
 

@@ -130,7 +130,7 @@ function bool unhandledQuery(WebAdminQuery q)
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/voting", "Voting", self, "Generic voting settings");
-	menu.addMenu("/voting/profiles", "Game Profiles", self, "Game profiles are votable preconfigured game types. Here you can manage the various profiles.", -1);
+	menu.addMenu("/voting/profiles", "Game Profiles", self, "Game profiles are votable preconfigured game types. Here you can manage the various profiles. Changes will take effect in the next game session.", -1);
 	menu.addMenu("/voting/profiles/data", "", self);
 	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles.");
 	menu.addMenu("/voting/mutators", "Mutators", self, "...");
@@ -433,15 +433,15 @@ function handleProfiles(WebAdminQuery q)
 
 	editProfile = q.request.getVariable("profilename");
 	if (len(editProfile) == 0) editProfile = MapListManager.ActiveGameProfileName;
-	idx = MapListManager.GameProfiles.find('GameName', editProfile);
+	idx = MapListManager.default.GameProfiles.find('GameName', editProfile);
 
 	if (q.request.getVariable("action") ~= "create" || q.request.getVariable("action") ~= "create new profile")
 	{
 		tmp = q.request.getVariable("newprofilename");
 		idx = INDEX_NONE;
-		for (i = 0; i < MapListManager.GameProfiles.length; i++)
+		for (i = 0; i < MapListManager.default.GameProfiles.length; i++)
 		{
-			if (MapListManager.GameProfiles[i].GameName ~= tmp)
+			if (MapListManager.default.GameProfiles[i].GameName ~= tmp)
 			{
 				idx = i;
 				break;
@@ -453,11 +453,11 @@ function handleProfiles(WebAdminQuery q)
 			webadmin.addMessage(q, "There is already a game profile with the name: "$`HTMLEscape(tmp), MT_Error);
 		}
 		else {
-			idx = MapListManager.GameProfiles.length;
-			MapListManager.GameProfiles.length = idx+1;
-			MapListManager.GameProfiles[idx].GameName = tmp;
-			//TODO: gametype thingy
-			MapListManager.SaveConfig();
+			idx = MapListManager.default.GameProfiles.length;
+			MapListManager.default.GameProfiles.length = idx+1;
+			MapListManager.default.GameProfiles[idx].GameName = tmp;
+			MapListManager.default.GameProfiles[idx].GameClass = q.request.getVariable("newgameclass");
+			MapListManager.static.StaticSaveConfig();
 			webadmin.addMessage(q, "Created game profile: "$`HTMLEscape(tmp));
 			editProfile = tmp;
 		}
@@ -469,7 +469,7 @@ function handleProfiles(WebAdminQuery q)
 			tmp = q.request.getVariable("friendlyname");
 			if (len(tmp) > 0 && tmp != editProfile)
 			{
-				MapListManager.GameProfiles[idx].GameName = tmp;
+				MapListManager.default.GameProfiles[idx].GameName = tmp;
 				if (editProfile == MapListManager.ActiveGameProfileName)
 				{
 					MapListManager.ActiveGameProfileName = tmp;
@@ -477,16 +477,44 @@ function handleProfiles(WebAdminQuery q)
 				webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' renamed to '"$`HTMLEscape(tmp)$"'");
 				editProfile = tmp;
 			}
-			MapListManager.GameProfiles[idx].GameClass = q.request.getVariable("gameclass");
-			MapListManager.GameProfiles[idx].MapListName = name(q.request.getVariable("maplist"));
+			MapListManager.default.GameProfiles[idx].GameClass = q.request.getVariable("gameclass");
+			MapListManager.default.GameProfiles[idx].MapListName = name(q.request.getVariable("maplist"));
 			tmp = Repl(q.request.getVariable("options"), chr(10), ",");
 			tmp -= " ";
 			tmp -= chr(13);
-			MapListManager.GameProfiles[idx].options = tmp;
+			MapListManager.default.GameProfiles[idx].options = tmp;
 
+			tmp = "";
+			for (i = 0; i < int(q.request.getVariable("mutatorcount")); i++)
+			{
+				tmp2 = q.request.getVariable("mutgroup"$i);
+				if (len(tmp2) > 0)
+				{
+					if (len(tmp) > 0)
+					{
+						tmp $= ",";
+					}
+					tmp $= tmp2;
+				}
+			}
+			MapListManager.default.GameProfiles[idx].Mutators = tmp;
 
-			// ...
-			MapListManager.SaveConfig();
+			tmp = "";
+			for (i = 0; i < int(q.request.getVariable("excludedmutcount")); i++)
+			{
+				tmp2 = q.request.getVariable("excludedmut_"$i);
+				if (len(tmp2) > 0)
+				{
+					if (len(tmp) > 0)
+					{
+						tmp $= ",";
+					}
+					tmp $= tmp2;
+				}
+			}
+			MapListManager.default.GameProfiles[idx].ExcludedMuts = tmp;
+
+			MapListManager.static.StaticSaveConfig();
 			webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' saved");
 		}
 		else {
@@ -497,14 +525,26 @@ function handleProfiles(WebAdminQuery q)
 	{
 		if (idx != INDEX_NONE)
 		{
-			MapListManager.GameProfiles.remove(idx, 1);
+			MapListManager.default.GameProfiles.remove(idx, 1);
 			if (editProfile == MapListManager.ActiveGameProfileName)
 			{
 				MapListManager.ActiveGameProfileName = "";
 			}
-			MapListManager.SaveConfig();
+			MapListManager.static.StaticSaveConfig();
    			idx = INDEX_NONE;
 			webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' deleted");
+		}
+		else {
+			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
+		}
+	}
+	else if (q.request.getVariable("action") ~= "activate")
+	{
+		if (idx != INDEX_NONE)
+		{
+			MapListManager.default.ActiveGameProfileName = editProfile;
+			MapListManager.static.StaticSaveConfig();
+			// TODO: map change?
 		}
 		else {
 			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
@@ -513,20 +553,20 @@ function handleProfiles(WebAdminQuery q)
 
 	tmp = "";
 	// TODO: sort this list
-	for (i = 0; i < MapListManager.GameProfiles.length; i++)
+	for (i = 0; i < MapListManager.default.GameProfiles.length; i++)
 	{
-		q.response.subst("profile.id", `HTMLEscape(MapListManager.GameProfiles[i].GameName));
-		if (editProfile == MapListManager.GameProfiles[i].GameName)
+		q.response.subst("profile.id", `HTMLEscape(MapListManager.default.GameProfiles[i].GameName));
+		if (editProfile == MapListManager.default.GameProfiles[i].GameName)
 		{
 			q.response.subst("profile.selected", "selected=\"selected\"");
 		}
 		else {
 			q.response.subst("profile.selected", "");
 		}
-		tmp2 = `HTMLEscape(MapListManager.GameProfiles[i].GameName);
+		tmp2 = `HTMLEscape(MapListManager.default.GameProfiles[i].GameName);
 		if (MapListManager != none)
 		{
-			if (MapListManager.GameProfiles[i].GameName == MapListManager.ActiveGameProfileName)
+			if (MapListManager.default.GameProfiles[i].GameName == MapListManager.ActiveGameProfileName)
 			{
 				tmp2 $= " (currently in use)";
 			}
@@ -536,19 +576,35 @@ function handleProfiles(WebAdminQuery q)
 	}
 	q.response.subst("profiles", tmp);
 
+	tmp = "";
+	webadmin.dataStoreCache.loadGameTypes();
+	foreach webadmin.dataStoreCache.gametypes(gametype)
+	{
+ 		if (gametype.bIsCampaign)
+ 		{
+ 			continue;
+	 	}
+		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
+		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
+		q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
+		q.response.subst("gametype.selected", "");
+		tmp $= webadmin.include(q, "current_change_gametype.inc");
+ 	}
+	q.response.subst("newgametypes", tmp);
+
 	q.response.subst("editor", "");
  	if (idx != INDEX_NONE)
  	{
- 		q.response.subst("profilename", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
- 		q.response.subst("profile.friendlyname", `HTMLEscape(MapListManager.GameProfiles[idx].GameName));
- 		q.response.subst("profile.gameclass", `HTMLEscape(MapListManager.GameProfiles[idx].GameClass));
- 		q.response.subst("profile.maplist", `HTMLEscape(MapListManager.GameProfiles[idx].MapListName));
- 		q.response.subst("profile.options", `HTMLEscape(MapListManager.GameProfiles[idx].Options));
- 		q.response.subst("profile.mutators", `HTMLEscape(repl(MapListManager.GameProfiles[idx].Mutators, ",", chr(10))));
- 		q.response.subst("profile.excludedmuts", `HTMLEscape(repl(MapListManager.GameProfiles[idx].ExcludedMuts, ",", chr(10))));
+ 		q.response.subst("profilename", `HTMLEscape(MapListManager.default.GameProfiles[idx].GameName));
+ 		q.response.subst("profile.friendlyname", `HTMLEscape(MapListManager.default.GameProfiles[idx].GameName));
+ 		q.response.subst("profile.gameclass", `HTMLEscape(MapListManager.default.GameProfiles[idx].GameClass));
+ 		q.response.subst("profile.maplist", `HTMLEscape(MapListManager.default.GameProfiles[idx].MapListName));
+ 		q.response.subst("profile.options", `HTMLEscape(MapListManager.default.GameProfiles[idx].Options));
+ 		q.response.subst("profile.mutators", `HTMLEscape(repl(MapListManager.default.GameProfiles[idx].Mutators, ",", chr(10))));
+ 		q.response.subst("profile.excludedmuts", `HTMLEscape(repl(MapListManager.default.GameProfiles[idx].ExcludedMuts, ",", chr(10))));
 
 		tmp = "";
-		webadmin.dataStoreCache.loadGameTypes();
 		foreach webadmin.dataStoreCache.gametypes(gametype)
 	 	{
  			if (gametype.bIsCampaign)
@@ -559,7 +615,7 @@ function handleProfiles(WebAdminQuery q)
  			q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
 	 		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
  			q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
- 			if (MapListManager.GameProfiles[idx].GameClass ~= gametype.GameMode)
+ 			if (MapListManager.default.GameProfiles[idx].GameClass ~= gametype.GameMode)
 	 		{
  				q.response.subst("gametype.selected", "selected=\"selected\"");
 	 		}
@@ -578,7 +634,7 @@ function handleProfiles(WebAdminQuery q)
 		for (i = 0; i < maplists.length; i++)
 		{
 			q.response.subst("maplist.id", `HTMLEscape(maplists[i].name));
-			if (MapListManager.GameProfiles[idx].MapListName == name(maplists[i].name))
+			if (MapListManager.default.GameProfiles[idx].MapListName == name(maplists[i].name))
 			{
 				q.response.subst("maplist.selected", "selected=\"selected\"");
 			}
@@ -590,16 +646,16 @@ function handleProfiles(WebAdminQuery q)
 		}
 		q.response.subst("maplists", tmp);
 
-		ParseStringIntoArray(MapListManager.GameProfiles[idx].Mutators, tmpArray, ",", true);
+		ParseStringIntoArray(MapListManager.default.GameProfiles[idx].Mutators, tmpArray, ",", true);
 		tmp = "";
 		i = 0;
-		procVotingMutators(q, MapListManager.GameProfiles[idx].GameClass, tmpArray, tmp, i);
+		procVotingMutators(q, MapListManager.default.GameProfiles[idx].GameClass, tmpArray, tmp, i);
 		q.response.subst("mutatorcount", i);
 		q.response.subst("mutators", tmp);
 
 		tmp = "";
 		webadmin.dataStoreCache.loadMutators();
-		ParseStringIntoArray(MapListManager.GameProfiles[idx].ExcludedMuts, tmpArray, ",", true);
+		ParseStringIntoArray(MapListManager.default.GameProfiles[idx].ExcludedMuts, tmpArray, ",", true);
  		for (i = 0; i < webadmin.dataStoreCache.mutators.length; i++)
  		{
  			q.response.subst("mutator.fieldname", "excludedmut_"$i);

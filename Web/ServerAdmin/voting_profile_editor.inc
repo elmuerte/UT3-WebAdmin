@@ -30,6 +30,7 @@
   <br />
   <button type="submit" name="action" value="save">save</button>
   <button type="submit" name="action" value="delete">delete</button>
+  <!--<button type="submit" name="action" value="activate">activate</button>-->
   </div>
 </fieldset>
 </form>
