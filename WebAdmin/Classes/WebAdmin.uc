@@ -96,6 +96,7 @@ function init()
 	local IpAddr ipaddr;
 	local int i;
 	local bool doSaveConfig;
+	local string tmp;
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
     doSaveConfig = false;
@@ -121,7 +122,11 @@ function init()
 	}
 	if (cfgver < 1)
 	{
-		QueryHandlers[QueryHandlers.length] = class.getPackageName()$".QHVoting";
+		tmp = class.getPackageName()$".QHVoting";
+		if (QueryHandlers.find(tmp) == INDEX_NONE)
+		{
+			QueryHandlers[QueryHandlers.length] = tmp;
+		}
 
 		doSaveConfig = true;
 		cfgver=1;
