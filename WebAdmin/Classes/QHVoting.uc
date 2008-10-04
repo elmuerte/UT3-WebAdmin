@@ -95,6 +95,7 @@ function bool handleQuery(WebAdminQuery q)
 				webadmin.sendPage(q, "message.html");
 				return true;
 			}
+			handleMutators(q);
 			return true;
 		case "/voting/profiles":
 			if (MapListManager == none) {
@@ -133,7 +134,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/voting/profiles", "Game Profiles", self, "Game profiles are votable preconfigured game types. Here you can manage the various profiles. Changes will take effect in the next game session.", -1);
 	menu.addMenu("/voting/profiles/data", "", self);
 	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles.");
-	menu.addMenu("/voting/mutators", "Mutators", self, "...");
+	menu.addMenu("/voting/mutators", "Mutators", self, "These mutators can be voted on by the players, unless the current game profile has the mutators in the exclude list.");
 }
 
 function convertLegacyMaplists()
@@ -821,6 +822,62 @@ function handleProfilesData(WebAdminQuery q)
 	q.response.SendText("</div>");
 
 	q.response.SendText("<input type=\"hidden\" id=\"mutatorcount\" value=\""$idx$"\" />");
+}
+
+function handleMutators(WebAdminQuery q)
+{
+	local int i, j, idx;
+	local string tmp, mutname;
+
+	webadmin.dataStoreCache.loadMutators();
+
+	if (q.request.GetVariable("action") ~= "save")
+	{
+		j = q.request.GetVariableCount("mutators");
+		class'UTVoteCollector'.default.VotableMutators.length = 0;
+		for (i = 0; i < j; i++)
+		{
+			tmp = `Trim(q.request.GetVariableNumber("mutators", i));
+			mutname = tmp;
+			for (idx = 0; idx < webadmin.dataStoreCache.mutators.length; idx++)
+			{
+				if (webadmin.dataStoreCache.mutators[idx].ClassName ~= tmp)
+				{
+					mutname = webadmin.dataStoreCache.mutators[idx].FriendlyName;
+					if (len(mutname) == 0) mutname = tmp;
+					break;
+				}
+			}
+			idx = class'UTVoteCollector'.default.VotableMutators.length;
+			class'UTVoteCollector'.default.VotableMutators.length = idx+1;
+			class'UTVoteCollector'.default.VotableMutators[idx].MutClass = tmp;
+			class'UTVoteCollector'.default.VotableMutators[idx].MutName = mutname;
+		}
+		class'UTVoteCollector'.static.StaticSaveConfig();
+		webadmin.addMessage(q, "Settings saved.");
+	}
+
+	tmp = "";
+	for (i = 0; i < webadmin.dataStoreCache.mutators.length; i++)
+	{
+		q.response.subst("mutator.classname", `HTMLEscape(webadmin.dataStoreCache.mutators[i].ClassName));
+		q.response.subst("mutator.id", "mutfield"$i);
+		mutname = webadmin.dataStoreCache.mutators[i].FriendlyName;
+		if (len(mutname) == 0) mutname = webadmin.dataStoreCache.mutators[i].ClassName;
+		q.response.subst("mutator.friendlyname", `HTMLEscape(mutname));
+		q.response.subst("mutator.description", `HTMLEscape(webadmin.dataStoreCache.mutators[i].Description));
+		if (class'UTVoteCollector'.default.VotableMutators.find('MutClass', webadmin.dataStoreCache.mutators[i].ClassName) != INDEX_NONE)
+ 		{
+ 			q.response.subst("mutator.selected", "checked=\"checked\"");
+		}
+ 		else {
+			q.response.subst("mutator.selected", "");
+ 		}
+		tmp $= webadmin.include(q, "voting_mutators_mutator.inc");
+	}
+	q.response.subst("mutatorcount", tmp);
+	q.response.subst("mutators", tmp);
+	webadmin.sendPage(q, "voting_mutators.html");
 }
 
 defaultproperties

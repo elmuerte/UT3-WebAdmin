@@ -13,7 +13,7 @@
     <dt><label for="maplist">Map list</label></dt>
     <dd><select id="maplist" name="maplist"><%maplists%></select></dd>
   
-    <dt><label for="options">Options</label></dt>
+    <dt title="Additional options to configur the game. These are the same options you would use on the launch URL."><label for="options">Options</label></dt>
     <dd><textarea id="options" name="options" cols="60" rows="2"><%profile.options%></textarea></dd>
     
     <dt><label for="mutators">Mutators</label></dt>
