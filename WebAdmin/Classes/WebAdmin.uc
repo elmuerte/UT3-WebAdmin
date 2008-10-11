@@ -166,7 +166,7 @@ function init()
 	}
 	auth.init(Worldinfo);
 
-	if (len(AuthenticationClass) != 0)
+	if (len(SessionHandlerClass) != 0)
 	{
 		sessClass = class(DynamicLoadObject(SessionHandlerClass, class'class'));
 	}
@@ -337,8 +337,17 @@ function Query(WebRequest Request, WebResponse Response)
 	if (wamenu == none)
 	{
 		wamenu = menu.getUserMenu(currentQuery.user);
-		currentQuery.session.putObject("WebAdminMenu", wamenu);
-		currentQuery.session.putString("WebAdminMenu.rendered", wamenu.render());
+		if (wamenu != none)
+		{
+			currentQuery.session.putObject("WebAdminMenu", wamenu);
+			currentQuery.session.putString("WebAdminMenu.rendered", wamenu.render());
+		}
+	}
+	if (wamenu == none)
+	{
+		Response.HTTPResponse("HTTP/1.1 403 Forbidden");
+		pageGenericError(currentQuery, "You do not have the privileges to view this page.", "Access Denied");
+		return;
 	}
 	response.Subst("navigation.menu", currentQuery.session.getString("WebAdminMenu.rendered"));
 

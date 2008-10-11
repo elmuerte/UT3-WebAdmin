@@ -6,6 +6,8 @@ Note: Patch 1.4 is required
 - fixed bot roster editing when the roster was empty
 - konami code
 - new voting configuration functionality
+- added an alternative authentication module: WebAdmin.MultiWebAdminAuth
+  this one allows multiple user accounts
 
 v1.7 - 2008-09-21
 -----------------

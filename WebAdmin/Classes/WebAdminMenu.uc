@@ -116,7 +116,7 @@ function IQueryHandler getHandlerFor(string path, out string title, out string d
 function WebAdminMenu getUserMenu(IWebAdminUser forUser)
 {
 	local WebAdminMenu result;
-	local MenuItem entry;
+	local MenuItem entry, dummy;
 
 	if (!forUser.canPerform(webadmin.getAuthURL("/")))
 	{
@@ -130,6 +130,11 @@ function WebAdminMenu getUserMenu(IWebAdminUser forUser)
 		if (forUser.canPerform(webadmin.getAuthURL(entry.path)))
 		{
 			result.addSortedItem(entry);
+		}
+		else {
+			dummy.path = entry.path;
+			dummy.weight = entry.weight;
+			result.addSortedItem(dummy);
 		}
 	}
 	result.createTree();
@@ -202,7 +207,7 @@ protected function createTree()
 			}
 		}
 
-		// add the time
+		// add the item
 		found = false;
 		foreach tree[parent].children(child, idx2)
 		{
