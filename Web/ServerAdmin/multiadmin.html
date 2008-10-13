@@ -1,0 +1,68 @@
+<!-- #include file="header.inc" -->
+
+<div id="content">
+
+<fieldset id="mloverview">
+<legend>Administrators</legend>
+<form id="editlist" method="post" action="<%page.fulluri%>">
+    <select id="adminidlist" name="adminidlist">
+    <option value="" />
+    <%admins%>
+    </select>
+    <button type="submit" id="btnselect">edit administrator</button>
+</form>
+<form id="newadmin" method="post" action="<%page.fulluri%>">
+    <br />
+    <label for="adminid">Map list name:</label>
+    <input type="text" id="newadminid" name="adminid" value=""/>
+    <button type="submit" name="action" value="create">create administrator</button>
+</form>
+</fieldset>
+
+<%editor%>
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+    $('#adminidlist').change(function(){
+        $('#editlist').submit();
+    });
+    $('#newadmin').submit(function() {
+        var nlid = jQuery.trim($(this.adminid).val());
+        var isValid = true;
+        if (nlid.length == 0)
+        {
+            alert('The administrator name');
+            isValid = false;
+        }
+        else {
+            $('#adminidlist option').each(function() {
+                var item = $(this);
+                if (item.text().toUpperCase() == nlid.toUpperCase()) {
+                    alert('There is already an administrator with the name');
+                    isValid = false;
+                }
+            });
+        }
+        if (!isValid) return false;
+    });
+    $('#newadmin *').hide();
+    $('#mloverview form').css('display', 'inline');
+    $('#newadmin button').show().click(function () {
+        var mapid = jQuery.trim(window.prompt('Enter the name of the new administrator'));
+        if (mapid.length > 0) {
+            $('#newadminid').val(mapid);
+            return true;
+        }
+        return false;
+    });
+});
+
+//]]>
+</script>
+
+<!-- #include file="navigation.inc" -->
+<!-- #include file="footer.inc" -->

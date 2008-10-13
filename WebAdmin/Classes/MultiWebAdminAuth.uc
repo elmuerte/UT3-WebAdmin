@@ -25,6 +25,7 @@ function init(WorldInfo wi)
 {
 	worldinfo = wi;
 	loadRecords();
+	loadQueryHandler();
 }
 
 function loadRecords()
@@ -41,6 +42,40 @@ function loadRecords()
 		if (idx == INDEX_NONE) continue;
 		records[i].name = Left(names[i], idx);
 	}
+}
+
+function loadQueryHandler()
+{
+	local QHMultiAdmin qh;
+	local WebAdmin webadmin;
+	local WebServer ws;
+	local int i;
+
+	if (WebAdmin(Outer) != none)
+	{
+		webadmin = WebAdmin(Outer);
+	}
+	else {
+		foreach worldinfo.AllActors(class'WebServer', ws)
+		{
+			break;
+		}
+		if (ws == none) return;
+		for (i = 0; i < ArrayCount(ws.ApplicationObjects); i++)
+		{
+			if (WebAdmin(ws.ApplicationObjects[i]) != none)
+			{
+				webadmin = WebAdmin(ws.ApplicationObjects[i]);
+				break;
+			}
+		}
+	}
+
+	if (webadmin == none) return;
+	qh = new class'QHMultiAdmin';
+	qh.authModule = self;
+	qh.init(webadmin);
+	qh.registerMenuItems(webadmin.menu);
 }
 
 function MultiAdminData getRecord(string username)
