@@ -5,7 +5,7 @@
 <fieldset id="mloverview">
 <legend>Administrators</legend>
 <form id="editlist" method="post" action="<%page.fulluri%>">
-    <select id="adminidlist" name="adminidlist">
+    <select id="adminidlist" name="adminid">
     <option value="" />
     <%admins%>
     </select>
@@ -13,7 +13,7 @@
 </form>
 <form id="newadmin" method="post" action="<%page.fulluri%>">
     <br />
-    <label for="adminid">Map list name:</label>
+    <label for="newadminid">Username:</label>
     <input type="text" id="newadminid" name="adminid" value=""/>
     <button type="submit" name="action" value="create">create administrator</button>
 </form>
@@ -52,7 +52,7 @@ $(document).ready(function(){
     $('#newadmin *').hide();
     $('#mloverview form').css('display', 'inline');
     $('#newadmin button').show().click(function () {
-        var mapid = jQuery.trim(window.prompt('Enter the name of the new administrator'));
+        var mapid = jQuery.trim(window.prompt('Enter the username of the new administrator'));
         if (mapid.length > 0) {
             $('#newadminid').val(mapid);
             return true;

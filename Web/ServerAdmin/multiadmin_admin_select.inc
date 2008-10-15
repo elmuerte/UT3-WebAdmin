@@ -1,1 +1,1 @@
-<option value="<%admin.name%>" <%admin.name%>><%admin.name%></option>
+<option value="<%multiadmin.name%>" <%multiadmin.selected%>><%multiadmin.name%></option>
