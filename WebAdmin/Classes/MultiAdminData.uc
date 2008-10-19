@@ -48,6 +48,14 @@ function string getDisplayName()
 	return displayName;
 }
 
+function setPassword(string pw)
+{
+	if (len(pw) > 0)
+	{
+		password = pw;
+	}
+}
+
 /**
  * return true when the password matches
  */

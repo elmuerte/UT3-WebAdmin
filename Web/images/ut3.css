@@ -741,3 +741,33 @@ UL.charlist LI {
 	background-image: url(active.png);
 	background-repeat: no-repeat;
 }
+
+#promptDialog {
+	background-image: url(dimmed.png);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+	cursor: default;
+	display: none;
+}
+
+#promptWindow {
+	cursor: auto;
+	margin: auto;
+	width: 33%;
+	margin-top: 25%;
+	background-color: #faf8f8;
+	padding: 1em;
+	border: 1px solid #520000;
+}
+
+#promptDialog INPUT {
+	width: 100%;
+}
+
+#promptDialog BUTTON {
+	margin: 5px 5px 0 0;
+}

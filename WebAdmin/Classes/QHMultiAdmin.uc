@@ -82,10 +82,47 @@ function handleAdmins(WebAdminQuery q)
 {
 	local string editAdmin;
 	local string tmp;
+	local array<string> tmpa;
 	local int i;
 	local MultiAdminData adminData;
 
 	editAdmin = q.request.getVariable("adminid");
+
+	if ((q.request.getVariable("action") ~= "create") || (q.request.getVariable("action") ~= "create administrator"))
+	{
+		if (len(editAdmin) > 0)
+		{
+			if (authModule.records.find('name', editAdmin) == INDEX_NONE)
+			{
+				adminData = new(none, editAdmin) class'MultiAdminData';
+				adminData.SaveConfig();
+				for (i = 0; i < authModule.records.length; i++)
+				{
+					if (caps(authModule.records[i].name) > caps(editAdmin))
+					{
+						authModule.records.insert(i, 1);
+						authModule.records[i].name = editAdmin;
+						authModule.records[i].data = adminData;
+						break;
+					}
+				}
+				if (i == authModule.records.length)
+				{
+					authModule.records.length = i+1;
+					authModule.records[i].name = editAdmin;
+					authModule.records[i].data = adminData;
+				}
+				webadmin.addMessage(q, "Created a new administrator with the name: "$editAdmin);
+			}
+			else {
+				webadmin.addMessage(q, "Unable to create a new administrator. There is already a admin with the name: "$editAdmin, MT_Error);
+				editAdmin = "";
+			}
+		}
+		else {
+			webadmin.addMessage(q, "No name given.", MT_Error);
+		}
+	}
 
 	tmp = "";
 	for (i = 0; i < authModule.records.length; i++)
@@ -109,6 +146,50 @@ function handleAdmins(WebAdminQuery q)
 	q.response.subst("editor", "");
 	if (adminData != none)
 	{
+		if (q.request.getVariable("action") ~= "save")
+		{
+			tmp = q.request.getVariable("password1");
+			if (tmp == q.request.getVariable("password2"))
+			{
+				if (len(tmp) > 0)
+				{
+					adminData.setPassword(tmp);
+				}
+				adminData.displayName = q.request.getVariable("displayname");
+
+				ParseStringIntoArray(q.request.getVariable("allow"), tmpa, chr(10), true);
+				adminData.allow.length = 0;
+				for (i = 0; i < tmpa.length; i++)
+				{
+					tmp = `Trim(tmpa[i]);
+					if (len(tmp) == 0) continue;
+					adminData.allow[adminData.allow.length] = tmp;
+				}
+
+				ParseStringIntoArray(q.request.getVariable("deny"), tmpa, chr(10), true);
+				adminData.deny.length = 0;
+				for (i = 0; i < tmpa.length; i++)
+				{
+					tmp = `Trim(tmpa[i]);
+					if (len(tmp) == 0) continue;
+					adminData.deny[adminData.deny.length] = tmp;
+				}
+
+				if (q.request.getVariable("order") ~= "AllowDeny") {
+					adminData.order = AllowDeny;
+				}
+				else {
+					adminData.order = DenyAllow;
+				}
+
+				adminData.saveconfig();
+				webadmin.addMessage(q, "Saved administrator information");
+			}
+			else {
+				webadmin.addMessage(q, "Passwords do not match.", MT_Error);
+			}
+		}
+
 		q.response.subst("adminid", `HTMLEscape(adminData.name));
 		q.response.subst("displayname", `HTMLEscape(adminData.displayName));
 		if (adminData.order == DenyAllow)

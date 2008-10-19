@@ -31,16 +31,40 @@ function init(WorldInfo wi)
 function loadRecords()
 {
 	local array<string> names;
-	local int i;
+	local int i, j;
 	local int idx;
+	local string tmp;
 
 	GetPerObjectConfigSections(class'MultiAdminData', names);
-	records.length = names.length;
 	for (i = 0; i < names.length; i++)
 	{
 		idx = InStr(names[i], " ");
 		if (idx == INDEX_NONE) continue;
-		records[i].name = Left(names[i], idx);
+		tmp = Left(names[i], idx);
+		for (j = 0; j < records.length; j++)
+		{
+			if (caps(records[j].name) > caps(tmp))
+			{
+				records.insert(j, 1);
+				records[j].name = tmp;
+				break;
+			}
+		}
+		if (j == records.length)
+		{
+			records.length = j+1;
+			records[j].name = tmp;
+		}
+	}
+	if (records.length == 0)
+	{
+		records[0].name = "Admin";
+		records[0].data = new(none, records[0].name) class'MultiAdminData';
+		tmp = worldinfo.game.consolecommand("get engine.accesscontrol adminpassword", false);
+		if (len(tmp) == 0) tmp = "Admin";
+		records[0].data.setPassword(tmp);
+		records[0].data.SaveConfig();
+		`Log("Created initial webadmin administrator account: "$records[0].name,,'WebAdmin');
 	}
 }
 

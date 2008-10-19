@@ -8,10 +8,10 @@
     <dd><input type="text" name="displayname" id="displayname" value="<%displayname%>" size="40" maxlength="128" /></dd>
     
     <dt><label for="password1">Password</label></dt>
-    <dd><input type="text" name="password1" id="password1" value="" size="40" maxlength="128" /></dd>
+    <dd><input type="password" name="password1" id="password1" value="" size="40" maxlength="128" /></dd>
     
     <dt><label for="password2">Confirm password</label></dt>
-    <dd><input type="text" name="password2" id="password2" value="" size="40" maxlength="128" /></dd>
+    <dd><input type="password" name="password2" id="password2" value="" size="40" maxlength="128" /></dd>
     
     <dt>Access order</dt>
     <dd>
@@ -26,7 +26,9 @@
     <dt><label for="allow">Allow patterns</label></dt>
     <dd><textarea id="allow" name="allow" cols="60" rows="6"><%allow%></textarea></dd>
     
-    <dd>....</dd>
+    <dd>The allow and deny patterns are the part of the URL in the webadmin after <code><%webadmin.path%></code>. 
+    For example, the pattern for this page is: <code><%page.uri%></code>, and the full URL is <code><%page.fulluri%></code>.
+    The patterns may contain the wildcard <code>*</code>. The pattern <code>/foo/*/bar</code> would match <code>/foo/quux/bar</code>, but not <code>/foo/bar</code>.</dd>
   
   </dl>
   
@@ -44,6 +46,14 @@
 $(document).ready(function() {
   $('#pfactions button[value="delete"]').click(function () {
     return window.confirm("Are you sure you want to delete this administrator?");
+  });
+  $('#pfactions button[value="save"]').click(function () {
+    if ($('#password1').val() != $('#password2').val())
+    {
+      alert("New password and confirmation do not match.");
+      return false;
+    }
+    return true;
   });
 });
 

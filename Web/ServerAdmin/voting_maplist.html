@@ -5,17 +5,21 @@
 <fieldset id="mloverview">
 <legend>Map lists</legend>
 <form id="editlist" method="post" action="<%page.fulluri%>">
+<div>
     <select id="maplistid" name="maplistid">
     <option value="" />
     <%maplists%>
     </select>
     <button type="submit" id="btnselect">edit map list</button>
+</div>
 </form>
 <form id="newlist" method="post" action="<%page.fulluri%>">
+<div>
     <br />
     <label for="newlistid">Map list name:</label>
     <input type="text" id="newlistid" name="maplistid" value=""/>
     <button type="submit" name="action" value="create">create new list</button>
+</div>
 </form>
 </fieldset>
 
@@ -49,17 +53,23 @@ $(document).ready(function(){
         }
         if (!isValid) return false;
     });
-    $('#newlist *').hide();
-    $('#mloverview form').css('display', 'inline');
+    $('#newlist div *').hide();
+    $('#mloverview form, #mloverview div').css('display', 'inline');
     $('#newlist button').show().click(function () {
-        var mapid = jQuery.trim(window.prompt('Enter the name of the new map list'));
-        if (mapid.length > 0) {
-            $('#newlistid').val(mapid);
-            return true;
-        }
+        messagePrompt('Enter the name of the new map list', promptedName, '');
         return false;
     });
 });
+
+function promptedName(newname) {
+    var mapid = jQuery.trim(newname);
+    if (mapid.length > 0) {
+        $('#newlistid').val(mapid);
+        $('#newlist button').click().click(function() {return true;});
+        return true;
+    }
+    return false;
+}
 
 //]]>
 </script>

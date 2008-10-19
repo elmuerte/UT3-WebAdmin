@@ -105,7 +105,7 @@ function reload() {
 
 function returnHome() {
     if (score > 0) {
-        alert("Congratulations!\nYou scored "+Math.round(score/scoreMax*100)+"%");
+        windowAlert("Congratulations!\nYou scored "+Math.round(score/scoreMax*100)+"%");
     }
     window.location = '<%webadmin.path%>';
 }
