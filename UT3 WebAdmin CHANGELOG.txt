@@ -1,4 +1,4 @@
-v1.8 - 2008-09-??
+v1.8 - 2008-10-??
 -----------------
 Note: Patch 1.4 is required
 - added sessionban functionality
