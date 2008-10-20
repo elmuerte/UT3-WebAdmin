@@ -1,5 +1,5 @@
 /**
- *
+ * Query handler for the multi admin access control.
  *
  * Copyright 2008 Epic Games, Inc. All Rights Reserved
  *
@@ -12,6 +12,12 @@ class QHMultiAdmin extends Object implements(IQueryHandler) config(WebAdmin)
 
 var MultiWebAdminAuth authModule;
 var WebAdmin webadmin;
+
+/**
+ * A list of administrator names that are protected. These can not be deleted
+ * at all. And can not be modified by themselves.
+ */
+var config array<string> protectedAdmins;
 
 function init(WebAdmin webapp)
 {
@@ -124,9 +130,32 @@ function handleAdmins(WebAdminQuery q)
 		}
 	}
 
+	if (q.request.getVariable("action") ~= "delete")
+	{
+		if (authModule.records.length <= 1)
+		{
+			webadmin.addMessage(q, "You can not remove the last administrator.", MT_Error);
+		}
+		else if (len(editAdmin) > 0)
+		{
+			if (!canDeleteAdmin(editAdmin, q.user))
+			{
+				webadmin.addMessage(q, "Administrator "$editAdmin$" can not be deleted.", MT_Error);
+			}
+			else if (authModule.removeAdminRecord(editAdmin))
+			{
+				webadmin.addMessage(q, "Removed administrator: "$editAdmin);
+			}
+			else {
+				webadmin.addMessage(q, "Unable to remove: "$editAdmin, MT_Error);
+			}
+		}
+	}
+
 	tmp = "";
 	for (i = 0; i < authModule.records.length; i++)
 	{
+		if (!canEditAdmin(authModule.records[i].name, q.user)) continue;
 		q.response.subst("multiadmin.name", `HTMLEscape(authModule.records[i].name));
 		if (authModule.records[i].name ~= editAdmin)
 		{
@@ -146,7 +175,7 @@ function handleAdmins(WebAdminQuery q)
 	q.response.subst("editor", "");
 	if (adminData != none)
 	{
-		if (q.request.getVariable("action") ~= "save")
+		if (q.request.getVariable("action") ~= "save" && canEditAdmin(editAdmin, q.user))
 		{
 			tmp = q.request.getVariable("password1");
 			if (tmp == q.request.getVariable("password2"))
@@ -220,10 +249,50 @@ function handleAdmins(WebAdminQuery q)
 			tmp $= adminData.deny[i];
 		}
 		q.response.subst("deny", tmp);
+
+		if (!canDeleteAdmin(string(adminData.name), q.user))
+		{
+			q.response.subst("allowdelete", "disabled=\"disabled\"");
+		}
+		else {
+			q.response.subst("allowdelete", "");
+		}
 		q.response.subst("editor", webadmin.include(q, "multiadmin_editor.inc"));
 	}
 
 	webadmin.sendPage(q, "multiadmin.html");
+}
+
+/**
+ * True if the user can be deleted. Users can not delete themselves.
+ */
+function bool canDeleteAdmin(string adminName, IWebAdminUser me)
+{
+	if (protectedAdmins.find(adminName) != INDEX_NONE)
+	{
+		return false;
+	}
+	if (me.getUserid() ~= adminName)
+	{
+		return false;
+	}
+	return true;
+}
+
+/**
+ * True if the user can be edited. Users can edit themselves if they are protected.
+ */
+function bool canEditAdmin(string adminName, IWebAdminUser me)
+{
+	if (protectedAdmins.find(adminName) != INDEX_NONE)
+	{
+		if (me.getUserid() ~= adminName)
+		{
+			return true;
+		}
+		return false;
+	}
+	return true;
 }
 
 defaultproperties

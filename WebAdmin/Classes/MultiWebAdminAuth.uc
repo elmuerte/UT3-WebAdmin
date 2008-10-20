@@ -117,6 +117,33 @@ function MultiAdminData getRecord(string username)
 	return records[idx].data;
 }
 
+function bool removeAdminRecord(string username)
+{
+	local int idx;
+	local MultiAdminData data;
+
+	idx = records.find('name', username);
+	if (idx == INDEX_NONE)
+	{
+		return false;
+	}
+	if (records[idx].data == none)
+	{
+		records[idx].data = new(none, records[idx].name) class'MultiAdminData';
+	}
+	data = records[idx].data;
+	data.ClearConfig();
+	records.remove(idx, 1);
+	for (idx = users.length-1; idx >= 0; idx--)
+	{
+		if (users[idx].adminData == data)
+		{
+			logout(users[idx]);
+		}
+	}
+	return true;
+}
+
 function cleanup()
 {
 	local IWebAdminUser user;
@@ -137,7 +164,7 @@ function IWebAdminUser authenticate(string username, string password, out string
 	adminData = getRecord(username);
 	if (adminData == none)
     {
-        errorMsg = "Invalid credentials.1";
+        errorMsg = "Invalid credentials.";
         if (records.length == 0)
         {
         	errorMsg @= "No administrators have been created. Please update the configuration.";
@@ -153,7 +180,7 @@ function IWebAdminUser authenticate(string username, string password, out string
 		users.AddItem(user);
 		return user;
 	}
-	errorMsg = "Invalid credentials.2";
+	errorMsg = "Invalid credentials.";
 	return none;
 }
 

@@ -35,7 +35,7 @@
   <div id="pfactions">
   <br />
   <button type="submit" name="action" value="save">save</button>
-  <button type="submit" name="action" value="delete">delete</button>
+  <button type="submit" name="action" value="delete" <%allowdelete%>>delete</button>
   </div>
 </fieldset>
 </form>
@@ -45,8 +45,9 @@
 
 $(document).ready(function() {
   $('#pfactions button[value="delete"]').click(function () {
-    return window.confirm("Are you sure you want to delete this administrator?");
+    return window.confirm("Are you sure you want to delete this administrator?\nThis will log out existing users.");
   });
+  $('#pfactions button[value="delete"]:disabled').before('<small>This admin cannot be deleted.</small>').remove();
   $('#pfactions button[value="save"]').click(function () {
     if ($('#password1').val() != $('#password2').val())
     {

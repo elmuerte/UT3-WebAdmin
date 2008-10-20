@@ -109,6 +109,12 @@ BUTTON:Hover, INPUT.button:Hover {
 	background-color: #730000;
 }
 
+BUTTON[disabled="disabled"], BUTTON[disabled="disabled"]:Hover {
+	background-color: #EDE6E6;
+	border-color: #936A6A;
+	color: #936A6A;
+}
+
 TD {
 	vertical-align: top;
 }

@@ -116,6 +116,11 @@ function string getUsername()
 	return PC.PlayerReplicationInfo.PlayerName;
 }
 
+function string getUserid()
+{
+	return getUsername();
+}
+
 function PlayerController getPC()
 {
 	return PC;

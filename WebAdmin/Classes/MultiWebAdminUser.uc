@@ -9,6 +9,11 @@ class MultiWebAdminUser extends BasicWebAdminUser;
 
 var MultiAdminData adminData;
 
+function string getUserid()
+{
+	return string(adminData.name);
+}
+
 function logout()
 {
 	adminData = none;
