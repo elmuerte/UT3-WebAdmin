@@ -7,7 +7,7 @@
  */
 class UTTeamGameSettings extends UTGameSettings;
 
-var const class<UTTeamGame> UTTeamGameClass;
+var class<UTTeamGame> UTTeamGameClass;
 
 function save()
 {

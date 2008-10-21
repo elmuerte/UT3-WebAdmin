@@ -8,6 +8,8 @@ Note: Patch 1.4 is required
 - new voting configuration functionality
 - added an alternative authentication module: WebAdmin.MultiWebAdminAuth
   this one allows multiple user accounts
+- added some gametype settings magic that shows the best match for avaiable
+  settings for an gametype that did not provide its own settings class.  
 
 v1.7 - 2008-09-21
 -----------------

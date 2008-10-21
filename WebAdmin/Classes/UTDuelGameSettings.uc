@@ -7,7 +7,7 @@
  */
 class UTDuelGameSettings extends UTTeamGameSettings;
 
-var const class<UTDuelGame> UTDuelGameClass;
+var class<UTDuelGame> UTDuelGameClass;
 
 function init()
 {

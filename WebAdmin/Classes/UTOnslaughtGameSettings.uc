@@ -7,7 +7,7 @@
  */
 class UTOnslaughtGameSettings extends UTTeamGameSettings abstract;
 
-var const class<UTOnslaughtGame> UTOnslaughtGameClass;
+var class<UTOnslaughtGame> UTOnslaughtGameClass;
 
 function init()
 {

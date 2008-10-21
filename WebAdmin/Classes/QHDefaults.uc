@@ -55,6 +55,8 @@ var `if(`UT3_PATCH_1_4)deprecated`endif
 var `if(`UT3_PATCH_1_4)deprecated`endif
 	AdditionalMapLists additionalML;
 
+var SettingsMagic settingsMagic;
+
 function init(WebAdmin webapp)
 {
 	if (Len(GeneralSettingsClass) == 0)
@@ -75,6 +77,11 @@ function init(WebAdmin webapp)
 function cleanup()
 {
 	local int i;
+	if (settingsMagic != none)
+	{
+		settingsMagic.cleanup();
+	}
+	settingsMagic = none;
 	webadmin = none;
 	settingsRenderer = none;
 	for (i = 0; i < settingsInstances.length; i++)
@@ -540,7 +547,7 @@ function Settings getSettingsInstance(class<Settings> cls)
 
 function handleSettingsGametypes(WebAdminQuery q)
 {
-	local string currentGameType, substvar;
+	local string currentGameType, substvar, tmp;
 	local UTUIDataProvider_GameModeInfo editGametype, gametype;
 	local int idx;
 	local class<Settings> settingsClass;
@@ -571,17 +578,19 @@ function handleSettingsGametypes(WebAdminQuery q)
  		{
  			continue;
  		}
+ 		tmp = "";
  		if (getSettingsClassFqn(gametype.GameMode) == none)
  		{
- 			continue;
+ 			//continue;
+ 			tmp = " &sup1;";
  		}
  		q.response.subst("gametype.gamemode", `HTMLEscape(gametype.GameMode));
- 		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 		q.response.subst("gametype.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName))$tmp);
  		q.response.subst("gametype.defaultmap", `HTMLEscape(gametype.DefaultMap));
  		q.response.subst("gametype.description", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.Description)));
  		if (currentGameType ~= gametype.GameMode)
  		{
- 			q.response.subst("editgametype.name", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName)));
+ 			q.response.subst("editgametype.name", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(gametype.FriendlyName))$tmp);
  			q.response.subst("editgametype.class", `HTMLEscape(gametype.GameMode));
  			q.response.subst("gametype.selected", "selected=\"selected\"");
  		}
@@ -602,6 +611,14 @@ function handleSettingsGametypes(WebAdminQuery q)
 		if (settingsClass != none)
 		{
 			settings = getSettingsInstance(settingsClass);
+		}
+		if (settings == none)
+		{
+			if (settingsMagic == none)
+			{
+				settingsMagic = new class'SettingsMagic';
+			}
+			settings = settingsMagic.find(gi);
 		}
 	}
 
