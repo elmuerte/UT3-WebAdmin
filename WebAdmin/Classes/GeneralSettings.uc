@@ -9,6 +9,14 @@ class GeneralSettings extends WebAdminSettings;
 
 `include(WebAdmin.uci)
 
+`if(`UT3_PATCH_1_4)
+	`define VOTING_1_4
+`else
+`if(`UT3_PATCH_1_3)
+	`define VOTING_1_3
+`endif
+`endif
+
 function string GetSpecialValue(name PropertyName)
 {
 	if (PropertyName == `{WA_GROUP_SETTINGS})
@@ -16,12 +24,6 @@ function string GetSpecialValue(name PropertyName)
 		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60;Voting=60,80";
 	}
 }
-
-`if(`UT3_PATCH_1_4)
-`define MAP_VOTE_CONFIG class'UTVoteCollector'
-`else
-`define MAP_VOTE_CONFIG class'UTGame'
-`endif
 
 function init()
 {
@@ -73,15 +75,24 @@ function init()
 	`endif
 
 	// map voting
-	`if(`UT3_PATCH_1_3)
-	SetIntPropertyByName('bAllowMapVoting', int(`{MAP_VOTE_CONFIG}.default.bAllowMapVoting));
-	SetIntPropertyByName('bMidGameMapVoting', int(`{MAP_VOTE_CONFIG}.default.bMidGameMapVoting));
-	SetIntPropertyByName('VoteDuration', `{MAP_VOTE_CONFIG}.default.VoteDuration);
-	SetIntPropertyByName('MapVotePercentage', `{MAP_VOTE_CONFIG}.default.MapVotePercentage);
-	SetIntPropertyByName('MinMapVotes', `{MAP_VOTE_CONFIG}.default.MinMapVotes);
-	SetIntPropertyByName('InitialVoteDelay', `{MAP_VOTE_CONFIG}.default.InitialVoteDelay);
+	`if(`isdefined(VOTING_1_3))
+	SetIntPropertyByName('bAllowMapVoting', int(class'UTGame'.default.bAllowMapVoting));
+	SetIntPropertyByName('bMidGameMapVoting', int(class'UTGame'.default.bMidGameMapVoting));
+	SetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
+	SetIntPropertyByName('MapVotePercentage', class'UTGame'.default.MapVotePercentage);
+	SetIntPropertyByName('MinMapVotes', class'UTGame'.default.MinMapVotes);
+	SetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
+	`endif
 
-	`if(`UT3_PATCH_1_4)
+	`if(`isdefined(VOTING_1_4))
+	SetIntPropertyByName('bAllowMapVoting', int(class'UTVoteCollector'.default.bAllowMapVoting));
+	SetIntPropertyByName('bMidGameVoting', int(class'UTVoteCollector'.default.bMidGameVoting));
+	SetIntPropertyByName('GameVoteDuration', class'UTVoteCollector'.default.GameVoteDuration);
+	SetIntPropertyByName('MapVoteDuration', class'UTVoteCollector'.default.MapVoteDuration);
+	SetIntPropertyByName('MidGameVotePercentage', class'UTVoteCollector'.default.MidGameVotePercentage);
+	SetIntPropertyByName('MinMidGameVotes', class'UTVoteCollector'.default.MinMidGameVotes);
+	SetIntPropertyByName('InitialVoteDelay', class'UTVoteCollector'.default.InitialVoteDelay);
+
 	SetIntPropertyByName('bAllowGameVoting', int(class'UTVoteCollector'.default.bAllowGameVoting));
 	SetIntPropertyByName('bAllowMutatorVoting', int(class'UTVoteCollector'.default.bAllowMutatorVoting));
 	SetIntPropertyByName('MutatorVotePercentage', class'UTVoteCollector'.default.MutatorVotePercentage);
@@ -92,7 +103,6 @@ function init()
 	SetIntPropertyByName('KickVotePercentage', class'UTVoteCollector'.default.KickVotePercentage);
 
 	SetIntPropertyByName('MapReplayLimit', class'UTMapListManager'.default.MapReplayLimit);
-	`endif
 	`endif
 }
 
@@ -141,26 +151,46 @@ function save()
 	}
 	GetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
 	GetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
+
 	`if(`UT3_PATCH_1_3)
 	if (GetIntPropertyByName('bNoCustomCharacters', val))
 	{
 		class'UTGame'.default.bNoCustomCharacters = val != 0;
 	}
+	`endif
 
+	`if(`isdefined(VOTING_1_3))
 	if (GetIntPropertyByName('bAllowMapVoting', val))
 	{
-		`{MAP_VOTE_CONFIG}.default.bAllowMapVoting = val != 0;
+		class'UTGame'.default.bAllowMapVoting = val != 0;
 	}
 	if (GetIntPropertyByName('bMidGameMapVoting', val))
 	{
-		`{MAP_VOTE_CONFIG}.default.bMidGameMapVoting = val != 0;
+		class'UTGame'.default.bMidGameMapVoting = val != 0;
 	}
-	GetIntPropertyByName('VoteDuration', `{MAP_VOTE_CONFIG}.default.VoteDuration);
-	GetIntPropertyByName('MapVotePercentage', `{MAP_VOTE_CONFIG}.default.MapVotePercentage);
-	GetIntPropertyByName('MinMapVotes', `{MAP_VOTE_CONFIG}.default.MinMapVotes);
-	GetIntPropertyByName('InitialVoteDelay', `{MAP_VOTE_CONFIG}.default.InitialVoteDelay);
+	GetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
+	GetIntPropertyByName('MapVotePercentage', class'UTGame'.default.MapVotePercentage);
+	GetIntPropertyByName('MinMapVotes', class'UTGame'.default.MinMapVotes);
+	GetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
+	`endif
 
-	`if(`UT3_PATCH_1_4)
+	class'UTGame'.static.StaticSaveConfig();
+
+	`if(`isdefined(VOTING_1_4))
+	if (GetIntPropertyByName('bAllowMapVoting', val))
+	{
+		class'UTVoteCollector'.default.bAllowMapVoting = val != 0;
+	}
+	if (GetIntPropertyByName('bMidGameVoting', val))
+	{
+		class'UTVoteCollector'.default.bMidGameVoting = val != 0;
+	}
+	GetIntPropertyByName('GameVoteDuration', class'UTVoteCollector'.default.GameVoteDuration);
+	GetIntPropertyByName('MapVoteDuration', class'UTVoteCollector'.default.MapVoteDuration);
+	GetIntPropertyByName('MidGameVotePercentage', class'UTVoteCollector'.default.MidGameVotePercentage);
+	GetIntPropertyByName('MinMidGameVotes', class'UTVoteCollector'.default.MinMidGameVotes);
+	GetIntPropertyByName('InitialVoteDelay', class'UTVoteCollector'.default.InitialVoteDelay);
+
 	if (GetIntPropertyByName('bAllowGameVoting', val))
 	{
 		class'UTVoteCollector'.default.bAllowGameVoting = val != 0;
@@ -186,9 +216,6 @@ function save()
 	GetIntPropertyByName('MapReplayLimit', class'UTMapListManager'.default.MapReplayLimit);
 	class'UTMapListManager'.static.StaticSaveConfig();
 	`endif
-
-	`endif
-	class'UTGame'.static.StaticSaveConfig();
 
 	// GameInfo
 	GetIntPropertyByName('MaxSpectators', class'GameInfo'.default.MaxSpectators);
@@ -300,7 +327,7 @@ defaultproperties
 	`endif
 
 	// mapvoting
-	`if(`UT3_PATCH_1_3)
+	`if(`isdefined(VOTING_1_3))
 	Properties.Add((PropertyId=60,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=61,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=62,Data=(Type=SDT_Int32)))
@@ -314,8 +341,15 @@ defaultproperties
 	PropertyMappings.Add((Id=63,name="MapVotePercentage",ColumnHeaderText="Vote Percentage to Change Map",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
 	PropertyMappings.Add((Id=64,name="MinMapVotes",ColumnHeaderText="Minimal Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=65,name="InitialVoteDelay",ColumnHeaderText="Mid-Game Vote Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	`endif
 
-	`if(`UT3_PATCH_1_4)
+	`if(`isdefined(VOTING_1_4))
+	Properties.Add((PropertyId=60,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=61,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=62,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=63,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=64,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=65,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=66,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=67,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=68,Data=(Type=SDT_Int32)))
@@ -324,7 +358,14 @@ defaultproperties
 	Properties.Add((PropertyId=71,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=72,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=73,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=74,Data=(Type=SDT_Int32)))
 
+	PropertyMappings.Add((Id=60,name="bAllowMapVoting",ColumnHeaderText="Allow Map Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=61,name="bMidGameVoting",ColumnHeaderText="Allow Mid-Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=62,name="GameVoteDuration",ColumnHeaderText="Game Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=63,name="MidGameVotePercentage",ColumnHeaderText="Mid-Game Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=64,name="MinMidGameVotes",ColumnHeaderText="Minimal Mid-Game Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=65,name="InitialVoteDelay",ColumnHeaderText="Mid-Game Vote Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
 	PropertyMappings.Add((Id=66,name="bAllowGameVoting",ColumnHeaderText="Allow Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=67,name="bAllowMutatorVoting",ColumnHeaderText="Allow Mutator Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
 	PropertyMappings.Add((Id=68,name="MutatorVotePercentage",ColumnHeaderText="Mutator Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
@@ -333,6 +374,8 @@ defaultproperties
 	PropertyMappings.Add((Id=71,name="MinKickVotes",ColumnHeaderText="Minimal Kick Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=72,name="KickVotePercentage",ColumnHeaderText="Kick Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
 	PropertyMappings.Add((Id=73,name="MapReplayLimit",ColumnHeaderText="Map Replay Limit",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=1))
-	`endif
+	PropertyMappings.Add((Id=74,name="MapVoteDuration",ColumnHeaderText="Map Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	// InitialVoteTransferTime
+	// RushVoteTransferTime
 	`endif
 }
