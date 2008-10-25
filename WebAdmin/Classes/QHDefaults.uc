@@ -49,8 +49,7 @@ var WebAdmin webadmin;
 
 var SettingsRenderer settingsRenderer;
 
-var `if(`UT3_PATCH_1_4)deprecated`endif
-	config string AdditionalMLClass;
+var config string AdditionalMLClass;
 
 var `if(`UT3_PATCH_1_4)deprecated`endif
 	AdditionalMapLists additionalML;
