@@ -2,7 +2,7 @@
 <fieldset>
   <legend><%adminid%></legend>
   <input type="hidden" name="adminid" value="<%adminid%>" />
-  
+   
   <dl>
     <dt title="Show this as the name of the administrator rather than the user name"><label for="displayname">Display name</label></dt>
     <dd><input type="text" name="displayname" id="displayname" value="<%displayname%>" size="40" maxlength="128" /></dd>
@@ -37,6 +37,9 @@
   <button type="submit" name="action" value="save">save</button>
   <button type="submit" name="action" value="delete" <%allowdelete%>>delete</button>
   </div>
+  
+  <div id="menueditor"><h3>Navigation Preview</h3><%menueditor%></div>
+  
 </fieldset>
 </form>
 
@@ -56,7 +59,71 @@ $(document).ready(function() {
     }
     return true;
   });
+  
+  var menuedit = $('#menueditor');
+  $('#profileform dl').prepend(menuedit.clone()); 
+  menuedit.remove();
+  
+  reloadAccessRules();
+  $('#profileform input[name="order"]').change(reloadAccessRules);
+  $('#allow, #deny').change(reloadAccessRules);
+  $('#menueditor a').click(function(){return false;});
+  $('#menueditor').fadeIn();
 });
+
+function toRegExp(str)
+{
+  str = str.replace(/\*/g, '.*');
+  return new RegExp('^'+str+'$');
+}
+
+function reloadAccessRules()
+{
+  var allow = $('#allow').val().split('\n');
+  for (var i = 0; i < allow.length; i++)
+  {
+    allow[i] = jQuery.trim(allow[i]);
+    if (allow[i].length == 0) continue;
+    allow[i] = toRegExp(allow[i]);
+  }
+  var deny = $('#deny').val().split('\n');
+  for (var i = 0; i < deny.length; i++)
+  {
+    deny[i] = jQuery.trim(deny[i]);
+    if (deny[i].length == 0) continue;
+    deny[i] = toRegExp(deny[i]);
+  }
+  var denyallow = $('#profileform input[name="order"]:checked').val() == $('#DenyAllow').val();
+  $('#menueditor a').each(function() {
+    var path = $(this).attr('href');
+    var inallow = false;
+    var indeny = false;
+    for (var i = 0; i < allow.length; i++)
+    {
+      if (allow[i].test(path))
+      {
+        inallow = true;
+        break;
+      }
+    }
+    for (var i = 0; i < deny.length; i++)
+    {
+      if (deny[i].test(path))
+      {
+        indeny = true;
+        break;
+      }
+    }
+    if (denyallow) {
+      if (indeny && !inallow) $(this).addClass('denied');
+      else $(this).removeClass('denied');
+    }
+    else {
+      if (inallow) $(this).removeClass('denied');
+      else $(this).addClass('denied');
+    }
+  });
+}
 
 //]]>
 </script>

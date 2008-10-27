@@ -19,6 +19,8 @@ var WebAdmin webadmin;
  */
 var config array<string> protectedAdmins;
 
+var string fullMenu;
+
 function init(WebAdmin webapp)
 {
 	local int i;
@@ -257,6 +259,13 @@ function handleAdmins(WebAdminQuery q)
 		else {
 			q.response.subst("allowdelete", "");
 		}
+
+		if (len(fullMenu) == 0)
+		{
+			fullMenu = webadmin.menu.render("/multiadmin_editor_menu.inc", "/multiadmin_editor_menuitem.inc");
+		}
+		q.response.subst("menueditor", fullMenu);
+
 		q.response.subst("editor", webadmin.include(q, "multiadmin_editor.inc"));
 	}
 

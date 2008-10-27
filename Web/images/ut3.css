@@ -777,3 +777,21 @@ UL.charlist LI {
 #promptDialog BUTTON {
 	margin: 5px 5px 0 0;
 }
+
+#menueditor {
+	float: right;
+	border: 1px solid #520000;
+	padding: 5px;
+	overflow: auto;
+	position: relative;
+	background-color: white;
+	display: none;
+}
+
+#menueditor A {
+	text-decoration: none;
+}
+
+#menueditor A.denied {
+	color: gray;
+}

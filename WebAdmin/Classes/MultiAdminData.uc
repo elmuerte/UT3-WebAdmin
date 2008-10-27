@@ -80,7 +80,7 @@ function bool canAccess(string loc)
 	}
 	else if (order == AllowDeny)
 	{
-		if (!matchAllowed(loc)) return false;
+		if (matchAllowed(loc)) return true;
 		if (matchDenied(loc)) return false;
 		return false;
 	}
