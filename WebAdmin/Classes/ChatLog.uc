@@ -36,6 +36,11 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 {
 	local string uniqueid;
 	local int teamindex;
+	if (sender == none)
+	{
+		writer.Logf(TimeStamp()$tab$""$tab$""$tab$type$tab$INDEX_NONE$tab$msg);
+		return;
+	}
 	uniqueid = class'OnlineSubsystem'.static.UniqueNetIdToString(Sender.UniqueId);
 	if (Sender.Team == none)
 	{
