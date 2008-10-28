@@ -87,7 +87,7 @@ $(document).ready(function() {
     drop: function(e, ui) {
       var item = $(ui.draggable);
       var te = $(this);
-      te.val(te.val()+'\n'+item.attr('href'));
+      te.val(jQuery.trim(te.val()+'\n'+item.attr('href')));
       reloadAccessRules();
     }
   });
@@ -105,14 +105,12 @@ function reloadAccessRules()
   for (var i = 0; i < allow.length; i++)
   {
     allow[i] = jQuery.trim(allow[i]);
-    if (allow[i].length == 0) continue;
     allow[i] = toRegExp(allow[i]);
   }
   var deny = $('#deny').val().split('\n');
   for (var i = 0; i < deny.length; i++)
   {
     deny[i] = jQuery.trim(deny[i]);
-    if (deny[i].length == 0) continue;
     deny[i] = toRegExp(deny[i]);
   }
   var denyallow = $('#profileform input[name="order"]:checked').val() == $('#DenyAllow').val();
