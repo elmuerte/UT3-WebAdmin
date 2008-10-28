@@ -5,10 +5,11 @@ Note: Patch 1.4 is required
 - added spawn protection time setting for gametypes
 - fixed bot roster editing when the roster was empty
 - konami code
-- new voting configuration functionality
+- new voting configuration functionality, if it doesn't show up, add the 
+  following query handler: WebAdmin.QHVoting
 - added an alternative authentication module: WebAdmin.MultiWebAdminAuth
   this one allows multiple user accounts
-- added some gametype settings magic that shows the best match for avaiable
+- added some gametype settings magic that shows the best match for available
   settings for an gametype that did not provide its own settings class.  
 
 v1.7 - 2008-09-21

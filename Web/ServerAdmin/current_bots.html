@@ -87,7 +87,8 @@ $(document).ready(function() {
     
     $('#botroster').parent().droppable({
         accept: ".character",
-        hoverClass: "droppable",
+        hoverClass: "dropHover",
+        activeClass: "droppable",
         drop: function(ev, ui) {
             var item = jQuery('<li><span class="entry">'+$(ui.draggable).text()+'</span></li>');        
             getDeleteMe(item);

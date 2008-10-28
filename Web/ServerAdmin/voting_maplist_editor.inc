@@ -133,7 +133,8 @@ function fancyMlEditor() {
     });
     $('#jsmapcycle').parent().droppable({
         accept: "li.mapEntry",
-        hoverClass: "droppable",
+        hoverClass: "dropHover",
+        activeClass: "droppable",
         drop: function(ev, ui) {
             var item = $(ui.draggable).clone();
             item.removeClass('mapEntry');            

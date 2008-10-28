@@ -68,7 +68,29 @@ $(document).ready(function() {
   $('#profileform input[name="order"]').change(reloadAccessRules);
   $('#allow, #deny').change(reloadAccessRules);
   $('#menueditor a').click(function(){return false;});
-  $('#menueditor').fadeIn();
+  $('#menueditor').show();
+  $('#menueditor a').draggable({
+    helper: 'clone',
+    zIndex: 100,
+    appendTo: '#profileform',
+    start: function(ev, ui) {
+      $(ui.helper).addClass('dragging');
+    },
+    stop: function(ev, ui) {
+      $(ui.helper).removeClass('dragging');
+    }
+  });
+  $('#allow, #deny').droppable({
+    accept: 'a',
+    hoverClass: "dropHover",
+    activeClass: "droppable",
+    drop: function(e, ui) {
+      var item = $(ui.draggable);
+      var te = $(this);
+      te.val(te.val()+'\n'+item.attr('href'));
+      reloadAccessRules();
+    }
+  });
 });
 
 function toRegExp(str)

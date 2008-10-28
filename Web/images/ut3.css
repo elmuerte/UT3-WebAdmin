@@ -535,7 +535,11 @@ DIV.message {
 }
 
 .droppable {
-    background-color: #FFF2F2;
+    background-color: #FFF0F0;
+}
+
+.dropHover {
+    background-color: #FFE4E4;
 }
 
 .deleteButton, .editButton {
@@ -790,8 +794,15 @@ UL.charlist LI {
 
 #menueditor A {
 	text-decoration: none;
+	cursor: move;
 }
 
 #menueditor A.denied {
 	color: gray;
 }
+
+TEXTAREA.dropHover {
+	border-color: #520000;	
+	color: black;
+}
+
