@@ -698,25 +698,25 @@ UL.charlist LI {
 	cursor: default;
 }
 
-.creditHead {
+.creditTitle {
 	background-image: url(ut3-logo.png) !important;
 	background-image: url(ut3-logo-ie6.png);
 	background-repeat: no-repeat;
 	background-position: 20px 0px;
-	
+	height: 205px;
+	width: 250px;
+}
+
+.creditHead {
 	font-size: 2em;
 	font-weight: bold;
-	padding-top: 200px;
 	padding-left: 20px;
 	color: white;
-	margin-bottom: 150px;
 }
 
 .creditSection {
-	margin-top: 50px;
-	margin-bottom: 10px;
 	width: 200px;
-	padding: 20px;
+	padding-left: 20px;
 	color: white;
 	font-size: 1.3em;
 }
@@ -724,7 +724,7 @@ UL.charlist LI {
 .creditItem {
 	padding-left: 270px;
 	font-size: 1.5em;
-	margin-bottom: 10px;
+	line-height: 1.7em;
 }
 
 .creditItem SPAN {

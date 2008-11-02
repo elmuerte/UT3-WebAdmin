@@ -27,6 +27,8 @@ var score = 0;
 var scoreMax = 0;
 var bullets = 0;
 
+var entries = new Array();
+
 $(document).ready(function(){
     $('#footer').remove();
     $('body').css('overflow', 'hidden');
@@ -37,60 +39,82 @@ $(document).ready(function(){
     {
         if (i == 0)
         {
-            roll.append('<div class="creditHead">'+creditData[i]+'</div>');
+            entries[entries.length] = $('<div class="creditTitle">&nbsp;</div>');
+            entries[entries.length] = $('<div class="creditHead">'+creditData[i]+'</div>');
+            entries[entries.length] = $('<div class="creditSection"><br /><br /><br /><br /><br /><br /></div>');
         }
         else if (jQuery.trim(creditData[i]).length == 0) {
             inSection = false;
         }
         else if (!inSection) {
-            roll.append('<div class="creditSection">'+creditData[i]+'</div>');
+            entries[entries.length] = $('<div class="creditSection"><br /><br /><br /></div>');
+            entries[entries.length] = $('<div class="creditSection">'+creditData[i]+'</div>');
             inSection = true;
         }
         else {
-            roll.append('<div class="creditItem"><span>'+creditData[i]+'</span>&nbsp;</div>');
+            entries[entries.length] = $('<div class="creditItem"><span>'+creditData[i]+'</span>&nbsp;</div>');
             ++scoreMax;
         }
-    }
-    roll.css('top', $(window).height());
-    
-    var broll = roll.clone();
-    broll.css('left', '2px');
-    broll.css('top', +$(window).height()+2+'px'); 
-    
-    $('#content').append(broll);
+    } 
     $('#content').append(roll);
-    
-    $('* span', roll).click(function(){
-        if (bullets <= 0) return;
-        fireGun();
-        var x = $(this);
-        var c = $('<div class="creditItem" style="margin: 0; padding: 0;">'+x.text()+'</div>');
-        var loc = x.parent().offset();
-        c.css('position', 'absolute').css('top', loc.top).css('left', loc.left+x.parent().css('padding-left'));
-        $('#content').append(c);
-        c.hide('explode', {pieces: 16}, 500, function(){
-            ++score;
-        });
-        x.remove();
-    });
-    
+    entryAnim();
+       
     $('#content').append('<div id="creditAmmo" title="Reload!"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></div>');
     $('#creditAmmo').click(reload);
     reload();
     
-    broll.fadeTo(0, 0.2, function (){rollit(roll, broll)});
+    $('body').animate({
+        backgroundPosition: '(0px '+(-10*$(window).height())+'px)'
+    }, creditData.length*1000, 'linear');
 });
 
-function rollit(roll, broll) {
-    $('body').animate({
-        backgroundPosition: '(0px '+(-0.75*roll.height())+'px)'
-    }, creditData.length*1000, 'linear');
-    roll.animate({
-        top: -1*roll.height()
-    }, creditData.length*1000, 'linear', returnHome);
-    broll.animate({
-        top: -1*broll.height()
-    }, creditData.length*1000, 'linear');
+var entryIdx = 0;
+var entryDone = 0;
+var speed = 20;
+var wheight = $(window).height()-30;
+
+function entryAnim() {
+    if (entryIdx >= entries.length) return;
+    var ent = entries[entryIdx++];
+    $('#creditRoll').append(ent);
+    ent.css('position', 'fixed');
+    var entHeight = ent.height();
+    ent.css('top', wheight);    
+    ent.css('opacity', '0.0');
+    ent.animate({opacity: 1.0},{queue: false, duration: entHeight*speed, easing: 'linear'})
+        .animate({top: wheight-entHeight}, {duration: entHeight*speed, easing: 'linear', complete: entryAnim_1})
+    ;
+}
+
+function entryAnim_1() {
+    entryAnim();
+    var ent = $(this);
+    var entHeight = ent.height();
+    var x = $(window).height()-entHeight*2;
+    ent.animate({top: entHeight}, {duration: x*speed, easing: 'linear', complete: entryAnim_2});
+    $('span', ent).click(function(){
+        if (bullets <= 0) return;
+        fireGun();
+        var x = $(this);
+        x.hide('explode', {}, 500, function(){
+            ++score;
+            x.remove();
+        });
+    });
+}
+
+function entryAnim_2() {
+    var ent = $(this);
+    var entHeight = ent.height();
+    ent.animate({opacity: 0.0},{queue: false, duration: entHeight*speed, easing: 'linear'})
+        .animate({top: 0}, {duration: entHeight*speed, easing: 'linear', complete: function() {
+            ent.remove();
+            ++entryDone;
+            if (entryDone >= entries.length) {
+                returnHome();
+            }
+        }})
+    ;
 }
 
 function fireGun() {
