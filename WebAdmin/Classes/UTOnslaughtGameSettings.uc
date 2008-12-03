@@ -33,6 +33,6 @@ defaultproperties
 	UTTeamGameClass=class'UTOnslaughtGame'
 	UTOnslaughtGameClass=class'UTOnslaughtGame'
 
-	Properties[13]=(PropertyId=13,Data=(Type=SDT_Int32))
-	PropertyMappings[13]=(Id=13,Name="bSwapSidesAfterReset" `modloc(,ColumnHeaderText="Swap Sides Each Round") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
+	Properties[14]=(PropertyId=14,Data=(Type=SDT_Int32))
+	PropertyMappings[14]=(Id=14,Name="bSwapSidesAfterReset" `modloc(,ColumnHeaderText="Swap Sides Each Round") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
 }
