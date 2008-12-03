@@ -176,5 +176,7 @@ static final function bool MaskedCompare(coerce string target, string mask)
 
 defaultproperties
 {
+    `if(`isdefined(BUILD_AS_MOD))
 	order=DenyAllow
+	`endif
 }

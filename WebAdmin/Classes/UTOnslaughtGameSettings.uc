@@ -7,6 +7,8 @@
  */
 class UTOnslaughtGameSettings extends UTTeamGameSettings abstract;
 
+`include(WebAdmin.uci)
+
 var class<UTOnslaughtGame> UTOnslaughtGameClass;
 
 function init()
@@ -32,5 +34,5 @@ defaultproperties
 	UTOnslaughtGameClass=class'UTOnslaughtGame'
 
 	Properties[13]=(PropertyId=13,Data=(Type=SDT_Int32))
-	PropertyMappings[13]=(Id=13,Name="bSwapSidesAfterReset",ColumnHeaderText="Swap Sides Each Round",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes")))
+	PropertyMappings[13]=(Id=13,Name="bSwapSidesAfterReset" `modloc(,ColumnHeaderText="Swap Sides Each Round") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
 }

@@ -258,13 +258,13 @@ defaultproperties
 	Properties.Add((PropertyId=5,Data=(Type=SDT_String)))
 	Properties.Add((PropertyId=6,Data=(Type=SDT_Int32)))
 
- 	PropertyMappings.Add((Id=0,Name="ServerName",ColumnHeaderText="Server Name",MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
- 	PropertyMappings.Add((Id=1,Name="ShortName",ColumnHeaderText="Short Server Name",MappingType=PVMT_RawValue,MinVal=0,MaxVal=64))
- 	PropertyMappings.Add((Id=2,Name="AdminName",ColumnHeaderText="Admin Name",MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
- 	PropertyMappings.Add((Id=3,Name="AdminEmail",ColumnHeaderText="Admin Email",MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
- 	PropertyMappings.Add((Id=4,Name="ServerRegion",ColumnHeaderText="Server Region",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="None Specified"),(Id=1,name="Southeast US"),(Id=2,name="Western US"),(Id=3,name="Midwest US"),(Id=4,name="Northwest US, West Canada"),(Id=5,name="Northeast US, East Canada"),(Id=6,name="United Kingdom"),(Id=7,name="Continental Europe"),(Id=8,name="Central Asia, Middle East"),(Id=9,name="Southeast Asia, Pacific"),(Id=10,name="Africa"),(Id=11,name="Australia / NZ / Pacific"),(Id=12,name="Central, South America"))))
- 	PropertyMappings.Add((Id=5,Name="MessageOfTheDay",ColumnHeaderText="Message of the Day",MappingType=PVMT_RawValue,MinVal=0,MaxVal=1024))
- 	PropertyMappings.Add((Id=6,Name="ServerSkillLevel",ColumnHeaderText="Server Skill Level Name",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="Beginner"),(Id=1,name="Experienced"),(Id=2,name="Expert"))))
+ 	PropertyMappings.Add((Id=0,Name="ServerName" `modloc(,ColumnHeaderText="Server Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
+ 	PropertyMappings.Add((Id=1,Name="ShortName" `modloc(,ColumnHeaderText="Short Server Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=64))
+ 	PropertyMappings.Add((Id=2,Name="AdminName" `modloc(,ColumnHeaderText="Admin Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
+ 	PropertyMappings.Add((Id=3,Name="AdminEmail" `modloc(,ColumnHeaderText="Admin Email") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
+ 	PropertyMappings.Add((Id=4,Name="ServerRegion" `modloc(,ColumnHeaderText="Server Region") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="None Specified") ),(Id=1 `modloc(,name="Southeast US") ),(Id=2 `modloc(,name="Western US") ),(Id=3 `modloc(,name="Midwest US") ),(Id=4 `modloc(,name="Northwest US, West Canada") ),(Id=5 `modloc(,name="Northeast US, East Canada") ),(Id=6 `modloc(,name="United Kingdom") ),(Id=7 `modloc(,name="Continental Europe") ),(Id=8 `modloc(,name="Central Asia, Middle East") ),(Id=9 `modloc(,name="Southeast Asia, Pacific") ),(Id=10 `modloc(,name="Africa") ),(Id=11 `modloc(,name="Australia / NZ / Pacific") ),(Id=12 `modloc(,name="Central, South America") ))))
+ 	PropertyMappings.Add((Id=5,Name="MessageOfTheDay" `modloc(,ColumnHeaderText="Message of the Day") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=1024))
+ 	PropertyMappings.Add((Id=6,Name="ServerSkillLevel" `modloc(,ColumnHeaderText="Server Skill Level Name") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="Beginner") ),(Id=1 `modloc(,name="Experienced") ),(Id=2 `modloc(,name="Expert")) )))
 
 	// Connection settings
 	Properties.Add((PropertyId=10,Data=(Type=SDT_Int32)))
@@ -273,20 +273,20 @@ defaultproperties
 	Properties.Add((PropertyId=13,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=14,Data=(Type=SDT_Float)))
 
- 	PropertyMappings.Add((Id=10,Name="MaxSpectators",ColumnHeaderText="Maximum Spectators",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
- 	PropertyMappings.Add((Id=11,Name="MaxPlayers",ColumnHeaderText="Maximum Players",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
- 	PropertyMappings.Add((Id=12,Name="bKickLiveIdlers",ColumnHeaderText="Kick Idlers",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
- 	PropertyMappings.Add((Id=13,Name="bKickMissingCDHashKeys",ColumnHeaderText="Kick Missing Unique Hash",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
- 	PropertyMappings.Add((Id=14,Name="TimeToWaitForHashKey",ColumnHeaderText="Time to Wait for Unique Hash",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+ 	PropertyMappings.Add((Id=10,Name="MaxSpectators" `modloc(,ColumnHeaderText="Maximum Spectators") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+ 	PropertyMappings.Add((Id=11,Name="MaxPlayers" `modloc(,ColumnHeaderText="Maximum Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+ 	PropertyMappings.Add((Id=12,Name="bKickLiveIdlers" `modloc(,ColumnHeaderText="Kick Idlers") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+ 	PropertyMappings.Add((Id=13,Name="bKickMissingCDHashKeys" `modloc(,ColumnHeaderText="Kick Missing Unique Hash") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+ 	PropertyMappings.Add((Id=14,Name="TimeToWaitForHashKey" `modloc(,ColumnHeaderText="Time to Wait for Unique Hash") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
 
 	// Cheat detection settings
 	Properties.Add((PropertyId=20,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=21,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=22,Data=(Type=SDT_Float)))
 
-	PropertyMappings.Add((Id=20,Name="MaxTimeMargin",ColumnHeaderText="[Speed Hack] Maximum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=21,Name="TimeMarginSlack",ColumnHeaderText="[Speed Hack] Time Margin Slack",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=22,name="MinTimeMargin",ColumnHeaderText="[Speed Hack] Minimum Time Margin",MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=20,Name="MaxTimeMargin" `modloc(,ColumnHeaderText="[Speed Hack] Maximum Time Margin") ,MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=21,Name="TimeMarginSlack" `modloc(,ColumnHeaderText="[Speed Hack] Time Margin Slack") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=22,name="MinTimeMargin" `modloc(,ColumnHeaderText="[Speed Hack] Minimum Time Margin") ,MappingType=PVMT_Ranged,MinVal=-9999,MaxVal=9999,RangeIncrement=10))
 
 	// Game settings
 	Properties.Add((PropertyId=30,Data=(Type=SDT_Float)))
@@ -295,15 +295,15 @@ defaultproperties
 	Properties.Add((PropertyId=33,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=34,Data=(Type=SDT_Int32)))
 
-	PropertyMappings.Add((Id=30,name="GameDifficulty",ColumnHeaderText="Game Difficulty",MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32),(Value1=2,Type=SDT_Int32),(Value1=3,Type=SDT_Int32),(Value1=4,Type=SDT_Int32),(Value1=5,Type=SDT_Int32),(Value1=6,Type=SDT_Int32),(Value1=7,Type=SDT_Int32)),MinVal=0,MaxVal=999,RangeIncrement=1))
-	PropertyMappings.Add((Id=31,name="GoreLevel",ColumnHeaderText="Gore Reduction",MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32)),MinVal=0,MaxVal=256,RangeIncrement=1))
-	PropertyMappings.Add((Id=32,name="bChangeLevels",ColumnHeaderText="Change Levels",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=33,Name="EndTimeDelay",ColumnHeaderText="End Game Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
-	PropertyMappings.Add((Id=34,Name="RestartWait",ColumnHeaderText="Game Restart Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1))
+	PropertyMappings.Add((Id=30,name="GameDifficulty" `modloc(,ColumnHeaderText="Game Difficulty") ,MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32),(Value1=2,Type=SDT_Int32),(Value1=3,Type=SDT_Int32),(Value1=4,Type=SDT_Int32),(Value1=5,Type=SDT_Int32),(Value1=6,Type=SDT_Int32),(Value1=7,Type=SDT_Int32)),MinVal=0,MaxVal=999,RangeIncrement=1))
+	PropertyMappings.Add((Id=31,name="GoreLevel" `modloc(,ColumnHeaderText="Gore Reduction") ,MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32)),MinVal=0,MaxVal=256,RangeIncrement=1))
+	PropertyMappings.Add((Id=32,name="bChangeLevels" `modloc(,ColumnHeaderText="Change Levels") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=33,Name="EndTimeDelay" `modloc(,ColumnHeaderText="End Game Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+	PropertyMappings.Add((Id=34,Name="RestartWait" `modloc(,ColumnHeaderText="Game Restart Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1))
 
 	// Administration settings
 	Properties.Add((PropertyId=40,Data=(Type=SDT_Int32)))
-	PropertyMappings.Add((Id=40,Name="bAdminCanPause",ColumnHeaderText="Admin can Pause",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
+	PropertyMappings.Add((Id=40,Name="bAdminCanPause" `modloc(,ColumnHeaderText="Admin can Pause") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 
 	// Player/bot settings
 	Properties.Add((PropertyId=50,Data=(Type=SDT_Int32)))
@@ -315,15 +315,15 @@ defaultproperties
 	Properties.Add((PropertyId=56,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
 
-	PropertyMappings.Add((Id=50,name="bPlayersMustBeReady",ColumnHeaderText="Players Must be Ready",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=51,Name="bForceRespawn",ColumnHeaderText="Force Respawn",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
-	PropertyMappings.Add((Id=52,Name="bWaitForNetPlayers",ColumnHeaderText="Wait for Players",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
-	PropertyMappings.Add((Id=53,Name="bPlayersBalanceTeams",ColumnHeaderText="Players Balance Teams",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
-	PropertyMappings.Add((Id=54,name="BotRatio",ColumnHeaderText="Bot/Player Ratio",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=0.1))
-	PropertyMappings.Add((Id=55,Name="MinNetPlayers",ColumnHeaderText="Minimal Players",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
-	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter",ColumnHeaderText="Force default Character",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes"))))
+	PropertyMappings.Add((Id=50,name="bPlayersMustBeReady" `modloc(,ColumnHeaderText="Players Must be Ready") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=51,Name="bForceRespawn" `modloc(,ColumnHeaderText="Force Respawn") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=52,Name="bWaitForNetPlayers" `modloc(,ColumnHeaderText="Wait for Players") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=53,Name="bPlayersBalanceTeams" `modloc(,ColumnHeaderText="Players Balance Teams") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=54,name="BotRatio" `modloc(,ColumnHeaderText="Bot/Player Ratio") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=0.1))
+	PropertyMappings.Add((Id=55,Name="MinNetPlayers" `modloc(,ColumnHeaderText="Minimal Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter" `modloc(,ColumnHeaderText="Force default Character") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`if(`UT3_PATCH_1_3)
-	PropertyMappings.Add((Id=57,name="bNoCustomCharacters",ColumnHeaderText="No Custom Characters",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
+	PropertyMappings.Add((Id=57,name="bNoCustomCharacters" `modloc(,ColumnHeaderText="No Custom Characters",MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`endif
 
 	// mapvoting
@@ -335,12 +335,12 @@ defaultproperties
 	Properties.Add((PropertyId=64,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=65,Data=(Type=SDT_Int32)))
 
-	PropertyMappings.Add((Id=60,name="bAllowMapVoting",ColumnHeaderText="Allow Map Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=61,name="bMidGameMapVoting",ColumnHeaderText="Allow Mid-Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=62,name="VoteDuration",ColumnHeaderText="Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
-	PropertyMappings.Add((Id=63,name="MapVotePercentage",ColumnHeaderText="Vote Percentage to Change Map",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
-	PropertyMappings.Add((Id=64,name="MinMapVotes",ColumnHeaderText="Minimal Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
-	PropertyMappings.Add((Id=65,name="InitialVoteDelay",ColumnHeaderText="Mid-Game Vote Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=60,name="bAllowMapVoting" `modloc(,ColumnHeaderText="Allow Map Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=61,name="bMidGameMapVoting" `modloc(,ColumnHeaderText="Allow Mid-Game Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=62,name="VoteDuration" `modloc(,ColumnHeaderText="Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=63,name="MapVotePercentage" `modloc(,ColumnHeaderText="Vote Percentage to Change Map") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=64,name="MinMapVotes" `modloc(,ColumnHeaderText="Minimal Votes") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=65,name="InitialVoteDelay" `modloc(,ColumnHeaderText="Mid-Game Vote Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
 	`endif
 
 	`if(`isdefined(VOTING_1_4))
@@ -360,21 +360,21 @@ defaultproperties
 	Properties.Add((PropertyId=73,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=74,Data=(Type=SDT_Int32)))
 
-	PropertyMappings.Add((Id=60,name="bAllowMapVoting",ColumnHeaderText="Allow Map Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=61,name="bMidGameVoting",ColumnHeaderText="Allow Mid-Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=62,name="GameVoteDuration",ColumnHeaderText="Game Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
-	PropertyMappings.Add((Id=63,name="MidGameVotePercentage",ColumnHeaderText="Mid-Game Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
-	PropertyMappings.Add((Id=64,name="MinMidGameVotes",ColumnHeaderText="Minimal Mid-Game Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
-	PropertyMappings.Add((Id=65,name="InitialVoteDelay",ColumnHeaderText="Mid-Game Vote Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
-	PropertyMappings.Add((Id=66,name="bAllowGameVoting",ColumnHeaderText="Allow Game Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=67,name="bAllowMutatorVoting",ColumnHeaderText="Allow Mutator Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=68,name="MutatorVotePercentage",ColumnHeaderText="Mutator Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
-	PropertyMappings.Add((Id=69,name="bAllowKickVoting",ColumnHeaderText="Allow Kick Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=70,name="bAnonymousKickVoting",ColumnHeaderText="Allow Anonymous Kick Voting",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes"))))
-	PropertyMappings.Add((Id=71,name="MinKickVotes",ColumnHeaderText="Minimal Kick Votes",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
-	PropertyMappings.Add((Id=72,name="KickVotePercentage",ColumnHeaderText="Kick Vote Percentage",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
-	PropertyMappings.Add((Id=73,name="MapReplayLimit",ColumnHeaderText="Map Replay Limit",MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=1))
-	PropertyMappings.Add((Id=74,name="MapVoteDuration",ColumnHeaderText="Map Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=60,name="bAllowMapVoting" `modloc(,ColumnHeaderText="Allow Map Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=61,name="bMidGameVoting" `modloc(,ColumnHeaderText="Allow Mid-Game Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=62,name="GameVoteDuration" `modloc(,ColumnHeaderText="Game Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=63,name="MidGameVotePercentage" `modloc(,ColumnHeaderText="Mid-Game Vote Percentage") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=64,name="MinMidGameVotes" `modloc(,ColumnHeaderText="Minimal Mid-Game Votes") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=65,name="InitialVoteDelay" `modloc(,ColumnHeaderText="Mid-Game Vote Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
+	PropertyMappings.Add((Id=66,name="bAllowGameVoting" `modloc(,ColumnHeaderText="Allow Game Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=67,name="bAllowMutatorVoting" `modloc(,ColumnHeaderText="Allow Mutator Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=68,name="MutatorVotePercentage" `modloc(,ColumnHeaderText="Mutator Vote Percentage") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=69,name="bAllowKickVoting" `modloc(,ColumnHeaderText="Allow Kick Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=70,name="bAnonymousKickVoting" `modloc(,ColumnHeaderText="Allow Anonymous Kick Voting") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=71,name="MinKickVotes" `modloc(,ColumnHeaderText="Minimal Kick Votes") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
+	PropertyMappings.Add((Id=72,name="KickVotePercentage" `modloc(,ColumnHeaderText="Kick Vote Percentage") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=5))
+	PropertyMappings.Add((Id=73,name="MapReplayLimit" `modloc(,ColumnHeaderText="Map Replay Limit") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=100,RangeIncrement=1))
+	PropertyMappings.Add((Id=74,name="MapVoteDuration" `modloc(,ColumnHeaderText="Map Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
 	// InitialVoteTransferTime
 	// RushVoteTransferTime
 	`endif

@@ -882,7 +882,9 @@ function handleMutators(WebAdminQuery q)
 
 defaultproperties
 {
+    `if(`isdefined(BUILD_AS_MOD))
 	bImportLegacyMaplists = true
+	`endif
 }
 
 `else

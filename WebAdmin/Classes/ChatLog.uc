@@ -142,8 +142,11 @@ function InitPlayerReplicationInfo()
 
 defaultproperties
 {
-	bKeepAlive=true
+    bKeepAlive=true
+    
+    `if(`isdefined(BUILD_AS_MOD))
 	bUnique=false
 	bIncludeTimeStamp=true
 	filename="Chatlog_%i_%p"
+	`endif
 }

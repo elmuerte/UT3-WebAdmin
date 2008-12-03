@@ -85,23 +85,23 @@ defaultproperties
 	Properties[11]=(PropertyId=11,Data=(Type=SDT_Int32))
 	Properties[12]=(PropertyId=12,Data=(Type=SDT_Float))
 
-	PropertyMappings[0]=(Id=0,Name="GoalScore",ColumnHeaderText="Score Limit",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
-	PropertyMappings[1]=(Id=1,Name="TimeLimit",ColumnHeaderText="Time Limit",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
-	PropertyMappings[2]=(Id=2,Name="MaxLives",ColumnHeaderText="Maximum Lives",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
-	PropertyMappings[3]=(Id=3,Name="LateEntryLives",ColumnHeaderText="Late Entry Lives",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
-	PropertyMappings[4]=(Id=4,Name="bWarmupRound",ColumnHeaderText="Warmup round",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes")))
-	PropertyMappings[5]=(Id=5,Name="WarmupTime",ColumnHeaderText="Warmup time",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=30)
+	PropertyMappings[0]=(Id=0,Name="GoalScore" `modloc(,ColumnHeaderText="Score Limit") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
+	PropertyMappings[1]=(Id=1,Name="TimeLimit" `modloc(,ColumnHeaderText="Time Limit") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
+	PropertyMappings[2]=(Id=2,Name="MaxLives" `modloc(,ColumnHeaderText="Maximum Lives") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
+	PropertyMappings[3]=(Id=3,Name="LateEntryLives" `modloc(,ColumnHeaderText="Late Entry Lives") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
+	PropertyMappings[4]=(Id=4,Name="bWarmupRound" `modloc(,ColumnHeaderText="Warmup round") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
+	PropertyMappings[5]=(Id=5,Name="WarmupTime" `modloc(,ColumnHeaderText="Warmup time") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=30)
 
-	PropertyMappings[6]=(Id=6,name="bForceMidGameMenuAtStart",ColumnHeaderText="Force MidGameMenu at Start",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,name="No"),(Id=1,name="Yes")))
+	PropertyMappings[6]=(Id=6,name="bForceMidGameMenuAtStart" `modloc(,ColumnHeaderText="Force MidGameMenu at Start") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
 	`if(`notdefined(UT3_PATCH_1_4))
-	PropertyMappings[7]=(Id=7,Name="VoteDuration",ColumnHeaderText="Vote Duration",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
+	PropertyMappings[7]=(Id=7,Name="VoteDuration" `modloc(,ColumnHeaderText="Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
 	`endif
-	PropertyMappings[8]=(Id=8,Name="ResetTimeDelay",ColumnHeaderText="New Round Delay",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
-	PropertyMappings[9]=(Id=9,Name="MaxCustomChars",ColumnHeaderText="Maximum Custom Characters",MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1)
-	PropertyMappings[10]=(Id=10,Name="NetWait",ColumnHeaderText="Delay When Waiting for Players",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
-	PropertyMappings[11]=(Id=11,Name="ClientProcessingTimeout",ColumnHeaderText="Client Processing Timeout",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
+	PropertyMappings[8]=(Id=8,Name="ResetTimeDelay" `modloc(,ColumnHeaderText="New Round Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
+	PropertyMappings[9]=(Id=9,Name="MaxCustomChars" `modloc(,ColumnHeaderText="Maximum Custom Characters") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1)
+	PropertyMappings[10]=(Id=10,Name="NetWait" `modloc(,ColumnHeaderText="Delay When Waiting for Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
+	PropertyMappings[11]=(Id=11,Name="ClientProcessingTimeout" `modloc(,ColumnHeaderText="Client Processing Timeout") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
 
 	`if(`UT3_PATCH_1_4)
-	PropertyMappings[12]=(Id=12,name="SpawnProtectionTime",ColumnHeaderText="Spawn Protection Time",MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
+	PropertyMappings[12]=(Id=12,name="SpawnProtectionTime" `modloc(,ColumnHeaderText="Spawn Protection Time") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
 	`endif
 }

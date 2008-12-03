@@ -107,7 +107,7 @@ function bool handleQuery(WebAdminQuery q)
 		case "/policy/bans":
 			handleBans(q);
 			return true;
-		`if(`WITH_BANCDHASH)
+		`if(`isdefined(WITH_BANCDHASH))
 		case "/policy/hashbans":
 			handleHashBans(q);
 			return true;
@@ -150,7 +150,7 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
 	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These records ban a single online account.");
-	`if(`WITH_BANCDHASH)
+	`if(`isdefined(WITH_BANCDHASH))
 	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
 	`endif
 	`if(`UT3_PATCH_1_4)
@@ -324,7 +324,7 @@ function handleBans(WebAdminQuery q)
 	webadmin.sendPage(q, "policy_bans.html");
 }
 
-`if(`WITH_BANCDHASH)
+`if(`isdefined(WITH_BANCDHASH))
 function handleHashBans(WebAdminQuery q)
 {
 	local string bans, action;
@@ -1232,6 +1232,8 @@ function handleMapListAdditional(WebAdminQuery q)
 
 defaultproperties
 {
+    `if(`isdefined(BUILD_AS_MOD))
 	GeneralSettingsClass="WebAdmin.GeneralSettings"
 	AdditionalMLClass="WebAdmin.AdditionalMapLists"
+	`endif
 }

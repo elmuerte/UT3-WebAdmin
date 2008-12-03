@@ -7,6 +7,8 @@
  */
 class UTTeamGameSettings extends UTGameSettings;
 
+`include(WebAdmin.uci)
+
 var class<UTTeamGame> UTTeamGameClass;
 
 function save()
@@ -37,5 +39,5 @@ defaultproperties
 	UTTeamGameClass=class'UTTeamGame'
 
 	Properties[12]=(PropertyId=12,Data=(Type=SDT_Int32))
-	PropertyMappings[12]=(Id=12,Name="bAllowNonTeamChat",ColumnHeaderText="Allow Non Team Chat",MappingType=PVMT_IdMapped,ValueMappings=((Id=0,Name="No"),(Id=1,Name="Yes")))
+	PropertyMappings[12]=(Id=12,Name="bAllowNonTeamChat" `modloc(,ColumnHeaderText="Allow Non Team Chat") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
 }

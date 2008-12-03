@@ -78,14 +78,31 @@ var protected string serverIp;
  */
 var const string timestamp;
 
+/**
+ * The webadmin version
+ */ 
 var const string version;
 
+/**
+ * Cached datastore values
+ */ 
 var DataStoreCache dataStoreCache;
 
+/**
+ * If true start the chatlogging functionality
+ */ 
 var globalconfig bool bChatLog;
 
+/**
+ * A hack to cleanup the stale PlayerController instances which are not being
+ * garbage collected but stay around due to the streaming level loading. 
+ */ 
 var PCCleanUp pccleanup;
 
+/**
+ * Used to keep track of config file updated to make sure certain changes are
+ * made. The dedicated server doesn't automatically merge updated config files. 
+ */ 
 var globalconfig int cfgver;
 
 function init()
@@ -103,7 +120,7 @@ function init()
 
     CleanupMsgSpecs();
 
-    `if(`WITH_WEBCONX_FIX)
+    `if(`isdefined(WITH_WEBCONX_FIX))
 	WebServer.AcceptClass = class'WebConnectionEx';
     `endif
 	if (class'WebConnection'.default.MaxValueLength < 4096)
@@ -209,6 +226,9 @@ function CleanupMsgSpecs()
 	WorldInfo.Spawn(class'PCCleanUp');
 }
 
+/**
+ * Clean up the webapplication and everything associated with it.
+ */ 
 function CleanupApp()
 {
 	local IQueryHandler handler;
@@ -289,6 +309,9 @@ function string getAuthURL(string forpath)
 	return "webadmin://"$ serverIp $":"$ WebServer.ListenPort $ forpath;
 }
 
+/**
+ * Main entry point for the webadmin
+ */ 
 function Query(WebRequest Request, WebResponse Response)
 {
 	local WebAdminQuery currentQuery;
@@ -434,6 +457,9 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 }
 
+/**
+ * Parse the cookie HTTP header
+ */ 
 protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookies)
 {
 	local array<string> cookieParts;
@@ -623,7 +649,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	}
 	q.session.putObject("IWebAdminUser", q.user);
 
-	`if(`WITH_BASE64ENC)
+	`if(`isdefined(WITH_BASE64ENC))
 	if (q.request.GetVariable("remember") != "")
 	{
 		rememberCookie = q.request.EncodeBase64(username$chr(10)$password);
@@ -634,6 +660,9 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	return true;
 }
 
+/**
+ * Set the cookie data to remember the current authetication attempt
+ */ 
 function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
 {
 	local int idx;
@@ -673,6 +702,9 @@ function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
 	// else don't remember
 }
 
+/**
+ * Get the messages stored for the current user.
+ */ 
 function WebAdminMessages getMessagesObject(WebAdminQuery q)
 {
 	local WebAdminMessages msgs;
@@ -685,6 +717,9 @@ function WebAdminMessages getMessagesObject(WebAdminQuery q)
 	return msgs;
 }
 
+/**
+ * Add a certain message. These messages will be processed at a later stage.
+ */ 
 function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT_Information)
 {
 	local WebAdminMessages msgs;
@@ -693,6 +728,9 @@ function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT
 	msgs.addMessage(msg, type);
 }
 
+/**
+ * Render the message structure to HTML.
+ */ 
 function string renderMessages(WebAdminQuery q)
 {
 	local WebAdminMessages msgs;
@@ -767,6 +805,9 @@ function pageAuthentication(WebAdminQuery q)
 	sendPage(q, "login.html");
 }
 
+/**
+ * Show the about page
+ */ 
 function pageAbout(WebAdminQuery q)
 {
 	q.response.Subst("page.title", "About");
@@ -784,6 +825,9 @@ function pageAbout(WebAdminQuery q)
 	sendPage(q, "about.html");
 }
 
+/**
+ * Show the credit page
+ */ 
 function pageCredits(WebAdminQuery q)
 {
 	q.response.Subst("page.title", "Credits");
@@ -791,6 +835,9 @@ function pageCredits(WebAdminQuery q)
 	sendPage(q, "credits.html");
 }
 
+/**
+ * Generic XML data provider, could be used by AJAX calls.
+ */ 
 function pageData(WebAdminQuery q)
 {
 	local string tmp;
@@ -864,13 +911,19 @@ defaultproperties
 {
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
+	
+	`if(`notdefined(TIMESTAMP))
+	   `define TIMESTAMP "unknown"
+	`end
 	timestamp=`{TIMESTAMP}
 	version="1.8"
 
+    `if(`isdefined(BUILD_AS_MOD))
 	// config
 	bHttpAuth=false
 	bChatLog=false
 	startpage="/current"
 	QueryHandlers[0]="WebAdmin.QHCurrent"
 	QueryHandlers[1]="WebAdmin.QHDefaults"
+	`endif
 }

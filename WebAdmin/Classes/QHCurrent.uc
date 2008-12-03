@@ -512,7 +512,7 @@ function bool handleCurrentPlayersAction(WebAdminQuery q)
 				{
 					banByID(PC);
 				}
-				`if(`WITH_BANCDHASH)
+				`if(`isdefined(WITH_BANCDHASH))
 				else if (action ~= "banhash" || action ~= "ban client hash")
 				{
 					banByHash(PC);
@@ -573,7 +573,7 @@ function handleCurrentPlayers(WebAdminQuery q)
 		IP = Left(IP, InStr(IP, ":"));
 		q.response.subst("player.ip", IP);
 		q.response.subst("player.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(pri.UniqueId));
-		`if(`WITH_BANCDHASH)
+		`if(`isdefined(WITH_BANCDHASH))
 		q.response.subst("player.hashresponse", PC.HashResponseCache);
 		`endif
 		players $= webadmin.include(q, "current_players_row.inc");
@@ -634,7 +634,7 @@ protected function banByID(PlayerController PC)
 	}
 }
 
-`if(`WITH_BANCDHASH)
+`if(`isdefined(WITH_BANCDHASH))
 protected function banByHash(PlayerController PC)
 {
 	local BannedHashInfo NewBanHashInfo;
@@ -1375,6 +1375,7 @@ defaultproperties
 	cssVisible=""
 	cssHidden="display: none;"
 
+    `if(`isdefined(BUILD_AS_MOD))
 	// config
 	ChatRefresh=5000
 	bEnableTeamChat=true
@@ -1391,4 +1392,5 @@ defaultproperties
 	denyConsoleCommands[3]="flush"
 	denyConsoleCommands[4]="set"
 	denyConsoleCommands[5]="get engine.accesscontrol"
+	`endif
 }
