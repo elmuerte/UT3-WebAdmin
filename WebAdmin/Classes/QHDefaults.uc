@@ -63,7 +63,8 @@ function init(WebAdmin webapp)
 		GeneralSettingsClass = class.getPackageName()$".GeneralSettings";
 		SaveConfig();
 	}
-	`if(`notdefined(UT3_PATCH_1_4))
+	`if(`UT3_PATCH_1_4)
+	`else
 	if (Len(AdditionalMLClass) == 0)
 	{
 		AdditionalMLClass = class.getPackageName()$".AdditionalMapLists";
@@ -132,7 +133,8 @@ function bool handleQuery(WebAdminQuery q)
 		case "/settings/mutators":
 			handleSettingsMutators(q);
 			return true;
-		`if(`notdefined(UT3_PATCH_1_4))
+		`if(`UT3_PATCH_1_4)
+		`else
 		case "/settings/maplist":
 			handleMapList(q);
 			return true;
@@ -161,7 +163,8 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.");
 	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.");
 	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level.");
-	`if(`notdefined(UT3_PATCH_1_4))
+	`if(`UT3_PATCH_1_4)
+	`else
 	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. Each game type can have a single map cycle.");
 	menu.addMenu("/settings/maplist/additional", "Additional Map Cycles", self, "Manage additional map cycle configurations.");
 	`endif
@@ -903,7 +906,8 @@ function handleSettingsMutators(WebAdminQuery q)
 	webadmin.sendPage(q, "default_settings_mutators.html");
 }
 
-`if(`notdefined(UT3_PATCH_1_4))
+`if(`UT3_PATCH_1_4)
+`else
 function handleMapList(WebAdminQuery q)
 {
 	local string currentGameType, substvar;

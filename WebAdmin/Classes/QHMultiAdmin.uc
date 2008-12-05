@@ -277,6 +277,7 @@ function handleAdmins(WebAdminQuery q)
  */
 function bool canDeleteAdmin(string adminName, IWebAdminUser me)
 {
+    `if(`UT3_PATCH_1_4)
 	if (protectedAdmins.find(adminName) != INDEX_NONE)
 	{
 		return false;
@@ -286,6 +287,9 @@ function bool canDeleteAdmin(string adminName, IWebAdminUser me)
 		return false;
 	}
 	return true;
+	`else
+	return false;
+	`endif
 }
 
 /**

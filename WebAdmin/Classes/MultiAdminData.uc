@@ -7,6 +7,8 @@
  */
 class MultiAdminData extends Object perobjectconfig config(MultiAdmin);
 
+`include(WebAdmin.uci)
+
 /**
  * The name to show. It does not have to be the same as the login name.
  */

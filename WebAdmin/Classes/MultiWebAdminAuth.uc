@@ -7,6 +7,8 @@
  */
 class MultiWebAdminAuth extends Object implements(IWebAdminAuth) config(WebAdmin);
 
+`include(WebAdmin.uci)
+
 var WorldInfo worldinfo;
 
 var array<MultiWebAdminUser> users;
@@ -58,6 +60,7 @@ function loadRecords()
 	}
 	if (records.length == 0)
 	{
+		records.length = 1;
 		records[0].name = "Admin";
 		records[0].data = new(none, records[0].name) class'MultiAdminData';
 		tmp = worldinfo.game.consolecommand("get engine.accesscontrol adminpassword", false);
@@ -119,6 +122,7 @@ function MultiAdminData getRecord(string username)
 
 function bool removeAdminRecord(string username)
 {
+    `if(`UT3_PATCH_1_4)
 	local int idx;
 	local MultiAdminData data;
 
@@ -133,6 +137,7 @@ function bool removeAdminRecord(string username)
 	}
 	data = records[idx].data;
 	data.ClearConfig();
+	
 	records.remove(idx, 1);
 	for (idx = users.length-1; idx >= 0; idx--)
 	{
@@ -142,6 +147,8 @@ function bool removeAdminRecord(string username)
 		}
 	}
 	return true;
+	`endif
+	return false;
 }
 
 function cleanup()

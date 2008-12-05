@@ -811,10 +811,13 @@ TEXTAREA.dropHover {
     overflow: auto;
 }
 
-#newsdeskts {
+#newsdesk DIV#newsdeskts {
     text-align: right;
-    font-size: smaller;
+    font-size: 0.7em;
     color: #520000;
     font-style: italic;
-    margin-top: -20px;
+    width: 200px;
+    overflow: hidden;
+    float: right;
+    margin-top: -18px;
 }
