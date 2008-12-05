@@ -916,7 +916,7 @@ defaultproperties
 	   `define TIMESTAMP "unknown"
 	`endif
 	timestamp=`{TIMESTAMP}
-	version="1.8"
+	version="1.9"
 
     `if(`isdefined(BUILD_AS_MOD))
 	// config
