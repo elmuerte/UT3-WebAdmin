@@ -7,7 +7,7 @@
 // only possible in case of mod building, and not in case of normale engine 
 // builds (in which case default properties can not contain values for localized
 // and config variables)
-//`define BUILD_AS_MOD
+`define BUILD_AS_MOD
 
 // Use base64 encoding functions, this functionality wasn't available in the
 // early versions of UWeb
@@ -21,10 +21,10 @@
 `define WITH_WEBCONX_FIX
 
 // Set to non-empty to enable UT3 patch 1.3 changes
-`define UT3_PATCH_1_3 1
+`define UT3_PATCH_1_3 present
 
 // Set to non-empty to enable UT3 patch 1.4 changes
-`define UT3_PATCH_1_4 1
+`define UT3_PATCH_1_4
 
 //
 // Other macros
@@ -32,9 +32,9 @@
 
 // this macro is used to filter out inline localized variables being set
 `if(`isdefined(BUILD_AS_MOD))
-    `define modloc(x) `x
+    `define modloc(c,data) `c,`data 
 `else
-    `define modloc(x)
+    `define modloc(c,data)
 `endif
 
 `define HTMLEscape(str) class'WebAdminUtils'.static.HTMLEscape(`str)
