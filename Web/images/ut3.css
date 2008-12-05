@@ -806,3 +806,15 @@ TEXTAREA.dropHover {
 	color: black;
 }
 
+#newsdesk DIV {
+    max-height: 100px;
+    overflow: auto;
+}
+
+#newsdeskts {
+    text-align: right;
+    font-size: smaller;
+    color: #520000;
+    font-style: italic;
+    margin-top: -20px;
+}

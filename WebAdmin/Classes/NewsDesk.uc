@@ -30,12 +30,13 @@ function getNews(optional bool forceUpdate)
 {
 	local DateTime last, now;
 
-	if (len(lastUpdate) == 0 && !forceUpdate)
+	if (len(lastUpdate) > 0 && !forceUpdate)
 	{
 		class'WebAdminUtils'.static.getDateTime(now);
 		class'WebAdminUtils'.static.getDateTime(last, lastUpdate);
 		// YY.YYM.MDD
 		// 20.081.231
+		`log(last.year*10000+last.month*100+last.day$" "$now.year*10000+now.month*100+now.day);
 		if (last.year*10000+last.month*100+last.day >= now.year*10000+now.month*100+now.day)
 		{
 			return;
