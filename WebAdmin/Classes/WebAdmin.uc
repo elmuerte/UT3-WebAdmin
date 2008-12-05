@@ -914,7 +914,7 @@ defaultproperties
 	
 	`if(`notdefined(TIMESTAMP))
 	   `define TIMESTAMP "unknown"
-	`end
+	`endif
 	timestamp=`{TIMESTAMP}
 	version="1.8"
 
