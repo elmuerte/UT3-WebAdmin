@@ -78,6 +78,9 @@ var array<PlayerReplicationInfo> sortedPRI;
  */
 var private string newUrl;
 
+/**
+ * Characters ordered by faction.
+ */
 struct FactionCharacters
 {
 	var string factionName;
@@ -89,6 +92,13 @@ struct FactionCharacters
  * List of factions and their characters
  */
 var array<FactionCharacters> factions;
+
+/**
+ * if true the news will be shown on the "current" page
+ */
+var config bool hideNews;
+
+var NewsDesk newsDesk;
 
 function init(WebAdmin webapp)
 {
@@ -118,6 +128,11 @@ function init(WebAdmin webapp)
 	}
 
 	webadmin.WorldInfo.Game.SetTimer(0.1, false, 'CreateTeamChatProxy', self);
+	if (!hideNews)
+	{
+		newsDesk = new class'NewsDesk';
+		newsDesk.getNews();
+	}
 }
 
 function CreateTeamChatProxy()
@@ -161,6 +176,8 @@ function cleanup()
 {
 	adminCmdHandler = none;
 	webadmin = none;
+	newsDesk.cleanup();
+	newsDesk = none;
 	sortedPRI.Remove(0, sortedPRI.Length);
 }
 
@@ -246,6 +263,14 @@ function handleCurrent(WebAdminQuery q)
 	local int idx;
 	local mutator mut;
 	local string tmp, tmp2;
+
+	if (!hideNews && newsDesk != none)
+	{
+		q.response.subst("news", newsDesk.renderNews(webadmin, q));
+	}
+	else {
+		q.response.subst("news", "");
+	}
 
 	q.response.subst("game.name", `HTMLEscape(webadmin.WorldInfo.Game.GameName));
 	q.response.subst("game.type", webadmin.WorldInfo.Game.class.getPackageName()$"."$webadmin.WorldInfo.Game.class);

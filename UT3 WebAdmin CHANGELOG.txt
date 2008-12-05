@@ -11,6 +11,7 @@ Note: Patch 1.4 is required
   this one allows multiple user accounts
 - added some gametype settings magic that shows the best match for available
   settings for an gametype that did not provide its own settings class.  
+- added "news" to the home page
 
 v1.7 - 2008-09-21
 -----------------
