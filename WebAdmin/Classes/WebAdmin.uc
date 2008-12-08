@@ -80,29 +80,29 @@ var const string timestamp;
 
 /**
  * The webadmin version
- */ 
+ */
 var const string version;
 
 /**
  * Cached datastore values
- */ 
+ */
 var DataStoreCache dataStoreCache;
 
 /**
  * If true start the chatlogging functionality
- */ 
+ */
 var globalconfig bool bChatLog;
 
 /**
  * A hack to cleanup the stale PlayerController instances which are not being
- * garbage collected but stay around due to the streaming level loading. 
- */ 
+ * garbage collected but stay around due to the streaming level loading.
+ */
 var PCCleanUp pccleanup;
 
 /**
  * Used to keep track of config file updated to make sure certain changes are
- * made. The dedicated server doesn't automatically merge updated config files. 
- */ 
+ * made. The dedicated server doesn't automatically merge updated config files.
+ */
 var globalconfig int cfgver;
 
 function init()
@@ -228,7 +228,7 @@ function CleanupMsgSpecs()
 
 /**
  * Clean up the webapplication and everything associated with it.
- */ 
+ */
 function CleanupApp()
 {
 	local IQueryHandler handler;
@@ -311,7 +311,7 @@ function string getAuthURL(string forpath)
 
 /**
  * Main entry point for the webadmin
- */ 
+ */
 function Query(WebRequest Request, WebResponse Response)
 {
 	local WebAdminQuery currentQuery;
@@ -411,14 +411,14 @@ function Query(WebRequest Request, WebResponse Response)
 		pageAbout(currentQuery);
 		return;
 	}
-	else if (request.URI == "/credits")
-	{
-		pageCredits(currentQuery);
-		return;
-	}
 	else if (request.URI == "/data")
 	{
 		pageData(currentQuery);
+		return;
+	}
+	else if (request.URI == ("/"$currentQuery.session.getId()) )
+	{
+		pageCredits(currentQuery);
 		return;
 	}
 
@@ -459,7 +459,7 @@ function Query(WebRequest Request, WebResponse Response)
 
 /**
  * Parse the cookie HTTP header
- */ 
+ */
 protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookies)
 {
 	local array<string> cookieParts;
@@ -662,7 +662,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 
 /**
  * Set the cookie data to remember the current authetication attempt
- */ 
+ */
 function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
 {
 	local int idx;
@@ -704,7 +704,7 @@ function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
 
 /**
  * Get the messages stored for the current user.
- */ 
+ */
 function WebAdminMessages getMessagesObject(WebAdminQuery q)
 {
 	local WebAdminMessages msgs;
@@ -719,7 +719,7 @@ function WebAdminMessages getMessagesObject(WebAdminQuery q)
 
 /**
  * Add a certain message. These messages will be processed at a later stage.
- */ 
+ */
 function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT_Information)
 {
 	local WebAdminMessages msgs;
@@ -730,7 +730,7 @@ function addMessage(WebAdminQuery q, string msg, optional EMessageType type = MT
 
 /**
  * Render the message structure to HTML.
- */ 
+ */
 function string renderMessages(WebAdminQuery q)
 {
 	local WebAdminMessages msgs;
@@ -807,7 +807,7 @@ function pageAuthentication(WebAdminQuery q)
 
 /**
  * Show the about page
- */ 
+ */
 function pageAbout(WebAdminQuery q)
 {
 	q.response.Subst("page.title", "About");
@@ -827,7 +827,7 @@ function pageAbout(WebAdminQuery q)
 
 /**
  * Show the credit page
- */ 
+ */
 function pageCredits(WebAdminQuery q)
 {
 	q.response.Subst("page.title", "Credits");
@@ -837,7 +837,7 @@ function pageCredits(WebAdminQuery q)
 
 /**
  * Generic XML data provider, could be used by AJAX calls.
- */ 
+ */
 function pageData(WebAdminQuery q)
 {
 	local string tmp;
@@ -911,7 +911,7 @@ defaultproperties
 {
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
-	
+
 	`if(`notdefined(TIMESTAMP))
 	   `define TIMESTAMP "unknown"
 	`endif

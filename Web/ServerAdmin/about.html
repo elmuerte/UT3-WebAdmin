@@ -88,7 +88,7 @@ if ( window.addEventListener ) {
     window.addEventListener("keydown", function(e){
         kkeys.push( e.keyCode );
         if ( kkeys.toString().indexOf( konami ) >= 0 )
-        window.location = "<%webadmin.path%>/"+unescape('%63%72%65%64%69%74%73');
+        window.location = "<%webadmin.path%>/"+'<%sessionid%>';
     }, true);
 }
 
