@@ -100,6 +100,11 @@ var config bool hideNews;
 
 var NewsDesk newsDesk;
 
+/**
+ * Notes which an admin can enter if they feel like
+ */
+var config array<string> notes;
+
 function init(WebAdmin webapp)
 {
 	local class<AdminCommandHandler> achc;
@@ -184,6 +189,7 @@ function cleanup()
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/current", "Current Game", self, "The current game status.", -100);
+	menu.addMenu("/current/data", "", self);
 	menu.addMenu("/current/players", "Players", self, "Manage the players currently on the server.");
 	menu.addMenu("/current/players/data", "", self);
 	menu.addMenu("/current/chat", "Chat console", self, "This console allows you to chat with the players on the server.");
@@ -207,6 +213,9 @@ function bool handleQuery(WebAdminQuery q)
 	{
 		case "/current":
 			handleCurrent(q);
+			return true;
+		case "/current/data":
+			handleCurrentData(q);
 			return true;
 		case "/current/players":
 			handleCurrentPlayers(q);
@@ -256,6 +265,42 @@ function bool handleQuery(WebAdminQuery q)
 // not used here
 function bool unhandledQuery(WebAdminQuery q);
 
+function handleCurrentData(WebAdminQuery q)
+{
+	local string tmp;
+	local int idx;
+
+	if (q.request.getVariable("action") ~= "save")
+	{
+		notes.length = 0;
+		tmp = q.request.getVariable("notes");
+		idx = InStr(tmp, chr(10));
+		while (idx != INDEX_NONE)
+		{
+			notes[notes.length] = `Trim(Left(tmp, idx));
+			tmp = Mid(tmp, idx+1);
+			idx = InStr(tmp, chr(10));
+		}
+		tmp = `Trim(tmp);
+		if (len(tmp) > 0)
+		{
+			notes[notes.length] = tmp;
+		}
+		SaveConfig();
+		webadmin.addMessage(q, "Notes saved");
+	}
+
+	if (q.request.getVariable("ajax") == "1")
+	{
+		q.response.AddHeader("Content-Type: text/xml");
+		q.response.SendText("<request>");
+  		q.response.SendText("<messages><![CDATA[");
+		q.response.SendText(webadmin.renderMessages(q));
+		q.response.SendText("]]></messages>");
+		q.response.SendText("</request>");
+	}
+}
+
 function handleCurrent(WebAdminQuery q)
 {
 	local string players;
@@ -264,6 +309,8 @@ function handleCurrent(WebAdminQuery q)
 	local mutator mut;
 	local string tmp, tmp2;
 
+	handleCurrentData(q);
+
 	if (!hideNews && newsDesk != none)
 	{
 		q.response.subst("news", newsDesk.renderNews(webadmin, q));
@@ -271,6 +318,13 @@ function handleCurrent(WebAdminQuery q)
 	else {
 		q.response.subst("news", "");
 	}
+
+	tmp = "";
+	for (idx = 0; idx < notes.length; idx++)
+	{
+		tmp $= notes[idx]$chr(10);
+	}
+	q.response.subst("notes", `HTMLEscape(tmp));
 
 	q.response.subst("game.name", `HTMLEscape(webadmin.WorldInfo.Game.GameName));
 	q.response.subst("game.type", webadmin.WorldInfo.Game.class.getPackageName()$"."$webadmin.WorldInfo.Game.class);

@@ -10,8 +10,8 @@ class NewsDesk extends Object config(WebAdmin) dependson(WebAdminUtils);
 
 `include(WebAdmin.uci)
 
-var config string gameNews;
-var config string contentNews;
+var config array<string> gameNews;
+var config array<string> contentNews;
 var config string lastUpdate;
 
 var OnlineNewsInterface newsIface;
@@ -34,9 +34,8 @@ function getNews(optional bool forceUpdate)
 	{
 		class'WebAdminUtils'.static.getDateTime(now);
 		class'WebAdminUtils'.static.getDateTime(last, lastUpdate);
-		// YY.YYM.MDD
-		// 20.081.231
-		`log(last.year*10000+last.month*100+last.day$" "$now.year*10000+now.month*100+now.day);
+		// YY,YYM,MDD
+		// 20,081,231
 		if (last.year*10000+last.month*100+last.day >= now.year*10000+now.month*100+now.day)
 		{
 			return;
@@ -64,9 +63,16 @@ function getNews(optional bool forceUpdate)
  */
 function OnReadGameNewsCompleted(bool bWasSuccessful)
 {
+	local array<string> data;
+	local int i;
 	if (bWasSuccessful)
 	{
-		gameNews = repl(repl(newsIface.GetGameNews(0), chr(10), " "), chr(13), "");
+		ParseStringIntoArray(newsIface.GetGameNews(0), data, chr(10), false);
+		gameNews.length = data.length;
+		for (i = 0; i < data.length; i++)
+		{
+			gameNews[i] = `Trim(data[i]);
+		}
 		lastUpdate = TimeStamp();
 		SaveConfig();
 	}
@@ -78,9 +84,16 @@ function OnReadGameNewsCompleted(bool bWasSuccessful)
  */
 function OnReadContentAnnouncementsCompleted(bool bWasSuccessful)
 {
+	local array<string> data;
+	local int i;
 	if (bWasSuccessful)
 	{
-		contentNews = repl(repl(newsIface.GetContentAnnouncements(0), chr(10), " "), chr(13), "");
+		ParseStringIntoArray(newsIface.GetContentAnnouncements(0), data, chr(10), false);
+		contentNews.length = data.length;
+		for (i = 0; i < data.length; i++)
+		{
+			contentNews[i] = `Trim(data[i]);
+		}
 		lastUpdate = TimeStamp();
 		SaveConfig();
 	}
@@ -89,10 +102,23 @@ function OnReadContentAnnouncementsCompleted(bool bWasSuccessful)
 
 function string renderNews(WebAdmin webadmin, WebAdminQuery q)
 {
-	if (len(gameNews) > 0 || len(contentNews) > 0)
+	local int i;
+	local string tmp;
+	if (gameNews.length > 0 || contentNews.length > 0)
 	{
-		q.response.subst("news.game", `HTMLEscape(gameNews));
-		q.response.subst("news.content", `HTMLEscape(contentNews));
+		for (i = 0; i < gameNews.length; i++)
+		{
+			if (i > 0) tmp $= "<br />";
+			tmp $= `HTMLEscape(gameNews[i]);
+		}
+		q.response.subst("news.game", tmp);
+		tmp = "";
+		for (i = 0; i < contentNews.length; i++)
+		{
+			if (i > 0) tmp $= "<br />";
+			tmp $= `HTMLEscape(contentNews[i]);
+		}
+		q.response.subst("news.content", tmp);
 		q.response.subst("news.timestamp", `HTMLEscape(lastUpdate));
 	}
 	return webadmin.include(q, "news.inc");

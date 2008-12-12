@@ -5,6 +5,7 @@ Note: Patch 1.4 is required
 - added spawn protection time setting for gametypes
 - new voting configuration functionality, if it doesn't show up, add the 
   following query handler: WebAdmin.QHVoting
+- added note taking functionality to the "current" page  
 
 v1.8 - 2008-12-05
 -----------------

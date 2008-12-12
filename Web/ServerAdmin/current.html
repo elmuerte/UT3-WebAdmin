@@ -4,6 +4,18 @@
 
 <%news%>
 
+<fieldset id="notesField" title="Here you can leave some notes. They will be stored on the server so other administrators can see and edit them.">
+<legend>Notes</legend>
+<form action="<%page.fulluri%>" method="post" id="notesForm">
+<div>
+<textarea id="notes" name="notes" rows="5" cols="80" style="width:100%;"><%notes%></textarea>
+</div>
+<div id="notectrl">
+<button type="submit" name="action" value="save">Save</button>
+</div>
+</form>
+</fieldset>
+
 <table width="100%">
 <colgroup>
     <col width="50%"/>
@@ -73,15 +85,61 @@
 //<![CDATA[
 $(document).ready(function(){
      // bug in sortedtable causes a javascript error when the table is empty.
-    if ($("#players td").size() <= 1) return;
-    $("#players th a").each(function(){
-        jthis = $(this);
-        jthis.before(jthis.html());
-        jthis.remove();
+    if ($("#players td").size() > 1) {
+        $("#players th a").each(function(){
+            jthis = $(this);
+            jthis.before(jthis.html());
+            jthis.remove();
+        });
+        $("#players th").wrapInner("<span></span>");
+        $("#players").tablesorter({sortList:[[3,1]], widgets: ['zebra']});
+    }
+    
+    $('#notectrl').hide();
+    $('#notes').change(function() {
+        $.ajax({
+            type: "POST",
+            url: '<%page.fulluri%>/data',
+            data: {ajax: 1, action: 'save', notes: $('#notes').val()},
+            success: handleMessages,
+            error: ajaxError
+        });
     });
-    $("#players th").wrapInner("<span></span>");
-    $("#players").tablesorter({sortList:[[3,1]], widgets: ['zebra']});
+    
+    var fields = $('fieldset');
+    
+    if (fields.size() > 1) {
+        var tabs = $('<ul id="infotabs"></ul>');
+        $('#content').prepend(tabs);
+        fields.each(function() {
+            var title = $('legend', this);
+            tabs.append('<li><a href="#'+this.id+'"><span>'+title.text()+'</span></a></li>');
+            title.remove();
+        });
+        tabs.tabs();
+    }
 });
+
+function ajaxError(XMLHttpRequest, textStatus, errorThrown) {
+    if (XMLHttpRequest.status == 403) {
+        document.location = '<%page.fulluri%>';
+    }
+}
+
+function handleMessages(data, textStatus) {
+    if (data.length == 0) {
+        alert("Network error during updating.");
+    }
+    var jdata = $(data);
+    var old = $('#messages .oldMessage');
+    var newmsg = $(jdata.find('request messages').text());
+    newmsg.hide();
+    $('#messages').prepend(newmsg);
+    newmsg.fadeIn();
+    old.remove();
+    $('#messages *').addClass('oldMessage');
+}
+
 //]]>
 </script>
 
