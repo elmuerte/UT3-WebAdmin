@@ -1,6 +1,6 @@
-v1.9 - 200?-??-??
+v1.9 - 2009-??-??
 -----------------
-Note: Patch 1.4 is required
+Note: Patch 2.0 is required
 - added sessionban functionality
 - added spawn protection time setting for gametypes
 - new voting configuration functionality, if it doesn't show up, add the 
