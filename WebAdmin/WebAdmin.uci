@@ -23,7 +23,7 @@
 // Set to non-empty to enable UT3 patch 1.3 changes
 `define UT3_PATCH_1_3 present
 
-// Set to non-empty to enable UT3 patch 1.4 changes
+// Set to non-empty to enable UT3 patch 1.4 (=2.0) changes
 `define UT3_PATCH_1_4 present
 
 //
