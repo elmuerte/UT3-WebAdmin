@@ -84,6 +84,13 @@ var const string timestamp;
 var const string version;
 
 /**
+ * Minimum engine version required.
+ */
+var const int minengine;
+
+var protected bool isOutdatedEngine;
+
+/**
  * Cached datastore values
  */
 var DataStoreCache dataStoreCache;
@@ -116,6 +123,16 @@ function init()
 	local string tmp;
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
+
+    if (worldinfo.EngineVersion < minengine)
+    {
+    	`Log("ERROR! This version requires a newer game version.",,'WebAdmin');
+    	`Log("Required version: "$minengine,,'WebAdmin');
+    	`Log("Engine version:   "$worldinfo.EngineVersion,,'WebAdmin');
+    	isOutdatedEngine = true;
+    	return;
+    }
+
     doSaveConfig = false;
 
     CleanupMsgSpecs();
@@ -338,6 +355,15 @@ function Query(WebRequest Request, WebResponse Response)
 		response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
 		response.subst("html.headers", "<meta http-equiv=\"refresh\" content=\"10\"/>");
 		response.IncludeUHTM(Path $ "/servertravel.html");
+		response.ClearSubst();
+		return;
+	}
+	if (isOutdatedEngine)
+	{
+		response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
+		response.Subst("engine.version", worldinfo.EngineVersion);
+		response.Subst("webadmin.minversion", minversion);
+		response.IncludeUHTM(Path $ "/oudated.html");
 		response.ClearSubst();
 		return;
 	}
@@ -916,7 +942,8 @@ defaultproperties
 	   `define TIMESTAMP "unknown"
 	`endif
 	timestamp=`{TIMESTAMP}
-	version="1.9"
+	version="1.10"
+	minengine=4000
 
     `if(`isdefined(BUILD_AS_MOD))
 	// config
