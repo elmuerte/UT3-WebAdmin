@@ -1,3 +1,8 @@
+v1.10 - 2009-02-25
+------------------
+- added an game engine check at webadmin startup
+- some minor adjustments
+
 v1.9 - 2009-02-20
 -----------------
 Note: Patch 2.0 is required

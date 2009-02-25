@@ -124,7 +124,7 @@ function init()
 
     `Log("Starting UT3 WebAdmin v"$version$" - "$timestamp,,'WebAdmin');
 
-    if (worldinfo.EngineVersion < minengine)
+    if (int(worldinfo.EngineVersion) < minengine)
     {
     	`Log("ERROR! This version requires a newer game version.",,'WebAdmin');
     	`Log("Required version: "$minengine,,'WebAdmin');
@@ -362,8 +362,8 @@ function Query(WebRequest Request, WebResponse Response)
 	{
 		response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
 		response.Subst("engine.version", worldinfo.EngineVersion);
-		response.Subst("webadmin.minversion", minversion);
-		response.IncludeUHTM(Path $ "/oudated.html");
+		response.Subst("webadmin.minengine", minengine);
+		response.IncludeUHTM(Path $ "/outdated.html");
 		response.ClearSubst();
 		return;
 	}
@@ -943,7 +943,7 @@ defaultproperties
 	`endif
 	timestamp=`{TIMESTAMP}
 	version="1.10"
-	minengine=4000
+	minengine=3786
 
     `if(`isdefined(BUILD_AS_MOD))
 	// config

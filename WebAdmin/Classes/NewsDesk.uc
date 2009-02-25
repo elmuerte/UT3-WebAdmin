@@ -64,15 +64,19 @@ function getNews(optional bool forceUpdate)
 function OnReadGameNewsCompleted(bool bWasSuccessful)
 {
 	local array<string> data;
-	local int i;
+	local string ln;
+	local int i,j;
 	if (bWasSuccessful)
 	{
 		ParseStringIntoArray(newsIface.GetGameNews(0), data, chr(10), false);
 		gameNews.length = data.length;
+		j = 0;
 		for (i = 0; i < data.length; i++)
 		{
-			gameNews[i] = `Trim(data[i]);
+			ln = `Trim(data[i]);
+			if (len(ln) > 0 || j > 0) gameNews[j++] = ln;
 		}
+		gameNews.length = j;
 		lastUpdate = TimeStamp();
 		SaveConfig();
 	}
@@ -85,15 +89,19 @@ function OnReadGameNewsCompleted(bool bWasSuccessful)
 function OnReadContentAnnouncementsCompleted(bool bWasSuccessful)
 {
 	local array<string> data;
-	local int i;
+	local string ln;
+	local int i,j;
 	if (bWasSuccessful)
 	{
 		ParseStringIntoArray(newsIface.GetContentAnnouncements(0), data, chr(10), false);
 		contentNews.length = data.length;
+		j = 0;
 		for (i = 0; i < data.length; i++)
 		{
-			contentNews[i] = `Trim(data[i]);
+			ln = `Trim(data[i]);
+			if (len(ln) > 0 || j > 0) contentNews[j++] = ln;
 		}
+		contentNews.length = j;
 		lastUpdate = TimeStamp();
 		SaveConfig();
 	}
