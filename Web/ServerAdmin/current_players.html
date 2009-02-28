@@ -12,6 +12,8 @@
     <th>IP</th>
     <th title="A unique ID for this game account.">Unique ID</th>
     <th title="A unique ID for the copy of the game the player is using.">Client Hash</th>
+    <th>Voice</th>
+    <th>Text</th>
     <th>Admin</th>
 </tr>
 </thead>
@@ -56,11 +58,17 @@ function actionSuccess(data, textStatus) {
     $('#messages').prepend(newmsg);
     newmsg.fadeIn();
     old.remove();
-    var result = jdata.find('request success');
+    var result = jdata.find('request kicked');
     if (result.length > 0)
     {
         var playerkey = result.attr('playerkey');
         $('[name="playerkey"][value="'+playerkey+'"]').parents('tr').fadeOut('normal', function(){$(this).remove()});
+    }
+    result = jdata.find('request text');
+    if (result.length > 0)
+    {
+        var playerkey = result.attr('playerkey');
+        $('button[value="toggletext"]', $('[name="playerkey"][value="'+playerkey+'"]').parent()).html(result.attr('label'));
     }
 }
 
