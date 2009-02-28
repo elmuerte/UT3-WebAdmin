@@ -361,7 +361,10 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("rules.maxlives", webadmin.WorldInfo.Game.MaxLives);
 
 	q.response.subst("rules.maxspectators", webadmin.WorldInfo.Game.MaxSpectators);
+	q.response.subst("rules.numspectators", webadmin.WorldInfo.Game.NumSpectators);
 	q.response.subst("rules.maxplayers", webadmin.WorldInfo.Game.MaxPlayers);
+	q.response.subst("rules.numplayers", webadmin.WorldInfo.Game.NumPlayers);
+	q.response.subst("rules.numbots", webadmin.WorldInfo.Game.NumBots);
 
 	q.response.subst("time.elapsed", webadmin.WorldInfo.Game.GameReplicationInfo.ElapsedTime);
 	q.response.subst("time.remaining", webadmin.WorldInfo.Game.GameReplicationInfo.RemainingTime);
@@ -547,12 +550,13 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.starttime", pri.starttime);
 }
 
-function bool handleCurrentPlayersAction(WebAdminQuery q)
+function int handleCurrentPlayersAction(WebAdminQuery q)
 {
 	local PlayerReplicationInfo PRI;
 	local int idx;
 	local string IP, action;
-	local PlayerController PC;
+	local PlayerController PC,otherPC;
+	local UTPlayerController UTPC;
 
 	action = q.request.getVariable("action");
 	if (action != "")
@@ -583,7 +587,37 @@ function bool handleCurrentPlayersAction(WebAdminQuery q)
 				webadmin.addMessage(q, "No human player associated with this player.", MT_Warning);
 			}
 			else {
-				if (action ~= "banip" || action ~= "ban ip")
+				if (action ~= "mutevoice")
+				{
+					foreach webadmin.WorldInfo.AllControllers(class'PlayerController', otherPC)
+					{
+						otherPC.ServerMutePlayer(PC.PlayerReplicationInfo.UniqueId);
+					}
+					webadmin.addMessage(q, "Player "$PRI.PlayerName$"'s voice has been muted for everybody.");
+					return 0;
+				}
+				else if (action ~= "unmutevoice")
+				{
+					foreach webadmin.WorldInfo.AllControllers(class'PlayerController', otherPC)
+					{
+						otherPC.ServerUnMutePlayer(PC.PlayerReplicationInfo.UniqueId);
+					}
+					webadmin.addMessage(q, "Player "$PRI.PlayerName$"'s voice has been unmuted for everybody.");
+					return 0;
+				}
+				else if (action ~= "toggletext")
+				{
+					UTPC = UTPlayerController(PC);
+					if (UTPC != none)
+					{
+						UTPC.bServerMutedText = !UTPC.bServerMutedText;
+						webadmin.addMessage(q, "Player "$PRI.PlayerName$" has been "$(UTPC.bServerMutedText?"muted":"unmuted")$".");
+						return (UTPC.bServerMutedText?2:3);
+					}
+					return 0;
+				}
+
+				else if (action ~= "banip" || action ~= "ban ip")
 				{
 					banByIP(PC);
 				}
@@ -603,12 +637,12 @@ function bool handleCurrentPlayersAction(WebAdminQuery q)
 					if (webadmin.WorldInfo.Game.AccessControl.IsAdmin(PC))
 					{
 						webadmin.addMessage(q, "Unable to session ban the player "$PRI.PlayerName$". Logged in admins can not be removed.", MT_Error);
-						return false;
+						return 0;
 					}
 					else {
 						webadmin.WorldInfo.Game.AccessControl.SessionBanPlayer(PC);
 						webadmin.addMessage(q, "Player "$PRI.PlayerName$" was banned for this session.");
-						return true;
+						return 1;
 					}
 				}
 				`endif
@@ -618,12 +652,12 @@ function bool handleCurrentPlayersAction(WebAdminQuery q)
 				}
 				else {
 					webadmin.addMessage(q, "Player "$PRI.PlayerName$" was removed from the server.");
-					return true;
+					return 1;
 				}
 			}
 		}
 	}
-	return false;
+	return 0;
 }
 
 function handleCurrentPlayers(WebAdminQuery q)
@@ -655,6 +689,13 @@ function handleCurrentPlayers(WebAdminQuery q)
 		`if(`isdefined(WITH_BANCDHASH))
 		q.response.subst("player.hashresponse", PC.HashResponseCache);
 		`endif
+		if (UTPlayerController(PC) != none && UTPlayerController(PC).bServerMutedText)
+		{
+			q.response.subst("player.mutetext", "Text Unmute");
+		}
+		else {
+			q.response.subst("player.mutetext", "Text Mute");
+		}
 		players $= webadmin.include(q, "current_players_row.inc");
 	}
 	if (sortedPRI.Length == 0)
@@ -677,12 +718,20 @@ function handleCurrentPlayersData(WebAdminQuery q)
 {
 	q.response.AddHeader("Content-Type: text/xml");
 	q.response.SendText("<request>");
-	if (handleCurrentPlayersAction(q))
+	switch (handleCurrentPlayersAction(q))
 	{
-		q.response.SendText("<success playerkey=\""$q.request.getVariable("playerkey")$"\"/>");
-	}
-	else {
-		q.response.SendText("<failure/>");
+		case 3: // is NOT muted
+			q.response.SendText("<text playerkey=\""$q.request.getVariable("playerkey")$"\" label=\"Text Mute\"/>");
+			break;
+		case 2: // is muted
+			q.response.SendText("<text playerkey=\""$q.request.getVariable("playerkey")$"\" label=\"Text Unmute\"/>");
+			break;
+		case 1:
+			q.response.SendText("<kicked playerkey=\""$q.request.getVariable("playerkey")$"\"/>");
+			break;
+		case 0:
+			q.response.SendText("<nop/>");
+			break;
 	}
 	q.response.SendText("<messages><![CDATA[");
 	q.response.SendText(webadmin.renderMessages(q));

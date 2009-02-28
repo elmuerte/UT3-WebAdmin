@@ -7,14 +7,13 @@
 <tr>
     <th>&nbsp;</th>
     <th><a href="<%page.fulluri%>?sortby=name&amp;reverse=<%reverse.name%>" class="sortable <%sorted.name%>">Player name</a></th>
-    <th>&nbsp;</th>
     <th><a href="<%page.fulluri%>?sortby=ping&amp;reverse=<%reverse.ping%>" class="sortable <%sorted.ping%>">Ping</a></th>
     <th>IP</th>
     <th title="A unique ID for this game account.">Unique ID</th>
     <th title="A unique ID for the copy of the game the player is using.">Client Hash</th>
-    <th>Voice</th>
-    <th>Text</th>
     <th>Admin</th>
+    <th title="Spectator">Spec.</th>
+    <th>Controls</th>
 </tr>
 </thead>
 <tbody>
@@ -32,7 +31,7 @@ $(document).ready(function(){
         jthis.remove();
     });
     $("#players th").wrapInner("<span></span>");
-    $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra'], headers: { 2: {sorter: false} }});
+    $("#players").tablesorter({sortList:[[1,0]], widgets: ['zebra'], headers: { 8: {sorter: false} }});
     
     $("#players form").each(function(i){
         var frm = $(this);
@@ -68,7 +67,7 @@ function actionSuccess(data, textStatus) {
     if (result.length > 0)
     {
         var playerkey = result.attr('playerkey');
-        $('button[value="toggletext"]', $('[name="playerkey"][value="'+playerkey+'"]').parent()).html(result.attr('label'));
+        $('option[value="toggletext"]', $('[name="playerkey"][value="'+playerkey+'"]').parent()).html(result.attr('label'));
     }
 }
 

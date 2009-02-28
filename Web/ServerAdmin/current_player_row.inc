@@ -8,4 +8,5 @@
   <td class="right" title="Packet loss: <%player.packetloss%>"><%player.ping%></td>
   <td class="center"><%player.bot%></td>
   <td class="center"><%player.admin%></td>
+  <td class="center"><%player.spectator%></td>
 </tr>

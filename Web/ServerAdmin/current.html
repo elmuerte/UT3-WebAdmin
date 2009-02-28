@@ -51,10 +51,10 @@
     <dd><%rules.goalscore%></dd>
     <dt>Maximum Lives</dt>
     <dd><%rules.maxlives%></dd>
-    <dt>Maximum Players</dt>
-    <dd><%rules.maxplayers%></dd>
-    <dt>Maximum Spectators</dt>
-    <dd><%rules.maxspectators%></dd>
+    <dt>Players (Max)</dt>
+    <dd><%rules.numplayers%> (<%rules.maxplayers%>)</dd>
+    <dt>Spectators (Max)</dt>
+    <dd><%rules.numspectators%> (<%rules.maxspectators%>)</dd>
 </dl>
 
 </td>
@@ -74,6 +74,7 @@
     <th><a href="<%page.fulluri%>?sortby=ping&amp;reverse=<%reverse.ping%>" class="sortable <%sorted.ping%>">Ping</a></th>
     <th>Bot</th>
     <th>Admin</th>
+    <th title="Spectator">Spec.</th>
 </tr>
 </thead>
 <tbody>

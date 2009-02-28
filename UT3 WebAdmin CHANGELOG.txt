@@ -1,7 +1,10 @@
-v1.10 - 2009-02-25
+v1.10 - 2009-02-28
 ------------------
 - added an game engine check at webadmin startup
 - some minor adjustments
+- added text/voice muting to /current/player page. Note: voice muting is a
+  force action to all clients. This means that a forced unmute removes the
+  client's own mute action. 
 
 v1.9 - 2009-02-20
 -----------------

@@ -41,6 +41,7 @@ function messageAlert(text, type) {
   if (text == undefined) text = "";
   if (type == undefined) type = "error";
   var old = $('#messages .oldMessage');
+  text = ""+text;
   var newmsg = $('<div class="message '+type+'">'+text.replace("\n", "\n<br />")+'</div>');
   newmsg.hide();
   $('#messages').prepend(newmsg);
