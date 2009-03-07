@@ -943,7 +943,7 @@ defaultproperties
 	`endif
 	timestamp=`{TIMESTAMP}
 	version="1.11"
-	minengine=3786
+	minengine=3797
 
     `if(`isdefined(BUILD_AS_MOD))
 	// config

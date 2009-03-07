@@ -36,6 +36,10 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 {
 	local string uniqueid;
 	local int teamindex;
+	if (writer == none)
+	{
+		CreateFileWriter();
+	}
 	if (sender == none)
 	{
 		writer.Logf(TimeStamp()$tab$""$tab$""$tab$type$tab$INDEX_NONE$tab$msg);
@@ -48,10 +52,6 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 	}
 	else {
 		teamindex = Sender.Team.TeamIndex;
-	}
-	if (writer == none)
-	{
-		CreateFileWriter();
 	}
 	writer.Logf(TimeStamp()$tab$Sender.GetPlayerAlias()$tab$uniqueid$tab$type$tab$teamindex$tab$msg);
 }
@@ -143,7 +143,7 @@ function InitPlayerReplicationInfo()
 defaultproperties
 {
     bKeepAlive=true
-    
+
     `if(`isdefined(BUILD_AS_MOD))
 	bUnique=false
 	bIncludeTimeStamp=true

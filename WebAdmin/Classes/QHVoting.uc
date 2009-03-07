@@ -318,7 +318,7 @@ function handleMaplist(WebAdminQuery q)
 					ml.Maps.length = ml.Maps.length+1;
 					j = InStr(tmp, "extra:");
 					if (j == INDEX_NONE) j = Len(tmp);
-					ml.Maps[ml.Maps.length-1].Map = Left(tmp, j);
+					ml.Maps[ml.Maps.length-1].Map = `trim(Left(tmp, j));
 
 					ParseStringIntoArray(`Trim(mid(tmp, j+6)), tmpb, "?", true);
 					for (j = 0; j < tmpb.length; j++)

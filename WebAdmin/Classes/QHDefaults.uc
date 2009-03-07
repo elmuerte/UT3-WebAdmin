@@ -493,6 +493,7 @@ function class<Settings> getSettingsClass(string pkgName, string clsName, option
 	if (settingsClass ~= "UTGame") settingsClass = string(class.getPackageName());
 	else if (settingsClass ~= "UTGameContent") settingsClass = string(class.getPackageName());
 	else if (settingsClass ~= "UT3Gold") settingsClass = string(class.getPackageName());
+	else if (settingsClass ~= "UT3GoldGame") settingsClass = string(class.getPackageName());
 	settingsClass $= "."$clsName$"Settings";
 	result = class<Settings>(DynamicLoadObject(settingsClass, class'class', true));
 	if (result != none)

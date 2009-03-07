@@ -59,8 +59,9 @@ function init()
 
 	// Administration settings
 	SetIntPropertyByName('bAdminCanPause', int(class'GameInfo'.default.bAdminCanPause));
-	//SetStringPropertyByName('AdminPassword', class'AccessControl'.default.AdminPassword);
-	//SetStringPropertyByName('GamePassword', class'AccessControl'.default.GamePassword);
+	`if(`UT3_PATCH_1_4)
+	SetIntPropertyByName('bForceNoSeamlessTravel', int(class'GameInfo'.default.bForceNoSeamlessTravel));
+	`endif
 
 	// Player/bot settings
 	SetIntPropertyByName('bPlayersMustBeReady', int(class'UTGame'.default.bPlayersMustBeReady));
@@ -244,6 +245,12 @@ function save()
 	{
 		class'GameInfo'.default.bAdminCanPause = val != 0;
 	}
+	`if(`UT3_PATCH_1_4)
+	if (GetIntPropertyByName('bForceNoSeamlessTravel', val))
+	{
+		class'GameInfo'.default.bForceNoSeamlessTravel = val != 0;
+	}
+	`endif
 	class'GameInfo'.static.StaticSaveConfig();
 }
 
@@ -303,7 +310,7 @@ defaultproperties
 
 	// Administration settings
 	Properties.Add((PropertyId=40,Data=(Type=SDT_Int32)))
-	PropertyMappings.Add((Id=40,Name="bAdminCanPause" `modloc(,ColumnHeaderText="Admin can Pause") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=40,name="bAdminCanPause" `modloc(,ColumnHeaderText="Admin can Pause") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 
 	// Player/bot settings
 	Properties.Add((PropertyId=50,Data=(Type=SDT_Int32)))
@@ -377,5 +384,11 @@ defaultproperties
 	PropertyMappings.Add((Id=74,name="MapVoteDuration" `modloc(,ColumnHeaderText="Map Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
 	// InitialVoteTransferTime
 	// RushVoteTransferTime
+	`endif
+
+	`if(`UT3_PATCH_1_4)
+	// some more admin
+	Properties.Add((PropertyId=41,Data=(Type=SDT_Int32)))
+	PropertyMappings.Add((Id=41,name="bForceNoSeamlessTravel" `modloc(,ColumnHeaderText="Disable Seamless Loading") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`endif
 }

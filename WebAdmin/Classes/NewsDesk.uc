@@ -74,7 +74,11 @@ function OnReadGameNewsCompleted(bool bWasSuccessful)
 		for (i = 0; i < data.length; i++)
 		{
 			ln = `Trim(data[i]);
-			if (len(ln) > 0 || j > 0) gameNews[j++] = ln;
+			if (len(ln) > 0 || j > 0)
+			{
+				gameNews[j] = ln;
+				++j;
+			}
 		}
 		gameNews.length = j;
 		lastUpdate = TimeStamp();
@@ -99,7 +103,11 @@ function OnReadContentAnnouncementsCompleted(bool bWasSuccessful)
 		for (i = 0; i < data.length; i++)
 		{
 			ln = `Trim(data[i]);
-			if (len(ln) > 0 || j > 0) contentNews[j++] = ln;
+			if (len(ln) > 0 || j > 0)
+			{
+				contentNews[j] = ln;
+				++j;
+			}
 		}
 		contentNews.length = j;
 		lastUpdate = TimeStamp();

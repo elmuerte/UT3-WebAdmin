@@ -1,6 +1,10 @@
-v1.11 - 2009-03-??
+v1.11 - 2009-03-07
 ------------------
-- fixed creation of new maplists
+- fixed creation of new maplists when javascript was enabled
+- fixed spaces in map names when saving maplists under certain circumstances
+- fixed an accessed none in the chat log functionality
+- added the setting to disable seamless level loading:
+    Settings > General > Administration > Disable seamless loading
 
 v1.10 - 2009-02-28
 ------------------

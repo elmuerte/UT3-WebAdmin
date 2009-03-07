@@ -43,7 +43,9 @@ struct SettingsGroup
 {
 	var string title;
 	var array<SortedSetting> settings;
+	/** range in the properties that belongs to this group */
 	var int pMin,pMax;
+	/** range in the localized properties that belongs to this group */
 	var int lMin,lMax;
 };
 var array<SettingsGroup> groups;
