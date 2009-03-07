@@ -942,7 +942,7 @@ defaultproperties
 	   `define TIMESTAMP "unknown"
 	`endif
 	timestamp=`{TIMESTAMP}
-	version="1.10"
+	version="1.11"
 	minengine=3786
 
     `if(`isdefined(BUILD_AS_MOD))

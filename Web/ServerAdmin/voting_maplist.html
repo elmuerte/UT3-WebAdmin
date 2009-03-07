@@ -30,6 +30,8 @@
 <script type="text/javascript">
 //<![CDATA[
 
+var submitCreate = false;
+
 $(document).ready(function(){
     $('#maplistid').change(function(){
         $('#editlist').submit();
@@ -56,16 +58,21 @@ $(document).ready(function(){
     $('#newlist div *').hide();
     $('#mloverview form, #mloverview div').css('display', 'inline');
     $('#newlist button').show().click(function () {
-        messagePrompt('Enter the name of the new map list', promptedName, '');
-        return false;
+        if (!submitCreate) {
+            messagePrompt('Enter the name of the new map list', promptedName, '');
+            return false;
+        }
+        submitCreate = false;
+        return true;
     });
 });
 
 function promptedName(newname) {
     var mapid = jQuery.trim(newname);
     if (mapid.length > 0) {
+        submitCreate = true;
         $('#newlistid').val(mapid);
-        $('#newlist button').click().click(function() {return true;});
+        $('#newlist button').click();
         return true;
     }
     return false;
