@@ -1,5 +1,9 @@
+v1.12 - 2009-??-??
+------------------
+- fixed unsaved settings bKickMissingCDHashKeys, TimeToWaitForHashKey
+
 v1.11.1 - 2009-03-07
--------------------
+--------------------
 - lowered the minimum engine version for the Linux Server 2.0 beta
 
 v1.11 - 2009-03-07

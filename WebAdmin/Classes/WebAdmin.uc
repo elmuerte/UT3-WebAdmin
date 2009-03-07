@@ -10,7 +10,6 @@
 class WebAdmin extends WebApplication dependsOn(IQueryHandler) config(WebAdmin);
 
 `include(WebAdmin.uci)
-`include(timestamp.uci)
 
 /**
  * The menu handler
@@ -938,12 +937,9 @@ defaultproperties
 	defaultAuthClass=class'BasicWebAdminAuth'
 	defaultSessClass=class'SessionHandler'
 
-	`if(`notdefined(TIMESTAMP))
-	   `define TIMESTAMP "unknown"
-	`endif
-	timestamp=`{TIMESTAMP}
-	version="1.11.1"
-	minengine=3792
+	timestamp=`{WEBADMIN_TIMESTAMP}
+	version=`{WEBADMIN_VERSION}
+	minengine=`{WEBADMIN_MINENGINE}
 
     `if(`isdefined(BUILD_AS_MOD))
 	// config

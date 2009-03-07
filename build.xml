@@ -1,12 +1,16 @@
 <project name="UT3WebAdmin" default="build">
 
   <property file="build.properties"/>
+  <property file="version.properties"/>
+  
   <property name="ut3dir.user" value="${user.home}/Documents/My Games/Unreal Tournament 3"/>
   <property name="ut3dir.script" value="Unpublished/CookedPC/Script"/>
   <property name="ut3.com" value="ut3.com"/>
+  <property name="ut3.com" value="ut3.com"/>
+  <property name="unrealscript.defines" value =""/>
 
   <tstamp>
-    <format property="distfile.tstamp" pattern="yyyy-MM-dd" />
+    <format property="distfile.tstamp" pattern="${webadmin.version}_yyyy-MM-dd" />
   </tstamp>
   <tstamp>
     <format property="compile.timestamp" timezone="GMT" pattern="yyyy-MM-dd HH:mm:ss ZZ" />
@@ -21,7 +25,13 @@
 
   <target name="build" description="Build the UT3 WebAdmin">
     <delete file="${ut3dir.user}/UTGame/${ut3dir.script}/WebAdmin.u" />
-    <echo file="${basedir}/WebAdmin/timestamp.uci">`define TIMESTAMP "${compile.timestamp}"</echo>
+    <echo file="${basedir}/WebAdmin/build.uci">
+        `define WEBADMIN_TIMESTAMP "${compile.timestamp}"
+        `define WEBADMIN_VERSION "${webadmin.version}"
+        `define WEBADMIN_MINENGINE ${webadmin.minengine}
+        // additional defines
+        ${unrealscript.defines}
+    </echo>
     <exec executable="cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" vmlauncher="false">
       <arg value="/C" />
       <arg value="${ut3.com}" />
@@ -94,7 +104,7 @@
 
   <target name="dist" depends="clean,build,jquery_compress,-dist-copy-files" description="Build a release package">
     <mkdir dir="dist" />
-    <zip destfile="dist/WebAdmin-${distfile.tstamp}.zip" basedir="build" />
+    <zip destfile="dist/UT3WebAdmin-${distfile.tstamp}.zip" basedir="build" />
   </target>
 
   <target name="dist-dev" depends="clean,build,jquery_compress,-dist-copy-files" description="Build a developer release package">
@@ -108,7 +118,7 @@
       </fileset>
     </copy>
     <mkdir dir="dist" />
-    <zip destfile="dist/WebAdmin_dev-${distfile.tstamp}.zip" basedir="build" />
+    <zip destfile="dist/UT3WebAdmin_dev-${distfile.tstamp}.zip" basedir="build" />
   </target>
   
 </project>

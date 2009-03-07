@@ -1,3 +1,17 @@
+// Include directives set by the build script
+`include(build.uci)
+
+// Make sure these are defined
+`if(`notdefined(WEBADMIN_TIMESTAMP))
+   `define WEBADMIN_TIMESTAMP "unknown"
+`endif
+`if(`notdefined(WEBADMIN_VERSION))
+   `define WEBADMIN_VERSION "unknown"
+`endif
+`if(`notdefined(WEBADMIN_MINENGINE))
+   `define WEBADMIN_MINENGINE 0
+`endif
+
 //
 // Swicthes used for conditional compilation
 //
@@ -7,7 +21,7 @@
 // only possible in case of mod building, and not in case of normale engine 
 // builds (in which case default properties can not contain values for localized
 // and config variables)
-`define BUILD_AS_MOD
+// `define BUILD_AS_MOD
 
 // Use base64 encoding functions, this functionality wasn't available in the
 // early versions of UWeb

@@ -40,7 +40,7 @@ function init()
 	SetIntPropertyByName('MaxSpectators', class'GameInfo'.default.MaxSpectators);
 	SetIntPropertyByName('MaxPlayers', class'GameInfo'.default.MaxPlayers);
 	SetIntPropertyByName('bKickLiveIdlers', int(class'GameInfo'.default.bKickLiveIdlers));
-	`if(`WITH_BANCDHASH)
+	`if(`isdefined(WITH_BANCDHASH))
 	SetIntPropertyByName('bKickMissingCDHashKeys', int(class'GameInfo'.default.bKickMissingCDHashKeys));
 	SetFloatPropertyByName('TimeToWaitForHashKey', class'GameInfo'.default.TimeToWaitForHashKey);
 	`endif
@@ -225,7 +225,7 @@ function save()
 	{
 		class'GameInfo'.default.bKickLiveIdlers = val != 0;
 	}
-	`if(`WITH_BANCDHASH)
+	`if(`isdefined(WITH_BANCDHASH))
 	if (GetIntPropertyByName('bKickMissingCDHashKeys', val))
 	{
 		class'GameInfo'.default.bKickMissingCDHashKeys = val != 0;
@@ -277,14 +277,17 @@ defaultproperties
 	Properties.Add((PropertyId=10,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=11,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=12,Data=(Type=SDT_Int32)))
-	Properties.Add((PropertyId=13,Data=(Type=SDT_Int32)))
-	Properties.Add((PropertyId=14,Data=(Type=SDT_Float)))
 
  	PropertyMappings.Add((Id=10,Name="MaxSpectators" `modloc(,ColumnHeaderText="Maximum Spectators") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
  	PropertyMappings.Add((Id=11,Name="MaxPlayers" `modloc(,ColumnHeaderText="Maximum Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
  	PropertyMappings.Add((Id=12,Name="bKickLiveIdlers" `modloc(,ColumnHeaderText="Kick Idlers") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+
+ 	`if(`isdefined(WITH_BANCDHASH))
+	Properties.Add((PropertyId=13,Data=(Type=SDT_Int32)))
+	Properties.Add((PropertyId=14,Data=(Type=SDT_Float)))
  	PropertyMappings.Add((Id=13,Name="bKickMissingCDHashKeys" `modloc(,ColumnHeaderText="Kick Missing Unique Hash") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
  	PropertyMappings.Add((Id=14,Name="TimeToWaitForHashKey" `modloc(,ColumnHeaderText="Time to Wait for Unique Hash") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10))
+ 	`endif
 
 	// Cheat detection settings
 	Properties.Add((PropertyId=20,Data=(Type=SDT_Float)))
@@ -320,7 +323,6 @@ defaultproperties
 	Properties.Add((PropertyId=54,Data=(Type=SDT_Float)))
 	Properties.Add((PropertyId=55,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=56,Data=(Type=SDT_Int32)))
-	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
 
 	PropertyMappings.Add((Id=50,name="bPlayersMustBeReady" `modloc(,ColumnHeaderText="Players Must be Ready") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	PropertyMappings.Add((Id=51,Name="bForceRespawn" `modloc(,ColumnHeaderText="Force Respawn") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
@@ -330,6 +332,7 @@ defaultproperties
 	PropertyMappings.Add((Id=55,Name="MinNetPlayers" `modloc(,ColumnHeaderText="Minimal Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter" `modloc(,ColumnHeaderText="Force default Character") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`if(`UT3_PATCH_1_3)
+	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
 	PropertyMappings.Add((Id=57,name="bNoCustomCharacters" `modloc(,ColumnHeaderText="No Custom Characters",MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`endif
 
