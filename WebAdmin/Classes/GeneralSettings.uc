@@ -333,7 +333,7 @@ defaultproperties
 	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter" `modloc(,ColumnHeaderText="Force default Character") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`if(`UT3_PATCH_1_3)
 	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
-	PropertyMappings.Add((Id=57,name="bNoCustomCharacters" `modloc(,ColumnHeaderText="No Custom Characters",MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+	PropertyMappings.Add((Id=57,name="bNoCustomCharacters" `modloc(,ColumnHeaderText="No Custom Characters") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`endif
 
 	// mapvoting

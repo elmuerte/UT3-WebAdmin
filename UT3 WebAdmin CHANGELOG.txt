@@ -1,6 +1,7 @@
 v1.12 - 2009-??-??
 ------------------
 - fixed unsaved settings bKickMissingCDHashKeys, TimeToWaitForHashKey
+- fixed "No Custom Characters" showing up as a number field
 
 v1.11.1 - 2009-03-07
 --------------------
