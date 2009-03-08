@@ -107,6 +107,7 @@ function sortSettings(int groupId)
 	{
 		if (curSettings.LocalizedSettingsMappings[i].Id < groups[groupId].lMin) continue;
 		if (curSettings.LocalizedSettingsMappings[i].Id >= groups[groupId].lMax) continue;
+		if (curSettings.LocalizedSettingsMappings[i].Name == '') continue;
 		sortset.idx = i;
 		sortset.isLocalized = true;
 		sortset.txt = getLocalizedSettingText(curSettings.LocalizedSettingsMappings[i].Id);
@@ -128,6 +129,7 @@ function sortSettings(int groupId)
 	{
 		if (curSettings.PropertyMappings[i].Id < groups[groupId].pMin) continue;
 		if (curSettings.PropertyMappings[i].Id >= groups[groupId].pMax) continue;
+		if (curSettings.PropertyMappings[i].Name == '') continue;
 		sortset.idx = i;
 		sortset.isLocalized = false;
 		sortset.txt = getSettingText(curSettings.PropertyMappings[i].Id);
@@ -247,6 +249,7 @@ function string renderGroup(SettingsGroup group)
 		else {
 			j = group.settings[i].idx;
 			curSettings.GetPropertyMappingType(curSettings.PropertyMappings[j].Id, mtype);
+			`log(""@i@group.settings[i].idx@curSettings.PropertyMappings[j].Id);
 			defaultSubst(curSettings.PropertyMappings[j].Id);
 			switch (mtype)
 			{
