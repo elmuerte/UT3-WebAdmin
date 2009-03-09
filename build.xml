@@ -100,6 +100,11 @@
         <include name="DefaultWebAdmin.ini" />
       </fileset>
     </copy>
+    <copy todir="build/UTGame/Localization">
+      <fileset dir="Localization">
+        <include name="**/*.int" />
+      </fileset>
+    </copy>
   </target>
 
   <target name="dist" depends="clean,build,jquery_compress,-dist-copy-files" description="Build a release package">
@@ -119,6 +124,12 @@
     </copy>
     <mkdir dir="dist" />
     <zip destfile="dist/UT3WebAdmin_dev-${distfile.tstamp}.zip" basedir="build" />
+  </target>
+  
+  <target name="install" depends="build,jquery_compress,-dist-copy-files" description="Copy to the user location">
+    <copy todir="${user.ut3dir}">
+      <fileset dir="build" />
+    </copy>
   </target>
   
 </project>

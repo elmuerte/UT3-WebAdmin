@@ -1,8 +1,9 @@
-v1.12 - 2009-03-08
+v1.12 - 2009-03-09
 ------------------
 - fixed unsaved settings bKickMissingCDHashKeys, TimeToWaitForHashKey
 - fixed "No Custom Characters" showing up as a number field
-- fixed bug #0000065: Score Limit setting appears twice 
+- fixed bug #0000065: Score Limit setting appears twice
+- should no longer disable "achievements" 
 
 v1.11.1 - 2009-03-07
 --------------------
