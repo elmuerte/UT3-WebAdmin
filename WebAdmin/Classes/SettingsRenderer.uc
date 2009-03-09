@@ -249,7 +249,6 @@ function string renderGroup(SettingsGroup group)
 		else {
 			j = group.settings[i].idx;
 			curSettings.GetPropertyMappingType(curSettings.PropertyMappings[j].Id, mtype);
-			`log(""@i@group.settings[i].idx@curSettings.PropertyMappings[j].Id);
 			defaultSubst(curSettings.PropertyMappings[j].Id);
 			switch (mtype)
 			{
