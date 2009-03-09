@@ -55,6 +55,9 @@ PropertyMappings[41]=(ColumnHeaderText="Kick Vote Percentage")
 PropertyMappings[42]=(ColumnHeaderText="Map Replay Limit")
 PropertyMappings[43]=(ColumnHeaderText="Map Vote Duration")
 ;`endif
+;`if(UT3_PATCH_1_4)
+PropertyMappings[44]=(ColumnHeaderText="Disable Seamless Loading",ValueMappings=((name="No"),(name="Yes")))
+;`endif
 
 [UTGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
@@ -198,6 +201,65 @@ PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((nam
 PropertyMappings[14]=(ColumnHeaderText="Swap Sides Each Round",ValueMappings=((name="No"),(name="Yes")))
 
 [UTVehicleCTFGame_ContentSettings]
+PropertyMappings[0]=(ColumnHeaderText="Score Limit")
+PropertyMappings[1]=(ColumnHeaderText="Time Limit")
+PropertyMappings[2]=(ColumnHeaderText="Maximum Lives")
+PropertyMappings[3]=(ColumnHeaderText="Late Entry Lives")
+PropertyMappings[4]=(ColumnHeaderText="Warmup round",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[5]=(ColumnHeaderText="Warmup time")
+PropertyMappings[6]=(ColumnHeaderText="Force MidGameMenu at Start",ValueMappings=((name="No"),(name="Yes")))
+;`if(`notdefined(UT3_PATCH_1_4))
+;PropertyMappings[7]=(ColumnHeaderText="Vote Duration")
+;`endif
+PropertyMappings[8]=(ColumnHeaderText="New Round Delay")
+PropertyMappings[9]=(ColumnHeaderText="Maximum Custom Characters")
+PropertyMappings[10]=(ColumnHeaderText="Delay When Waiting for Players")
+PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
+;`if(`UT3_PATCH_1_4)
+PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
+;`endif
+PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
+
+[UTBetrayalGameSettings]
+PropertyMappings[0]=(ColumnHeaderText="Score Limit")
+PropertyMappings[1]=(ColumnHeaderText="Time Limit")
+PropertyMappings[2]=(ColumnHeaderText="Maximum Lives")
+PropertyMappings[3]=(ColumnHeaderText="Late Entry Lives")
+PropertyMappings[4]=(ColumnHeaderText="Warmup round",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[5]=(ColumnHeaderText="Warmup time")
+PropertyMappings[6]=(ColumnHeaderText="Force MidGameMenu at Start",ValueMappings=((name="No"),(name="Yes")))
+;`if(`notdefined(UT3_PATCH_1_4))
+;PropertyMappings[7]=(ColumnHeaderText="Vote Duration")
+;`endif
+PropertyMappings[8]=(ColumnHeaderText="New Round Delay")
+PropertyMappings[9]=(ColumnHeaderText="Maximum Custom Characters")
+PropertyMappings[10]=(ColumnHeaderText="Delay When Waiting for Players")
+PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
+;`if(`UT3_PATCH_1_4)
+PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
+;`endif
+
+[UTGreedGameSettings]
+PropertyMappings[0]=(ColumnHeaderText="Score Limit")
+PropertyMappings[1]=(ColumnHeaderText="Time Limit")
+PropertyMappings[2]=(ColumnHeaderText="Maximum Lives")
+PropertyMappings[3]=(ColumnHeaderText="Late Entry Lives")
+PropertyMappings[4]=(ColumnHeaderText="Warmup round",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[5]=(ColumnHeaderText="Warmup time")
+PropertyMappings[6]=(ColumnHeaderText="Force MidGameMenu at Start",ValueMappings=((name="No"),(name="Yes")))
+;`if(`notdefined(UT3_PATCH_1_4))
+;PropertyMappings[7]=(ColumnHeaderText="Vote Duration")
+;`endif
+PropertyMappings[8]=(ColumnHeaderText="New Round Delay")
+PropertyMappings[9]=(ColumnHeaderText="Maximum Custom Characters")
+PropertyMappings[10]=(ColumnHeaderText="Delay When Waiting for Players")
+PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
+;`if(`UT3_PATCH_1_4)
+PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
+;`endif
+PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
+
+[UTGreedGame_ContentSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
 PropertyMappings[2]=(ColumnHeaderText="Maximum Lives")
