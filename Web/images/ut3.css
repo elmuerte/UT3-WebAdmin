@@ -414,12 +414,12 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	display: inline;
 	vertical-align: top;
 	margin-bottom: 0em;
-	margin-right: 0.5em;
+	margin-right: 0.5em;	
 }
 
 .mutatorGroup DIV.padding {
 	width: 200px;
-	height: 1px;
+	white-space: nowrap;
 }
 
 .extmutator {
@@ -429,12 +429,13 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	margin-right: 0.5em;
 	border: 0;
 	padding: 0;
+	white-space: nowrap;
 }
 
 .extmutator SPAN.padding {
     display: block;
     width: 200px;
-	height: 1px;
+	overflow: hidden;
 }
 
 #throbber {
