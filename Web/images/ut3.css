@@ -1,86 +1,95 @@
-BODY {
-	background-color: #faf8f8;
-	font-family: sans-serif;
-	font-size: 1em;
-	color: #000000;
-	padding: 0 0 0 235px;
-	margin: 0;
+html, body {
 	background-image: url(background.png);
 	background-repeat: repeat-y;
 	background-position: 0 0;
-}
-
-H1, H2, H3, H4 {
+	padding: 0;
 	margin: 0;
 }
 
-FORM {
+body {
+	font-family: sans-serif;
+	font-size: 1em;
+	color: #000000;	
+	background-color: #faf8f8;
+	padding: 0 0 0 235px;
 	margin: 0;
 }
 
-A {
+h1, h2, h3, h4 {
+	margin: 0;
+}
+
+fieldset h4 {
+	border-bottom: 1px solid #520000;
+}
+
+form {
+	margin: 0;
+}
+
+a {
 	color: #800202;
 }
 
-INPUT {
+input {
 	font-size: 1em;
 }
 
-INPUT[type="text"], INPUT[type="password"], INPUT[type=""] {
-	border: 1px solid #C5ADAD;	
+input[type="text"], input[type="password"], input[type=""] {
+	border: 1px solid #C5ADAD;
 	padding-left: 0.1em;
 	background-color: #fffafa;
 	height: 1.25em;
 	color: #444444;
 }
 
-TEXTAREA {
-	border: 1px solid #C5ADAD;	
+textarea {
+	border: 1px solid #C5ADAD;
 	padding-left: 0.1em;
 	background-color: #fffafa;
 	color: #444444;
 }
 
-SELECT {
-	border: 1px solid #C5ADAD;	
+select {
+	border: 1px solid #C5ADAD;
 	background-color: #fffafa;
 	color: #444444;
 }
 
-INPUT[type="text"]:Hover, INPUT[type="password"]:Hover, INPUT[type=""]:Hover, TEXTAREA:Hover, SELECT:Hover,
-INPUT[type="text"]:Focus, INPUT[type="password"]:Focus, INPUT[type=""]:Focus, TEXTAREA:Focus, SELECT:Focus {
+input[type="text"]:hover, input[type="password"]:hover, input[type=""]:hover, textarea:hover, select:hover,
+input[type="text"]:focus, input[type="password"]:focus, input[type=""]:focus, textarea:focus, select:focus {
 	background-color: White;
-	border-color: #520000;	
+	border-color: #520000;
 	color: black;
 }
 
-LABEL[for] {
+label[for] {
 	cursor: pointer;
 }
 
-LABEL[for]:Hover {
+label[for]:hover {
 	color: #520000;
 }
 
-INPUT[readonly="readonly"], TEXTAREA[readonly="readonly"] {
-	background-color: #EDE6E6;	
+input[readonly="readonly"], textarea[readonly="readonly"] {
+	background-color: #EDE6E6;
 	color: black;
 }
 
-DT {
+dt {
 	font-weight: bold;
 	font-size: 0.9em;
 }
 
-DT:After {
+dt:after {
 	content: ":";
 }
 
-DD {
+dd {
 	margin-bottom: 0.1em;
 }
 
-LEGEND {
+legend {
 	font-weight: bold;
 	color: #f0f0f0;
 	padding: 0 0.75em 0 0.75em;
@@ -90,13 +99,13 @@ LEGEND {
 	line-height: 32px;
 }
 
-FIELDSET {
+fieldset {
 	border: 1px solid #520000;
 	padding: 0.5em;
 	margin-bottom: 1em;
 }
 
-BUTTON, INPUT.button {
+button, input.button {
 	background-color: #520000;
 	color: #ffffff;
 	border-width: 1px;
@@ -105,41 +114,40 @@ BUTTON, INPUT.button {
 	height: 1.8em;
 }
 
-BUTTON:Hover, INPUT.button:Hover {
+button:hover, input.button:hover {
 	background-color: #730000;
 }
 
-BUTTON[disabled="disabled"], BUTTON[disabled="disabled"]:Hover {
+button[disabled="disabled"], button[disabled="disabled"]:hover {
 	background-color: #EDE6E6;
 	border-color: #936A6A;
 	color: #936A6A;
 }
 
-TD {
+td {
 	vertical-align: top;
 }
 
-TH {
+th {
 	padding: 0.2em 0.4em 0.1em 0.4em;
 	font-size: 0.9em;
 	font-weight: bold;
-	color: white;
-	/*background-color: #520000;*/
+	color: white; /*background-color: #520000;*/
 	background-image: url(hbar.png);
 	background-repeat: no-repeat;
 	background-position: top center;
 }
 
-TH A {
+th a {
 	color: white;
 }
 
-P {
-    margin: 0;
-    margin-bottom: 0.5em;
+p {
+	margin: 0;
+	margin-bottom: 0.5em;
 }
 
-CODE {
+code {
 	background-color: #FFE3E3;
 	border: 1px solid #FFBFBF;
 	padding: 0 2px 0 2px;
@@ -158,7 +166,7 @@ CODE {
 	color: white;
 }
 
-#header H1 {
+#header h1 {
 	background-image: url(ut3-logo.png) !important;
 	background-image: url(ut3-logo-ie6.png);
 	background-repeat: no-repeat;
@@ -170,7 +178,7 @@ CODE {
 	left: 0px;
 }
 
-#header H1 SPAN {
+#header h1 span {
 	display: none;
 }
 
@@ -183,7 +191,7 @@ CODE {
 	color: #f0e0e0;
 }
 
-#header #adminName SPAN {
+#header #adminName span {
 	font-style: italic;
 }
 
@@ -192,7 +200,7 @@ CODE {
 	display: none;
 }
 
-#header P {
+#header p {
 	margin: 0;
 	width: 500px;
 	margin-left: auto;
@@ -203,7 +211,7 @@ CODE {
 	margin-left: 10px;
 }
 
-#content H2, #content H3 {
+#content h2, #content h3 {
 	background-image: url(hbar.png);
 	background-repeat: no-repeat;
 	line-height: 32px;
@@ -226,24 +234,24 @@ CODE {
 	left: 0px;
 }
 
-#menu H2 {
+#menu h2 {
 	display: none;
 }
 
-#menu LI {
+#menu li {
 	display: inline;
 }
 
-#menu UL {
+#menu ul {
 	margin: 0;
 	padding-left: 0;
 }
 
-#menu UL UL {
+#menu ul ul {
 	padding-left: 1em;
 }
 
-#menu A {
+#menu a {
 	padding: 0.2em;
 	padding-left: 20px;
 	display: block;
@@ -251,17 +259,17 @@ CODE {
 	text-decoration: none;
 }
 
-#menu A:Hover {
+#menu a:hover {
 	text-decoration: underline;
 }
 
-#menu A.active {
+#menu a.active {
 	background-image: url(active.png);
 	background-position: left 6px;
 	background-repeat: no-repeat;
 }
 
-#menu A:Hover.active {
+#menu a:hover.active {
 	text-decoration: none;
 }
 
@@ -274,17 +282,18 @@ CODE {
 
 #chatlog {
 	border: 1px solid #800202;
-	padding: 2px;	
+	padding: 2px;
 }
 
 #chat {
 	margin-top: 2px;
 }
 
-#chat INPUT {
+#chat input {
 	width: 90%;
 }
-#chat BUTTON, #chat INPUT.button {
+
+#chat button, #chat input.button {
 	width: 9%;
 }
 
@@ -305,7 +314,7 @@ CODE {
 	font-size: 75%;
 }
 
-.teamcolor  {
+.teamcolor {
 	background-color: silver;
 	padding-left: 0.4em;
 }
@@ -321,7 +330,7 @@ CODE {
 	display: none;
 }
 
-#teamsayctrl INPUT {
+#teamsayctrl input {
 	width: auto;
 }
 
@@ -330,47 +339,45 @@ CODE {
 }
 
 #consoleResults {
-	/*white-space: pre;*/
-	font-family: monospace;
+	font-family: monospace; 
 	overflow: auto;
 	border: 1px solid #520000;
 	padding: 2px;
 	margin-top: 1em;
 }
 
-TABLE.grid {
+table.grid {
 	border-collapse: collapse;
 	margin-bottom: 1em;
 }
 
-TABLE.grid TD {
+table.grid td {
 	border: 1px solid #520000;
 }
 
-TABLE.grid TD {
+table.grid td {
 	vertical-align: middle;
 }
 
-
-TABLE.noborder {
+table.noborder {
 	border-collapse: collapse;
 	margin-bottom: 1em;
 }
 
-TABLE.noborder TD {
+table.noborder td {
 	border: 0px solid #520000;
 }
 
-TR.odd {
+tr.odd {
 	background-color: #edd;
 }
 
-TH.header, TH.headerSortUp, TH.headerSortDown {
-    padding-left: 0em;
-    padding-right: 0em;
+th.header, th.headerSortUp, th.headerSortDown {
+	padding-left: 0em;
+	padding-right: 0em;
 }
 
-.header SPAN {
+.header span {
 	background-repeat: no-repeat;
 	background-position: right;
 	padding-left: 0.4em;
@@ -378,7 +385,7 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	cursor: pointer;
 }
 
-.headerSortUp SPAN {
+.headerSortUp span {
 	background-image: url(sort.png) !important;
 	background-image: url(sort.gif);
 	background-repeat: no-repeat;
@@ -388,7 +395,7 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	cursor: pointer;
 }
 
-.headerSortDown SPAN {
+.headerSortDown span {
 	background-image: url(sort.png) !important;
 	background-image: url(sort.gif);
 	background-repeat: no-repeat;
@@ -414,16 +421,16 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	display: inline;
 	vertical-align: top;
 	margin-bottom: 0em;
-	margin-right: 0.5em;	
+	margin-right: 0.5em;
 }
 
-.mutatorGroup DIV.padding {
+.mutatorGroup div.padding {
 	width: 200px;
 	white-space: nowrap;
 }
 
 .extmutator {
-    display: inline;
+	display: inline;
 	vertical-align: top;
 	margin-bottom: 0em;
 	margin-right: 0.5em;
@@ -432,9 +439,9 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	white-space: nowrap;
 }
 
-.extmutator SPAN.padding {
-    display: block;
-    width: 200px;
+.extmutator span.padding {
+	display: block;
+	width: 200px;
 	overflow: hidden;
 }
 
@@ -449,17 +456,16 @@ TH.header, TH.headerSortUp, TH.headerSortDown {
 	width: 100%;
 	height: 100%;
 	z-index: 100;
-	/*display: none;*/
 	cursor: wait;
 	opacity: 0.75;
 	filter: alpha(opacity=75);
 }
 
-#throbber SPAN {
+#throbber span {
 	display: none;
 }
 
-DIV.message {
+div.message {
 	border: 1px solid gray;
 	padding: 1em;
 	padding-left: 3.2em;
@@ -490,36 +496,36 @@ DIV.message {
 	background-image: url(throbber.gif);
 }
 
-#jsmaplist UL, #jsmaplist OL, #jsbotroster {
+#jsmaplist ul, #jsmaplist ol, #jsbotroster {
 	padding: 0;
 	margin: 0;
 	width: 100%;
-} 
-
-#jsmaplist UL, #jsbotroster {
+}
+ 
+#jsmaplist ul, #jsbotroster {
 	margin-right: 1em;
 }
 
-#jsmaplist LI, #jsbotroster LI {
+#jsmaplist li, #jsbotroster li {
 	cursor: move;
 	white-space: normal;
-	margin-left: 1.25em;	
+	margin-left: 1.25em;
 }
 
-#jsmaplist #jsmapcycle LI, #jsbotroster LI {
+#jsmaplist #jsmapcycle li, #jsbotroster li {
 	margin-left: 2em;
 	padding-right: 0.5em;
 	white-space: nowrap;
 }
 
-#jsmaplist #jsmapcycle LI SPAN, #jsbotroster LI SPAN {
+#jsmaplist #jsmapcycle li span, #jsbotroster li span {
 	margin-left: 5px;
 	white-space: nowrap;
 }
 
-#jsmlctrls BUTTON {
-    margin-bottom: 2px;
-    width: 100%;
+#jsmlctrls button {
+	margin-bottom: 2px;
+	width: 100%;
 }
 
 .sorting {
@@ -536,30 +542,29 @@ DIV.message {
 }
 
 .droppable {
-    background-color: #FFF0F0;
+	background-color: #FFF0F0;
 }
 
 .dropHover {
-    background-color: #FFE4E4;
+	background-color: #FFE4E4;
 }
 
 .deleteButton, .editButton {
 	display: block;
 	width: 14px;
 	height: 1em;
-
 	background-repeat: no-repeat;
-	background-position: center;	
+	background-position: center;
 	float: left;
 	cursor: pointer;
 }
 
 .sorting .deleteButton {
-	background-image: url(delete.png);	
+	background-image: url(delete.png);
 }
 
 .sorting .editButton {
-	background-image: url(edit.png);	
+	background-image: url(edit.png);
 }
 
 .dragging .deleteButton, .dragging .editButton {
@@ -567,39 +572,40 @@ DIV.message {
 }
 
 .inlineEdit {
-    background-repeat: no-repeat;
+	background-repeat: no-repeat;
 	background-position: center;
 	cursor: pointer;
-    background-image: url(edit.png);
-    padding-left: 20px;
+	background-image: url(edit.png);
+	padding-left: 20px;
 }
 
-.inlineEdit SPAN {
-    display: none;
+.inlineEdit span {
+	display: none;
 }
 
-INPUT.spin-button {
+input.spin-button {
 	padding-right: 20px;
 	background-repeat: no-repeat;
 	background-position: 100% 1px;
 	background-image: url(spinbtn.png);
 }
 
-INPUT.spin-button.up {
+input.spin-button.up {
 	cursor: pointer;
 	background-position: 100% -49px;
 }
-INPUT.spin-button.down {
+
+input.spin-button.down {
 	cursor: pointer;
 	background-position: 100% -99px;
 }
 
-UL.charlist {
+ul.charlist {
 	margin: 0;
 	padding: 0;
 }
 
-UL.charlist LI {
+ul.charlist li {
 	list-style: none;
 }
 
@@ -608,83 +614,93 @@ UL.charlist LI {
 }
 
 /* for the tabs */
-
 .ui-tabs-nav {
-    list-style: none;
-    margin: 0;
-    padding: 0 0 0 4px;
+	list-style: none;
+	margin: 0;
+	padding: 0 0 0 4px;
 }
 
-.ui-tabs-nav:after { /* clearing without presentational markup, IE gets extra treatment */
-    display: block;
-    clear: both;
-    content: " ";
+.ui-tabs-nav:after {
+	display: block; /* clearing without presentational markup, IE gets extra treatment */
+	clear: both;
+	content: " ";
 }
+
 .ui-tabs-nav li {
-    float: left;
-    margin: 0 0 0 1px;
-    min-width: 84px; /* be nice to Opera */
+	float: left;
+	margin: 0 0 0 1px;
+	min-width: 84px; /* be nice to Opera */
 }
-.ui-tabs-nav a, .ui-tabs-nav a span {
-    display: block;
-    padding: 0 10px;
-}
-.ui-tabs-nav a {
-    margin: 1px 0 0; /* position: relative makes opacity fail for disabled tab in IE */
-    padding-left: 0;
-    font-weight: bold;
-	 font-size: 90%;
-    line-height: 1.2;
-    text-align: center;
-    text-decoration: none;
-    white-space: nowrap; /* required in IE 6 */    
-    outline: 0; /* prevent dotted border in Firefox */
-	 color: #530000;
-	 margin-bottom: 1px;
-}
-.ui-tabs-nav .ui-tabs-selected a {
-    color: white;
-	 margin-bottom: 0px;
-	 padding-bottom: 1px;
-}
-.ui-tabs-nav a span {
-    width: 64px; /* IE 6 treats width as min-width */
-    min-width: 64px;
-    height: 18px; /* IE 6 treats height as min-height */
-    min-height: 18px;
-    padding-top: 6px;
-    padding-right: 0;
-}
-*>.ui-tabs-nav a span { /* hide from IE 6 */
-    width: auto;
-    height: auto;
-}
-.ui-tabs-nav .ui-tabs-selected a span {
 
+.ui-tabs-nav a, .ui-tabs-nav a span {
+	display: block;
+	padding: 0 10px;
 }
+
+.ui-tabs-nav a {
+	margin: 1px 0 0; /* position: relative makes opacity fail for disabled tab in IE */
+	padding-left: 0;
+	font-weight: bold;
+	font-size: 90%;
+	line-height: 1.2;
+	text-align: center;
+	text-decoration: none;
+	white-space: nowrap; /* required in IE 6 */
+	outline: 0; /* prevent dotted border in Firefox */
+	color: #530000;
+	margin-bottom: 1px;
+}
+
+.ui-tabs-nav .ui-tabs-selected a {
+	color: white;
+	margin-bottom: 0px;
+	padding-bottom: 1px;
+}
+
+.ui-tabs-nav a span {
+	width: 64px; /* IE 6 treats width as min-width */
+	min-width: 64px;
+	height: 18px; /* IE 6 treats height as min-height */
+	min-height: 18px;
+	padding-top: 6px;
+	padding-right: 0;
+}
+
+*>.ui-tabs-nav a span {
+	width: auto; /* hide from IE 6 */
+	height: auto;
+}
+
+.ui-tabs-nav .ui-tabs-selected a span {
+}
+
 .ui-tabs-nav .ui-tabs-selected a, .ui-tabs-nav a:hover, .ui-tabs-nav a:focus, .ui-tabs-nav a:active {
-	 background: url(hbar.png) no-repeat center top;
-	 color: #C8A8A4;
+	background: url(hbar.png) no-repeat center top;
+	color: #C8A8A4;
 }
-.ui-tabs-nav .ui-tabs-selected a:link, .ui-tabs-nav .ui-tabs-selected a:visited, .ui-tabs-nav .ui-tabs-disabled a:link, .ui-tabs-nav .ui-tabs-disabled a:visited { /* @ Opera, use pseudo classes otherwise it confuses cursor... */
-    cursor: default;
-	 color: white;
+
+.ui-tabs-nav .ui-tabs-selected a:link, .ui-tabs-nav .ui-tabs-selected a:visited, .ui-tabs-nav .ui-tabs-disabled a:link, .ui-tabs-nav .ui-tabs-disabled a:visited {
+	cursor: default; /* @ Opera, use pseudo classes otherwise it confuses cursor... */
+	color: white;
 }
+
 .ui-tabs-nav a:hover, .ui-tabs-nav a:focus, .ui-tabs-nav a:active,
-.ui-tabs-nav .ui-tabs-unselect a:hover, .ui-tabs-nav .ui-tabs-unselect a:focus, .ui-tabs-nav .ui-tabs-unselect a:active { /* @ Opera, we need to be explicit again here now... */
-    cursor: pointer;
+.ui-tabs-nav .ui-tabs-unselect a:hover, .ui-tabs-nav .ui-tabs-unselect a:focus, .ui-tabs-nav .ui-tabs-unselect a:active {
+	cursor: pointer; /* @ Opera, we need to be explicit again here now... */
 }
+
 .ui-tabs-panel {
-    border-top: 1px solid #530000;
-	 padding-top: 5px;
+	border-top: 1px solid #530000;
+	padding-top: 5px;
 }
 
 /* Additional IE specific bug fixes... */
-* html .ui-tabs-nav { /* auto clear, @ IE 6 & IE 7 Quirks Mode */
-    display: inline-block;
+* html .ui-tabs-nav {
+	display: inline-block; /* auto clear, @ IE 6 & IE 7 Quirks Mode */
 }
-*:first-child+html .ui-tabs-nav  { /* @ IE 7 Standards Mode - do not group selectors, otherwise IE 6 will ignore complete rule (because of the unknown + combinator)... */
-    display: inline-block;
+
+*:first-child+html .ui-tabs-nav {
+	display: inline-block; /* @ IE 7 Standards Mode - do not group selectors, otherwise IE 6 will ignore complete rule (because of the unknown + combinator)... */
 }
 
 .ui-tabs-hide {
@@ -728,12 +744,12 @@ UL.charlist LI {
 	line-height: 1.7em;
 }
 
-.creditItem SPAN {
+.creditItem span {
 	cursor: crosshair;
 }
 
 #creditAmmo {
-	position: absolute;	
+	position: absolute;
 	top: 63px;
 	right: 0;
 	padding: 7px;
@@ -744,7 +760,7 @@ UL.charlist LI {
 	cursor: default;
 }
 
-#creditAmmo SPAN {
+#creditAmmo span {
 	display: block;
 	float: left;
 	width: 20px;
@@ -775,11 +791,11 @@ UL.charlist LI {
 	border: 1px solid #520000;
 }
 
-#promptDialog INPUT {
+#promptdialog input {
 	width: 100%;
 }
 
-#promptDialog BUTTON {
+#promptdialog button {
 	margin: 5px 5px 0 0;
 }
 
@@ -793,32 +809,33 @@ UL.charlist LI {
 	display: none;
 }
 
-#menueditor A {
+#menueditor a {
 	text-decoration: none;
 	cursor: move;
 }
 
-#menueditor A.denied {
+#menueditor a.denied {
 	color: gray;
 }
 
-TEXTAREA.dropHover {
-	border-color: #520000;	
+textarea.dropHover {
+	border-color: #520000;
 	color: black;
 }
 
-#newsdesk DIV {
-    max-height: 100px;
-    overflow: auto;
+#newsdesk div {
+	max-height: 100px;
+	overflow: auto;
 }
 
-#newsdesk DIV#newsdeskts {
-    text-align: right;
-    font-size: 0.7em;
-    color: #520000;
-    font-style: italic;
-    width: 200px;
-    overflow: hidden;
-    float: right;
-    margin-top: -18px;
+#newsdesk div#newsdeskts {
+	text-align: right;
+	font-size: 0.7em;
+	color: #520000;
+	font-style: italic;
+	width: 200px;
+	overflow: hidden;
+	float: right;
+	margin-top: -18px;
 }
+

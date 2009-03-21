@@ -69,6 +69,11 @@ function cleanup()
 	MapListManager = none;
 }
 
+function bool producesXhtml()
+{
+	return true;
+}
+
 /**
  * Called by the webadmin to request the query handler to handle this query.
  *
@@ -816,6 +821,8 @@ function handleProfilesData(WebAdminQuery q)
  	}
 
 	procVotingMutators(q, currentGameType, currentMutators, substMutators, idx);
+
+	q.response.AddHeader("Content-Type: text/html");
 
 	q.response.SendText("<div id=\"mutators\">");
 	q.response.SendText(substMutators);

@@ -17,9 +17,6 @@ function versionUpdate(versionData) {
     var reqInfo = "";
     if (versionData.mingamever) {
         reqInfo = "<br />Requires UT3 version "+versionData.mingamever+" (engine version: "+versionData.minengine+")";
-        if (versionCompare('<%build.version%>', versionData.mingamever) != 0) {
-            type = "warn";
-        }
     }
     if (versionData.minengine) {
         if (parseInt('<%engine.version%>') < parseInt(versionData.minengine)) {
@@ -27,8 +24,11 @@ function versionUpdate(versionData) {
             type = "error";
         }
     }
+    if (versionCompare('<%build.version%>', versionData.version) != 0) {
+        type = "warn";
+    }
     $('#messages').append('<div class="message '+type+'"><b>Latest version:</b> '
-        + '<em>v'+versionData.version+' &ndash; '+versionData.date+'</em> '
+        + '<em>v'+versionData.version+' &#8211; '+versionData.date+'</em> '
         +reqInfo
         + '<br /><a rel="external" href="'+versionData.url+'">Download</a></div>');
 }

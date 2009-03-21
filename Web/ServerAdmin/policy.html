@@ -2,14 +2,16 @@
 
 <div id="content">
 
+<form method="post" action="<%page.fulluri%>">
 <table id="policies" class="grid">
 <tr>
     <th>IP Mask</th>
     <th>Policy</th>
-    <th></th>
+    <th><input type="hidden" name="action" value="modify" /></th>
 </tr>
 <%policies%>
 </table>
+</form>
 
 <form method="post" action="<%page.fulluri%>">
 <fieldset id="addpolicy">
@@ -18,8 +20,9 @@
 <dl>
     <dt><label for="newipmask" title="You can use * as a wildcard.">IP Mask</label></dt>
     <dd><input type="text" name="ipmask" id="newipmask" class="monospace" /></dd>
-    <dt><label for="newpolicy">Policy</label></dt>
-    <dd><select id="newpolicy" name="policy"><option value="DENY">Deny</option><option value="ACCEPT">Accept</option></select></dd>
+    <dt><label for="poldeny">Policy</label></dt>
+    <dd><input type="radio" name="policy" value="DENY" id="poldeny" checked="checked"/><label for="poldeny">Deny</label>
+    <input type="radio" name="policy" value="ALLOW" id="polallow"/><label for="polallow">Allow</label></dd>
     <dd><button type="submit">Add policy</button></dd>
 </dl>
 </fieldset>

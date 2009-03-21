@@ -186,6 +186,11 @@ function cleanup()
 	sortedPRI.Remove(0, sortedPRI.Length);
 }
 
+function bool producesXhtml()
+{
+	return true;
+}
+
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/current", "Current Game", self, "The current game status.", -100);
@@ -857,6 +862,7 @@ function handleCurrentChatData(WebAdminQuery q)
 			BroadcastMessage(q.user.getPC(), i, msg, 'TeamSay');
 		}
 	}
+	q.response.AddHeader("Content-Type: text/html");
 	q.response.SendStandardHeaders();
 	procChatData(q, int(q.session.getString("chatlog.lastid")));
 }
@@ -1285,6 +1291,8 @@ function handleCurrentChangeData(WebAdminQuery q)
 
 	procCurrentChange(q, currentGameType, curmap, currentMutators, substMaps, substMutators, idx);
 	//q.response.SendText("<result>");
+
+	q.response.AddHeader("Content-Type: text/html");
 
 	q.response.SendText("<select id=\"map\">");
 	q.response.SendText(substMaps);

@@ -1,5 +1,5 @@
 <tr class="<%evenodd%>">
-  <td style="background: <%player.teamcolor%>; color: <%player.teamcolor%>;"><%player.teamid%>&nbsp;</td>
+  <td style="background: <%player.teamcolor%>; color: <%player.teamcolor%>;"><%player.teamid%>&#160;</td>
   <td><%player.name%></td>
   <td class="right"><%player.ping%></td>
   <td><%player.ip%></td>

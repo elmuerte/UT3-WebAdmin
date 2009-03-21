@@ -1,5 +1,4 @@
 <fieldset class="mutatorGroup">
 <legend>No Group</legend>
-<%group.mutators%>
-<div class="padding"></div>
+<div class="padding"><%group.mutators%></div>
 </fieldset>

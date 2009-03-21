@@ -6,8 +6,8 @@
   <property name="ut3dir.user" value="${user.home}/Documents/My Games/Unreal Tournament 3"/>
   <property name="ut3dir.script" value="Unpublished/CookedPC/Script"/>
   <property name="ut3.com" value="ut3.com"/>
-  <property name="ut3.com" value="ut3.com"/>
   <property name="unrealscript.defines" value =""/>
+  <property name="server.launchurl" value="DM-Morbias?Game=UTGame.UTTeamGame"/>
 
   <tstamp>
     <format property="distfile.tstamp" pattern="${webadmin.version}_yyyy-MM-dd" />
@@ -37,6 +37,16 @@
       <arg value="${ut3.com}" />
       <arg value="make" />
       <arg value="-unattended" />
+    </exec>
+  </target>
+  
+  <target name="run-server" description="Launch a server instance">
+    <exec executable="cmd" dir="${ut3dir}/binaries" failonerror="true" resolveexecutable="true" vmlauncher="false">
+      <arg value="/C" />
+      <arg value="utgame.exe" />
+      <arg value="server" />
+      <arg value="${server.launchurl}" />
+      <arg value="-useunpublished" />
     </exec>
   </target>
   

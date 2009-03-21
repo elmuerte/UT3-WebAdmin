@@ -3,7 +3,7 @@
 <div id="content">
 
 <div id="nojs">
-<h2>Unreal Tournament 3 &mdash; Credits</h2>
+<h2>Unreal Tournament 3 &#8212; Credits</h2>
 <pre id="creditData" style="padding-left: 1em; font-family: sans-serif; font-size: 1.1em;"><%credits%></pre>
 </div>
 
@@ -32,6 +32,7 @@ var entries = new Array();
 $(document).ready(function(){
     $('#footer').remove();
     $('body').css('overflow', 'hidden');
+    $('body').css('padding', '0');
     var inSection = false;
     var roll = $('<div id="creditRoll"></div>');
     
@@ -39,7 +40,7 @@ $(document).ready(function(){
     {
         if (i == 0)
         {
-            entries[entries.length] = $('<div class="creditTitle">&nbsp;</div>');
+            entries[entries.length] = $('<div class="creditTitle">&#160;</div>');
             entries[entries.length] = $('<div class="creditHead">'+creditData[i]+'</div>');
             entries[entries.length] = $('<div class="creditSection"><br /><br /><br /><br /><br /><br /></div>');
         }
@@ -52,14 +53,14 @@ $(document).ready(function(){
             inSection = true;
         }
         else {
-            entries[entries.length] = $('<div class="creditItem"><span>'+creditData[i]+'</span>&nbsp;</div>');
+            entries[entries.length] = $('<div class="creditItem"><span>'+creditData[i]+'</span>&#160;</div>');
             ++scoreMax;
         }
     } 
     $('#content').append(roll);
     entryAnim();
        
-    $('#content').append('<div id="creditAmmo" title="Reload!"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></div>');
+    $('#content').append('<div id="creditAmmo" title="Reload!"><span>&#160;</span><span>&#160;</span><span>&#160;</span><span>&#160;</span><span>&#160;</span></div>');
     $('#creditAmmo').click(reload);
     reload();
     

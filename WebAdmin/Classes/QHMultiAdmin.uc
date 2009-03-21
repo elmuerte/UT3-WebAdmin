@@ -64,6 +64,11 @@ function cleanup()
 	webadmin = none;
 }
 
+function bool producesXhtml()
+{
+	return true;
+}
+
 function bool handleQuery(WebAdminQuery q)
 {
 	if (authModule == none) return false;

@@ -111,6 +111,12 @@ var PCCleanUp pccleanup;
  */
 var globalconfig int cfgver;
 
+/**
+ * If true pages will be served as application/xhtml+xml when the browser
+ * supports it, and when the QH claims it supports it.
+ */
+var globalconfig bool bUseStrictContentType;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -334,6 +340,7 @@ function Query(WebRequest Request, WebResponse Response)
 	local WebAdminMenu wamenu;
 	local IQueryHandler handler;
 	local string title, description;
+	local bool acceptsXhtmlXml;
 
     response.Subst("build.timestamp", timestamp);
 	response.Subst("build.version", version);
@@ -341,7 +348,7 @@ function Query(WebRequest Request, WebResponse Response)
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
 
-	if (InStr(Request.GetHeader("accept-encoding")$",", "gzip,")  != INDEX_NONE)
+	if (InStr(Request.GetHeader("accept-encoding")$",", "gzip,") != INDEX_NONE)
 	{
 		response.Subst("client.gzip", ".gz");
 	}
@@ -349,8 +356,14 @@ function Query(WebRequest Request, WebResponse Response)
 		response.Subst("client.gzip", "");
 	}
 
+	if (InStr(Request.GetHeader("accept"), "application/xhtml+xml") != INDEX_NONE)
+	{
+		acceptsXhtmlXml = bUseStrictContentType;
+	}
+
 	if (WorldInfo.IsInSeamlessTravel())
 	{
+		if (acceptsXhtmlXml) response.AddHeader("Content-Type: application/xhtml+xml");
 		response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
 		response.subst("html.headers", "<meta http-equiv=\"refresh\" content=\"10\"/>");
 		response.IncludeUHTM(Path $ "/servertravel.html");
@@ -359,6 +372,7 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 	if (isOutdatedEngine)
 	{
+		if (acceptsXhtmlXml) response.AddHeader("Content-Type: application/xhtml+xml");
 		response.HTTPResponse("HTTP/1.1 503 Service Unavailable");
 		response.Subst("engine.version", worldinfo.EngineVersion);
 		response.Subst("webadmin.minengine", minengine);
@@ -433,6 +447,7 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 	else if (request.URI == "/about")
 	{
+		if (acceptsXhtmlXml) response.AddHeader("Content-Type: application/xhtml+xml");
 		pageAbout(currentQuery);
 		return;
 	}
@@ -443,6 +458,7 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 	else if (request.URI == ("/"$currentQuery.session.getId()) )
 	{
+		if (acceptsXhtmlXml) response.AddHeader("Content-Type: application/xhtml+xml");
 		pageCredits(currentQuery);
 		return;
 	}
@@ -451,6 +467,7 @@ function Query(WebRequest Request, WebResponse Response)
 	handler = wamenu.getHandlerFor(request.URI, title, description);
 	if (handler != none)
 	{
+		if (acceptsXhtmlXml && handler.producesXhtml()) response.AddHeader("Content-Type: application/xhtml+xml");
 		response.Subst("page.title", title);
 		response.Subst("page.description", description);
 		if (handler.handleQuery(currentQuery))
@@ -471,6 +488,7 @@ function Query(WebRequest Request, WebResponse Response)
 	}
 
 	// check with the overal menu, if the handler is null the page doesn't exist
+	if (acceptsXhtmlXml) response.AddHeader("Content-Type: application/xhtml+xml");
 	if (menu.getHandlerFor(request.URI, title, description) == none)
 	{
 		Response.HTTPResponse("HTTP/1.1 404 Not Found");
@@ -787,6 +805,7 @@ function sendPage(WebAdminQuery q, string file)
  */
 function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional string title = "Error")
 {
+	if (q.acceptsXhtmlXml) q.response.AddHeader("Content-Type: application/xhtml+xml");
 	q.response.Subst("page.title", title);
 	q.response.Subst("page.description", "");
 	addMessage(q, errorMsg, MT_Error);
@@ -798,6 +817,7 @@ function pageGenericError(WebAdminQuery q, coerce string errorMsg, optional stri
  */
 function pageGenericInfo(WebAdminQuery q, coerce string msg, optional string title = "Information")
 {
+	if (q.acceptsXhtmlXml) q.response.AddHeader("Content-Type: application/xhtml+xml");
 	q.response.Subst("page.title", title);
 	q.response.Subst("page.description", "");
 	addMessage(q, msg);
@@ -822,6 +842,7 @@ function pageAuthentication(WebAdminQuery q)
 		pageGenericError(q, "Unauthorized access. You need to log in.", "Error 401 - Unauthorized");
 		return;
 	}
+	if (q.acceptsXhtmlXml) q.response.AddHeader("Content-Type: application/xhtml+xml");
 	token = Right(ToHex(Rand(MaxInt)), 4)$Right(ToHex(Rand(MaxInt)), 4);
 	q.session.putString("AuthFormToken", token);
 	q.response.Subst("page.title", "Login");

@@ -98,6 +98,11 @@ function cleanup()
 	settingsInstances.Length = 0;
 }
 
+function bool producesXhtml()
+{
+	return true;
+}
+
 function bool handleQuery(WebAdminQuery q)
 {
 	switch (q.request.URI)
@@ -180,14 +185,30 @@ function handleIPPolicy(WebAdminQuery q)
 	action = q.request.getVariable("action");
 	if (action != "")
 	{
+		idx = -1;
+		if (action ~= "modify")
+		{
+			if (q.request.getVariable("delete") != "")
+			{
+				idx = int(q.request.getVariable("delete"));
+				action = "delete";
+			}
+			else if (q.request.getVariable("update") != "")
+			{
+				idx = int(q.request.getVariable("update"));
+				action = "update";
+			}
+		}
+
 		//`Log("Action = "$action);
 		if (action ~= "delete")
 		{
-			idx = int(q.request.getVariable("policyid"));
 			if (idx > -1 && idx < webadmin.worldinfo.game.accesscontrol.IPPolicies.length)
 			{
+				policy = webadmin.worldinfo.game.accesscontrol.IPPolicies[idx];
 				webadmin.worldinfo.game.accesscontrol.IPPolicies.Remove(idx, 1);
 				webadmin.worldinfo.game.accesscontrol.SaveConfig();
+				webadmin.addMessage(q, "Removed policy: "$policy);
 			}
 		}
 		else {
@@ -219,20 +240,20 @@ function handleIPPolicy(WebAdminQuery q)
 				}
 				else {
 					policy = q.request.getVariable("policy")$","$policy;
-					if (q.request.getVariable("policyid") == "")
+					if (idx == -1)
 					{
 						webadmin.worldinfo.game.accesscontrol.IPPolicies.AddItem(policy);
+						webadmin.addMessage(q, "Added IP policy: "$policy);
 					}
 					else {
-						idx = int(q.request.getVariable("policyid"));
 						if (idx < -1 || idx > webadmin.worldinfo.game.accesscontrol.IPPolicies.length)
 						{
 							idx = webadmin.worldinfo.game.accesscontrol.IPPolicies.length;
 						}
 						webadmin.worldinfo.game.accesscontrol.IPPolicies[idx] = policy;
+						webadmin.addMessage(q, "Updated IP policy: "$policy);
 					}
 					webadmin.worldinfo.game.accesscontrol.SaveConfig();
-					webadmin.addMessage(q, "Added IP policy: "$policy);
 				}
 			}
 		}

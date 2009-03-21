@@ -132,6 +132,19 @@ function loadGameTypes()
 
 		for (j = 0; j < gametypes.length; j++)
 		{
+			if (gametypes[j].name == item.name)
+			{
+				`log("Found duplicate game mode with name: "$item.name,,'WebAdmin');
+				break;
+			}
+		}
+		if (j != gametypes.length)
+		{
+			continue;
+		}
+
+		for (j = 0; j < gametypes.length; j++)
+		{
 			if (compareGameType(gametypes[j], item, "FriendlyName"))
 			{
 				gametypes.Insert(j, 1);
@@ -259,6 +272,19 @@ function loadMaps()
 	for (i = 0; i < ProviderList.length; i++)
 	{
 		item = UTUIDataProvider_MapInfo(ProviderList[i]);
+
+		for (j = 0; j < maps.length; j++)
+		{
+			if (maps[j].name == item.name)
+			{
+				`log("Found duplicate map with name: "$item.name,,'WebAdmin');
+				break;
+			}
+		}
+		if (j != maps.length)
+		{
+			continue;
+		}
 
 		for (j = 0; j < maps.length; j++)
 		{
@@ -448,6 +474,19 @@ function loadMutators()
 	for (i = 0; i < ProviderList.length; i++)
 	{
 		item = UTUIDataProvider_Mutator(ProviderList[i]);
+
+		for (j = 0; j < mutators.length; j++)
+		{
+			if (mutators[j].name == item.name)
+			{
+				`log("Found duplicate game mode with name: "$item.name,,'WebAdmin');
+				break;
+			}
+		}
+		if (j != mutators.length)
+		{
+			continue;
+		}
 
 		ParseStringIntoArray(item.GroupNames, groups, "|", true);
 		if (groups.length == 0)

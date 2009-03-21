@@ -30,6 +30,8 @@ struct WebAdminQuery
 	var ISession session;
 	var IWebAdminUser user;
 	var array<KeyValuePair> cookies;
+	/** true if the client will be given an application/xhtml+xml document */
+	var bool acceptsXhtmlXml;
 };
 
 enum EMessageType
@@ -80,3 +82,9 @@ function bool unhandledQuery(WebAdminQuery q);
  * until one returns true.
  */
 function registerMenuItems(WebAdminMenu menu);
+
+/**
+ * Return true if this handler produces valid XHTML documents. In that case
+ * the content might be send as "application/xhtml+xml" rather than "text/html"
+ */
+function bool producesXhtml();

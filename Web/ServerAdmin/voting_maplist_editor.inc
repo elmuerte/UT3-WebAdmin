@@ -14,7 +14,7 @@
       <p id="noscriptHint">
         <em>Note:</em> you get the best map list editing experiance in a JavaScript capable browser. 
         Enter one map per line, you can include URL options like <code>?LinkSetup=...</code>. 
-        The data after the map name starting with <code>&nbsp;extra:</code> is additional information about this map used by the
+        The data after the map name starting with <code>&#160;extra:</code> is additional information about this map used by the
         map list manager to select the next map. It is safe to remove or alter this.
       </p>
 

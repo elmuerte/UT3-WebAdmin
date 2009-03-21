@@ -1,3 +1,9 @@
+v1.13 - 2009-03-??
+------------------
+- filter duplicate gamemode/maps/mutator registrations (check the log file for
+  detections).
+- fixed XHTML comppliance issues for all pages
+
 v1.12 - 2009-03-09
 ------------------
 - fixed unsaved settings bKickMissingCDHashKeys, TimeToWaitForHashKey

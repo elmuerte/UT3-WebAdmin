@@ -10,12 +10,12 @@
 
 <div id="footer">
 Copyright 2008-2009 Epic Games, Inc.
-&mdash;
+&#8212;
 <a href="<%webadmin.path%>/about" title="v<%build.version%> - <%build.timestamp%>">About the UT3 WebAdmin</a>
 </div>
 
 <script type="text/javascript">
-<!--
+//<![CDATA[
 
 var windowAlert = window.alert;
 
@@ -81,7 +81,7 @@ function messagePrompt(text, callback, defVal) {
   }
 }
 
-// -->
+//]]>
 </script>
 
 </body>
