@@ -839,3 +839,6 @@ textarea.dropHover {
 	margin-top: -18px;
 }
 
+.settingsraw {
+    display: none;
+}
