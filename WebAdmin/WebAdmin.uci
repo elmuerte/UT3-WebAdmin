@@ -40,6 +40,9 @@
 // Set to non-empty to enable UT3 patch 1.4 (=2.0) changes
 `define UT3_PATCH_1_4 present
 
+// Set to non-empty to enable UT3 patch 2.1 changes
+`define UT3_PATCH_2_1 present
+
 //
 // Other macros
 //
@@ -66,7 +69,6 @@
 `define WA_CLEANUP_SETTINGS '`{WEBADMIN_CMD}cleanup'
 // request group spec
 `define WA_GROUP_SETTINGS '`{WEBADMIN_CMD}groups'
-
 
 // the following stuff might change
 // request a comma separated list of properties that have custom rendering

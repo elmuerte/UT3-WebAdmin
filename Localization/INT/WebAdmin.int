@@ -59,6 +59,53 @@ PropertyMappings[43]=(ColumnHeaderText="Map Vote Duration")
 PropertyMappings[44]=(ColumnHeaderText="Disable Seamless Loading",ValueMappings=((name="No"),(name="Yes")))
 ;`endif
 
+[GeneralSettings Tooltips]
+ServerName=The name for the server as shown in the server browser.
+ShortName=A shorter name for the server. Might be used by 3rd party server browsers.
+AdminName=The name of the server administrator.
+AdminEmail=A contact address for the server administrators.
+ServerRegion=The region when this server is located. Might be used by the GameSpy master server to filter servers.
+MessageOfTheDay=A welcome message shown to players on the server. Use \\n to force line breaks.
+ServerSkillLevel=An indication of the skill of average players on the server. Used for quick matchmaking.
+MaxSpectators=Maximum number of spectators allowed to join the server.
+MaxPlayers=Maximum number of players allowed on the server.
+bKickLiveIdlers=Kick players who have not shown any recent activity.
+bKickMissingCDHashKeys=Kick players who's client did not send a CDKey hash to the server.
+TimeToWaitForHashKey=Time to wait before kicking players without a CDKey hash.
+MaxTimeMargin=
+TimeMarginSlack=
+MinTimeMargin=
+GameDifficulty=The difficulty level of the game. This affects the AI performance, but could also affect other elements.
+GoreLevel=Amount of blow and gibs to shown.
+bChangeLevels=Change to a different level at the end of a match.
+EndTimeDelay=Number of seconds before ending the current match.
+RestartWait=Number of seconds to wait before starting a new game.
+bAdminCanPause=Are administrators allowed to pause a network game.
+bForceNoSeamlessTravel=Disable seamless loading of the next map. When seamless loading is disabled, clients are forced to reconnect to the server.
+bPlayersMustBeReady=Players must be ready before the match begins.
+bForceRespawn=Force players to respawn when they have been killed.
+bWaitForNetPlayers=Do not start the game until the minimum number of players have joined.
+bPlayersBalanceTeams=Joining players will join the team with the least players.
+BotRatio=The number of bots to spawn for each player in a Players vs Bots match.
+MinNetPlayers=Minimum number of players required to start a match (when Wait for Players is true).
+bForceDefaultCharacter=Everybody plays as the default character.
+bNoCustomCharacters=Disable custom characters.
+bAllowMapVoting=Enable map voting.
+bMidGameMapVoting=Allow voting to happen during the match rather than only at the end.
+GameVoteDuration=How long players are given to pick a gametype.
+MapVoteDuration=How long players are given to pick a map.
+MidGameVotePercentage=The percentage of votes required to initiate a map switch midgame.
+MinMidGameVotes=he minimum number of votes requires to initiate a map switch midgame.
+InitialVoteDelay=The amount of time that must pass before voting is initialized (only applies to midgame voting).
+bAllowGameVoting=If true, then players can vote to kick a player out of the server.
+bAllowMutatorVoting=If true, then players can vote for a mutator to be enabled/disabled during the next game.
+MutatorVotePercentage=The percentage of votes required to enable/disable mutators (only counted at end of the game).
+bAllowKickVoting=If true, then players can vote to kick a player out of the server.
+bAnonymousKickVoting=If true, then kickvote messages will not display the name of the voter (except to admins).
+MinKickVotes=The minimum number of votes required in order to votekick a player.
+KickVotePercentage=The percentage of votes required to kick a player from the server.
+MapReplayLimit=After a map has been played, this many matches must pass before the map can be played again.
+
 [UTGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -78,6 +125,20 @@ PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
 PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 
+[UTGameSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+
 [UTDeathmatchSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -96,6 +157,20 @@ PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
 ;`if(`UT3_PATCH_1_4)
 PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
+
+[UTDeathmatchSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
 
 [UTTeamGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
@@ -117,6 +192,21 @@ PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
 
+[UTTeamGameSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+
 [UTCTFGame_ContentSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -136,6 +226,21 @@ PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
 PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
+
+[UTCTFGame_ContentSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
 
 [UTDuelGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
@@ -158,6 +263,22 @@ PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
 PropertyMappings[14]=(ColumnHeaderText="Rounds")
 
+[UTDuelGameSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+NumRounds=Number of rounds to play
+
 [UTOnslaughtGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -178,6 +299,22 @@ PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
 PropertyMappings[14]=(ColumnHeaderText="Swap Sides Each Round",ValueMappings=((name="No"),(name="Yes")))
+
+[UTOnslaughtGameSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+bSwapSidesAfterReset=Teams swap starting positions after a reset
 
 [UTOnslaughtGame_ContentSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
@@ -200,6 +337,22 @@ PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
 PropertyMappings[14]=(ColumnHeaderText="Swap Sides Each Round",ValueMappings=((name="No"),(name="Yes")))
 
+[UTOnslaughtGame_ContentSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+bSwapSidesAfterReset=Teams swap starting positions after a reset
+
 [UTVehicleCTFGame_ContentSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -220,6 +373,21 @@ PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
 
+[UTVehicleCTFGame_ContentSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+
 [UTBetrayalGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -238,6 +406,20 @@ PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
 ;`if(`UT3_PATCH_1_4)
 PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
+
+[UTBetrayalGameSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
 
 [UTGreedGameSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
@@ -259,6 +441,21 @@ PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
 
+[UTGreedGameSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+
 [UTGreedGame_ContentSettings]
 PropertyMappings[0]=(ColumnHeaderText="Score Limit")
 PropertyMappings[1]=(ColumnHeaderText="Time Limit")
@@ -278,3 +475,18 @@ PropertyMappings[11]=(ColumnHeaderText="Client Processing Timeout")
 PropertyMappings[12]=(ColumnHeaderText="Spawn Protection Time")
 ;`endif
 PropertyMappings[13]=(ColumnHeaderText="Allow Non Team Chat",ValueMappings=((name="No"),(name="Yes")))
+
+[UTGreedGame_ContentSettings Tooltips]
+GoalScore=What score is needed to end the match.
+TimeLimit=Time limit in minutes.
+LateEntryLives=Defines how many lives in a player can still join.
+MaxLives=Max number of lives for match, unless overruled by level's GameDetails.
+bWarmupRound=If true, this match will have a warmup round.
+WarmupTime=How long is the warmup round (In Seconds).
+bForceMidGameMenuAtStart=Show the mid game menu at the start of the match.
+MaxCustomChars=Maximum number of custom char meshes allowed.
+ResetTimeDelay=Time (seconds) before restarting teams.
+NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically team games).
+ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
+SpawnProtectionTime=Seconds of protection after a respawn.
+bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command

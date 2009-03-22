@@ -38,6 +38,9 @@ function save()
 
 protected function saveInternal();
 
+/** return the tooltip for a given property */
+protected function string settingsTooltip(name PropertyName);
+
 protected function bool SetFloatPropertyByName(name prop, float value)
 {
 	local int PropertyId;

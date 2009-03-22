@@ -290,16 +290,21 @@ function string getLocalizedSettingText(int settingId)
  */
 function string renderLocalizedSetting(int settingId)
 {
+	local name propname;
+	local string tooltip;
 	local string options;
 	local array<IdToStringMapping> values;
 	local int selectedValue;
 	local int i;
 
+	propname = curSettings.GetStringSettingName(settingId);
 	curResponse.subst("setting.type", "localizedSetting");
 	curResponse.subst("setting.id", string(settingId));
-	curResponse.subst("setting.name", curSettings.GetStringSettingName(settingId));
+	curResponse.subst("setting.name", propname);
 	curResponse.subst("setting.formname", namePrefix$curSettings.GetStringSettingName(settingId));
 	curResponse.subst("setting.text", `HTMLEscape(getLocalizedSettingText(settingId)));
+	tooltip = Localize(string(curSettings.class.name)$" Tooltips", string(propname), string(curSettings.class.getPackageName()));
+	curResponse.subst("setting.tooltip", `HTMLEscape(tooltip));
 
 	curSettings.GetStringSettingValue(settingId, selectedValue);
 	curSettings.GetStringSettingValueNames(settingId, values);
@@ -356,10 +361,17 @@ function string getSettingText(int settingId)
  */
 function defaultSubst(int settingId)
 {
+	local name propname;
+	local string tooltip;
+
+	propname = curSettings.GetPropertyName(settingId);
 	curResponse.subst("setting.id", string(settingId));
-	curResponse.subst("setting.name", curSettings.GetPropertyName(settingId));
+	curResponse.subst("setting.name", propname);
 	curResponse.subst("setting.formname", namePrefix$curSettings.GetPropertyName(settingId));
 	curResponse.subst("setting.text", `HTMLEscape(getSettingText(settingId)));
+
+	tooltip = Localize(string(curSettings.class.name)$" Tooltips", string(propname), string(curSettings.class.getPackageName()));
+	curResponse.subst("setting.tooltip", `HTMLEscape(tooltip));
 }
 
 function string renderPredefinedValues(int settingId, int idx)

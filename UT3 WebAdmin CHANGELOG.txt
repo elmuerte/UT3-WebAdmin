@@ -1,8 +1,11 @@
-v1.13 - 2009-03-??
+v1.13 - 2009-03-22
 ------------------
 - filter duplicate gamemode/maps/mutator registrations (check the log file for
   detections).
 - fixed XHTML comppliance issues for all pages
+- added tooltips to the settings pages with additional information about the
+  settings.
+- added "Max Replay Limit" setting to the map list editor
 
 v1.12 - 2009-03-09
 ------------------

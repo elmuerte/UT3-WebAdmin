@@ -343,6 +343,10 @@ function handleMaplist(WebAdminQuery q)
 					}
 				}
 
+				`if(`UT3_PATCH_2_1)
+				ml.MapReplayLimit = max(int(q.request.getVariable("replaylimit")), INDEX_NONE);
+				`endif
+
 				ml.SaveConfig();
 				webadmin.addMessage(q, "Changes saved");
 			}
@@ -378,6 +382,20 @@ function handleMaplist(WebAdminQuery q)
 				}
 			}
 			q.response.subst("mapcycle", `HTMLEscape(tmp));
+
+			`if(`UT3_PATCH_2_1)
+			q.response.subst("setting.formname", "replaylimit");
+			q.response.subst("setting.name", "MapReplayLimit");
+			q.response.subst("setting.text", "Map Replay Limit");
+			q.response.subst("setting.value", ml.MapReplayLimit);
+			q.response.subst("setting.minval", "-1");
+			q.response.subst("setting.maxval", MaxInt);
+			q.response.subst("setting.increment", "1");
+			q.response.subst("setting.asint", "true");
+			q.response.subst("setting.tooltip", "The maximum number of times a map can be voted for in a row. Use -1 to use the global map replay limit.");
+			q.response.subst("setting.html", webadmin.include(q, "settings_ranged.inc"));
+			q.response.subst("mapreplaylimit", webadmin.include(q, "settings_entry.inc"));
+			`endif
 
 			q.response.subst("editor", webadmin.include(q, "voting_maplist_editor.inc"));
 		}

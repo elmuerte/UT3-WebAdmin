@@ -23,6 +23,7 @@ function string GetSpecialValue(name PropertyName)
 	{
 		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60;Voting=60,80";
 	}
+	return super.GetSpecialValue(PropertyName);
 }
 
 function init()

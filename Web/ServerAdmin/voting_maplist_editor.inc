@@ -36,6 +36,7 @@
   </div>
   
   <div id="mlactions">
+  <dl><%mapreplaylimit%></dl>
   <br />
   <button type="submit" name="action" value="save">save</button>
   <button type="submit" name="action" value="delete">delete</button>
