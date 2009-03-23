@@ -1,3 +1,11 @@
+v1.14 - ??????????
+------------------
+- added support to dynamically add skins to the webadmin. To register a skin
+  simply create an .ini file in the Config directory with the following content
+    [SomeName WebAdminSkin]
+    FriendlyName=My Own Skins
+    CssFile=/images/myskin/main.css
+
 v1.13 - 2009-03-22
 ------------------
 - filter duplicate gamemode/maps/mutator registrations (check the log file for

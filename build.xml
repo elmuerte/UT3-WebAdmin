@@ -21,6 +21,8 @@
     <delete dir="dist" />
     <delete file="Web/images/jquery.js" />
     <delete file="Web/images/jquery.js.gz" />
+    <delete file="Web/images/base.js" />
+    <delete file="Web/images/base.js.gz" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
@@ -65,8 +67,11 @@
       <fileset dir="Web/jQuery-Src" includes="**/effects.core.js" />
       <fileset dir="Web/jQuery-Src" includes="**/effects.explode.js" />
       <fileset dir="Web/jQuery-Src" includes="**/effects.shake.js" />
+      <fileset dir="Web/jQuery-Src" includes="**/jquery.cookie.js" />
     </concat>
     <gzip src="Web/images/jquery.js" destfile="Web/images/jquery.js.gz"/>
+    <copy file="Web/ServerAdmin/base.js" tofile="Web/images/base.js" />
+    <gzip src="Web/images/base.js" destfile="Web/images/base.js.gz"/>
   </target>
   
   <target name="jquery_compress">
@@ -81,6 +86,14 @@
     </java>
     <delete file="${tmp.jquery}" />
     <gzip src="Web/images/jquery.js" destfile="Web/images/jquery.js.gz"/>
+    
+    <delete file="Web/images/base.js" />
+    <java classname="com.yahoo.platform.yui.compressor.YUICompressor" classpath="lib/yuicompressor-2.3.5.jar">
+      <arg value="-o" />
+      <arg value="Web/images/base.js" />
+      <arg value="Web/ServerAdmin/base.js" />
+    </java>
+    <gzip src="Web/images/base.js" destfile="Web/images/base.js.gz"/>
   </target>
 
   <target name="-dist-copy-files">

@@ -842,3 +842,22 @@ textarea.dropHover {
 .settingsraw {
     display: none;
 }
+
+#skinSelector {
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+#skinSelector h5 {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	padding-right: 0.5em;
+	font-size: 1em;
+}
+
+#skinSelector select {
+	display: inline;
+	font-size: 1em;
+}

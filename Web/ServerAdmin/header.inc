@@ -3,9 +3,11 @@
 <head>
 	<title>UT3 WebAdmin - <%page.title%></title>
 	<link rel="stylesheet" type="text/css" href="/images/ut3.css" title="Unreal Tournament 3" />
+	<%webadminskins.meta%>
 	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
 	<meta name="generator" content="UT3 WebAdmin v<%build.version%> - <%build.timestamp%>" />
 	<script type="text/javascript" src="/images/jquery.js<%client.gzip%>"></script>
+	<script type="text/javascript" src="/images/base.js<%client.gzip%>"></script>
 	<%html.headers%>
 </head>
 <body>

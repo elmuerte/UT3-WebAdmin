@@ -117,6 +117,10 @@ var globalconfig int cfgver;
  */
 var globalconfig bool bUseStrictContentType;
 
+var array<WebAdminSkin> Skins;
+
+var string SkinData;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -235,6 +239,18 @@ function init()
 	initQueryHandlers();
 }
 
+function loadWebAdminSkins()
+{
+	local int i;
+	local array<UTUIResourceDataProvider> ProviderList;
+
+	class'UTUIDataStore_MenuItems'.static.GetAllResourceDataProviders(class'WebAdminSkin', ProviderList);
+	for (i = 0; i < ProviderList.length; i++)
+	{
+		Skins[i] = WebAdminSkin(ProviderList[i]);
+	}
+}
+
 function CreateChatLog()
 {
 	if (bChatLog)
@@ -341,12 +357,33 @@ function Query(WebRequest Request, WebResponse Response)
 	local IQueryHandler handler;
 	local string title, description;
 	local bool acceptsXhtmlXml;
+	local int i;
 
     response.Subst("build.timestamp", timestamp);
 	response.Subst("build.version", version);
 	response.Subst("webadmin.path", path);
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
+
+	if (len(SkinData) == 0)
+	{
+		if (skins.length == 0)
+		{
+			loadWebAdminSkins();
+		}
+		for (i = 0; i < Skins.length; i++)
+		{
+			response.Subst("webadminskin.name", `HTMLEscape(Skins[i].name));
+			response.Subst("webadminskin.friendlyname", `HTMLEscape(Skins[i].FriendlyName));
+			response.Subst("webadminskin.cssfile", `HTMLEscape(Skins[i].cssfile));
+			SkinData $= response.LoadParsedUHTM(Path $ "/webadminskin_meta.inc");
+		}
+		if (skins.length == 0)
+		{
+			SkinData $= " ";
+		}
+	}
+	response.Subst("webadminskins.meta", SkinData);
 
 	if (InStr(Request.GetHeader("accept-encoding")$",", "gzip,") != INDEX_NONE)
 	{
