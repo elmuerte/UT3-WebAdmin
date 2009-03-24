@@ -121,6 +121,7 @@
     <copy todir="build/UTGame/Config">
       <fileset dir="Config">
         <include name="DefaultWebAdmin.ini" />
+        <include name="DefaultMultiAdmin.ini" />
       </fileset>
     </copy>
     <copy todir="build/UTGame/Localization">

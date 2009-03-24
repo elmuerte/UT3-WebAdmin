@@ -37,6 +37,16 @@
 </tr>
 </table>
 
+<br />
+
+<form method="post" action="<%page.fulluri%>" id="addbotsform">
+<h3>Add Bots</h3>
+<div>
+<input type="hidden" name="action" value="addbots" />
+<input type="text" id="numbots" name="numbots" value="1" title="Minimum: 0; Maximum: 32" size="2" /><button type="submit">add</button>
+</div>
+</form>
+
 </div>
 
 <script type="text/javascript">
@@ -124,6 +134,10 @@ $(document).ready(function() {
     tabs.tabs();
     
     updateCount();
+    
+    var elm = $('#numbots');
+    elm.numeric("\n");
+    elm.SpinButton({min: 0, max: 32, step: 1, page: 5, asint: true});
 });    
 
 function updateCount() {

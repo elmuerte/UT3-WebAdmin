@@ -5,9 +5,11 @@ v1.14 - ??????????
     [SomeName WebAdminSkin]
     FriendlyName=My Own Skins
     CssFile=/images/myskin/main.css
+- added option to /current/bots to add an arbitrary number of bots
 
 v1.13 - 2009-03-22
 ------------------
+Note: Patch 2.1 is required
 - filter duplicate gamemode/maps/mutator registrations (check the log file for
   detections).
 - fixed XHTML comppliance issues for all pages

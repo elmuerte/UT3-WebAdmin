@@ -1364,6 +1364,18 @@ function handleBots(WebAdminQuery q)
 		}
 	}
 
+	sv1 = q.request.getVariable("action", "");
+
+	if (sv1 ~= "addbots")
+	{
+		i = int(q.request.getVariable("numbots", "0"));
+		if (i > 0)
+		{
+			UTGame(webadmin.WorldInfo.Game).AddBots(i);
+			webadmin.addMessage(q, "Attempted to add "$i$" bots. It might take a little while before they have all been spawned.");
+		}
+	}
+
 	foreach webadmin.WorldInfo.AllControllers(class'UTBot', bot)
 	{
 		i = class'UTCustomChar_Data'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
@@ -1376,7 +1388,6 @@ function handleBots(WebAdminQuery q)
 		bots.addItem(bot);
 	}
 
-	sv1 = q.request.getVariable("action", "");
 	if (sv1 ~= "activation")
 	{
 		sv1 = "";
