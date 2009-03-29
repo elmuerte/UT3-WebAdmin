@@ -11,15 +11,15 @@ class UTTeamGameSettings extends UTGameSettings;
 
 var class<UTTeamGame> UTTeamGameClass;
 
-function save()
+function saveSettings()
 {
 	saveInternal();
 	UTGameClass.static.StaticSaveConfig();
 }
 
-function init()
+function initSettings()
 {
-	super.init();
+	super.initSettings();
 	SetIntPropertyByName('bAllowNonTeamChat', int(UTTeamGameClass.default.bAllowNonTeamChat));
 }
 

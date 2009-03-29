@@ -26,7 +26,7 @@ function string GetSpecialValue(name PropertyName)
 	return super.GetSpecialValue(PropertyName);
 }
 
-function init()
+function initSettings()
 {
 	// Server Information
 	SetStringPropertyByName('ServerName', class'GameReplicationInfo'.default.ServerName);
@@ -108,7 +108,7 @@ function init()
 	`endif
 }
 
-function save()
+function saveSettings()
 {
 	local int val;
 
@@ -266,13 +266,13 @@ defaultproperties
 	Properties.Add((PropertyId=5,Data=(Type=SDT_String)))
 	Properties.Add((PropertyId=6,Data=(Type=SDT_Int32)))
 
- 	PropertyMappings.Add((Id=0,Name="ServerName" `modloc(,ColumnHeaderText="Server Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
+ 	PropertyMappings.Add((Id=0,name="ServerName" `modloc(,ColumnHeaderText="Server name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
  	PropertyMappings.Add((Id=1,Name="ShortName" `modloc(,ColumnHeaderText="Short Server Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=64))
  	PropertyMappings.Add((Id=2,Name="AdminName" `modloc(,ColumnHeaderText="Admin Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
  	PropertyMappings.Add((Id=3,Name="AdminEmail" `modloc(,ColumnHeaderText="Admin Email") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
  	PropertyMappings.Add((Id=4,Name="ServerRegion" `modloc(,ColumnHeaderText="Server Region") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="None Specified") ),(Id=1 `modloc(,name="Southeast US") ),(Id=2 `modloc(,name="Western US") ),(Id=3 `modloc(,name="Midwest US") ),(Id=4 `modloc(,name="Northwest US, West Canada") ),(Id=5 `modloc(,name="Northeast US, East Canada") ),(Id=6 `modloc(,name="United Kingdom") ),(Id=7 `modloc(,name="Continental Europe") ),(Id=8 `modloc(,name="Central Asia, Middle East") ),(Id=9 `modloc(,name="Southeast Asia, Pacific") ),(Id=10 `modloc(,name="Africa") ),(Id=11 `modloc(,name="Australia / NZ / Pacific") ),(Id=12 `modloc(,name="Central, South America") ))))
  	PropertyMappings.Add((Id=5,Name="MessageOfTheDay" `modloc(,ColumnHeaderText="Message of the Day") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=1024))
- 	PropertyMappings.Add((Id=6,Name="ServerSkillLevel" `modloc(,ColumnHeaderText="Server Skill Level Name") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="Beginner") ),(Id=1 `modloc(,name="Experienced") ),(Id=2 `modloc(,name="Expert")) )))
+ 	PropertyMappings.Add((Id=6,name="ServerSkillLevel" `modloc(,ColumnHeaderText="Server Skill Level name") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="Beginner") ),(Id=1 `modloc(,name="Experienced") ),(Id=2 `modloc(,name="Expert")) )))
 
 	// Connection settings
 	Properties.Add((PropertyId=10,Data=(Type=SDT_Int32)))
@@ -281,7 +281,7 @@ defaultproperties
 
  	PropertyMappings.Add((Id=10,Name="MaxSpectators" `modloc(,ColumnHeaderText="Maximum Spectators") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
  	PropertyMappings.Add((Id=11,Name="MaxPlayers" `modloc(,ColumnHeaderText="Maximum Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
- 	PropertyMappings.Add((Id=12,Name="bKickLiveIdlers" `modloc(,ColumnHeaderText="Kick Idlers") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+ 	PropertyMappings.Add((Id=12,name="bKickLiveIdlers" `modloc(,ColumnHeaderText="Kick Idlers") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 
  	`if(`isdefined(WITH_BANCDHASH))
 	Properties.Add((PropertyId=13,Data=(Type=SDT_Int32)))

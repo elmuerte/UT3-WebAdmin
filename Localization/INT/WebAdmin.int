@@ -490,3 +490,41 @@ NetWait=Time to wait for players in netgames with bWaitForNetPlayers (typically 
 ClientProcessingTimeout=How long we wait for clients to perform initial processing at the start of the game.
 SpawnProtectionTime=Seconds of protection after a respawn.
 bAllowNonTeamChat=Allow normal chatting instead of only the "teamsay" command
+
+[WebAdminSystemSettings]
+PropertyMappings[0]=(ColumnHeaderText="Authentication Class")
+PropertyMappings[1]=(ColumnHeaderText="Session Handler class")
+PropertyMappings[2]=(ColumnHeaderText="HTTP Authentication",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[3]=(ColumnHeaderText="Starting Page")
+PropertyMappings[4]=(ColumnHeaderText="Chat Logging",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[5]=(ColumnHeaderText="Send XHTML headers",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[6]=(ColumnHeaderText="Chat Windows Refresh")
+PropertyMappings[7]=(ColumnHeaderText="Management Console Enabled",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[8]=(ColumnHeaderText="Deny URL options")
+PropertyMappings[9]=(ColumnHeaderText="Deny Console Commands")
+PropertyMappings[10]=(ColumnHeaderText="Admin Console Commands Enabled",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[11]=(ColumnHeaderText="Admin Console Commands Handler")
+PropertyMappings[12]=(ColumnHeaderText="Enable Team Chatting",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[13]=(ColumnHeaderText="Hide News",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[14]=(ColumnHeaderText="Filename")
+PropertyMappings[15]=(ColumnHeaderText="Force Uniqe Name",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[16]=(ColumnHeaderText="Append Timestamp",ValueMappings=((name="No"),(name="Yes")))
+
+[WebAdminSystemSettings Tooltips]
+AuthenticationClass=Class that performs the authentication for web administrators. Takes effect after the current game.
+SessionHandlerClass=Class that manages session handling for logged in web administrators. Takes effect after the current game.
+bHttpAuth=Use HTTP Basic Authentication rather than a log in form.
+startpage=The starting page when going to the UT3 Web server.
+bChatLog=Enable chat logging.
+bUseStrictContentType=Send the webpages with the application/xhtml+xml mime type.
+ChatRefresh=Delay between checking of chat messages in the chat window.
+bConsoleEnabled=The management console is enabled.
+denyUrlOptions=Options on a launch url to deny.
+denyConsoleCommands=Console commands which are not allowed to be executed in the management console. Matches the beginning of the command.
+bAdminConsoleCommandsHack=Support the "admin ..." console commands.
+AdminCommandHandlerClass=Handler for the "admin ..." console commands.
+bEnableTeamChat=Enable team chat functionality for webadmins.
+hideNews=Hide the news on the page
+chatLogFilename=Mask for the filename. Following place holders can be used: %i = server ip; %p = server port; %c = computer name (as reported by the OS); %v = engine version.
+chatLogUnique=Make sure the chatlog filename is unique.
+chatLogIncludeTimeStamp=Append a timestamp to the chatlog filename.

@@ -691,7 +691,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 /**
  * Apply the settings received from the response to the settings instance
  */
-function applySettings(Settings settings, WebRequest request, optional string prefix = "settings_")
+static function applySettings(Settings settings, WebRequest request, optional string prefix = "settings_")
 {
 	local int i, idx;
 	local name sname;

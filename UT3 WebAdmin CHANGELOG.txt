@@ -6,6 +6,7 @@ v1.14 - ??????????
     FriendlyName=My Own Skins
     CssFile=/images/myskin/main.css
 - added option to /current/bots to add an arbitrary number of bots
+- added a system settings page to change webadmin settins
 
 v1.13 - 2009-03-22
 ------------------

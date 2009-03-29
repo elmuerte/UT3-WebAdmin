@@ -390,6 +390,7 @@ function string renderPredefinedValues(int settingId, int idx)
 	selectedValue = curSettings.GetPropertyAsString(settingId);
 	values = curSettings.PropertyMappings[idx].PredefinedValues;
 	usedPreDef = false;
+
 	for (i = 0; i < values.Length; i++)
 	{
 		switch (values[i].Type)
@@ -411,6 +412,7 @@ function string renderPredefinedValues(int settingId, int idx)
 				break;
 			case SDT_String:
 				svalue = curSettings.GetSettingsDataString(values[i]);
+				`Log(svalue,,'WebAdmin');
 				curResponse.subst("setting.option.value", `HTMLEscape(svalue));
 				curResponse.subst("setting.option.text", `HTMLEscape(svalue));
 				selected = (svalue ~= selectedValue);

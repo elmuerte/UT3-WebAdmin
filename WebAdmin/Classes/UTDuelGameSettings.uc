@@ -11,9 +11,9 @@ class UTDuelGameSettings extends UTTeamGameSettings;
 
 var class<UTDuelGame> UTDuelGameClass;
 
-function init()
+function initSettings()
 {
-	super.init();
+	super.initSettings();
 	SetIntPropertyByName('NumRounds', UTDuelGameClass.default.NumRounds);
 }
 

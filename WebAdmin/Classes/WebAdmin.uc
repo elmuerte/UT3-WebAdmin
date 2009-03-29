@@ -174,6 +174,16 @@ function init()
 		doSaveConfig = true;
 		cfgver=1;
 	}
+	if (cfgver < 2)
+	{
+		tmp = class.getPackageName()$".WebAdminSystemSettings";
+		if (QueryHandlers.find(tmp) == INDEX_NONE)
+		{
+			QueryHandlers[QueryHandlers.length] = tmp;
+		}
+		doSaveConfig = true;
+		cfgver=2;
+	}
 
 	if (doSaveConfig)
 	{

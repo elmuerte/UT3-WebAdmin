@@ -21,17 +21,17 @@ function SetSpecialValue(name PropertyName, string NewValue)
 {
 	if (PropertyName == `{WA_INIT_SETTINGS})
 	{
-		init();
+		initSettings();
 	}
 	else if (PropertyName == `{WA_SAVE_SETTINGS})
 	{
-		save();
+		saveSettings();
 	}
 }
 
-function init();
+function initSettings();
 
-function save()
+function saveSettings()
 {
 	saveInternal();
 }
@@ -74,6 +74,25 @@ protected function bool SetStringPropertyByName(name prop, string value)
 	return false;
 }
 
+protected function bool SetStringArrayPropertyByName(name prop, array<string> value, optional string delim = ";")
+{
+	local int PropertyId;
+	local string realval;
+	local int i;
+
+	if (GetPropertyId(prop, PropertyId))
+	{
+		for (i = 0; i < value.length; i++)
+		{
+			if (i > 0) realval $= delim;
+			realval $= value[i];
+		}
+		SetStringProperty(PropertyId, realval);
+		return true;
+	}
+	return false;
+}
+
 protected function bool GetFloatPropertyByName(name prop, out float value)
 {
 	local int PropertyId;
@@ -100,6 +119,29 @@ protected function bool GetStringPropertyByName(name prop, out string value)
 	if (GetPropertyId(prop, PropertyId))
 	{
 		return GetStringProperty(PropertyId, value);
+	}
+	return false;
+}
+
+protected function bool GetStringArrayPropertyByName(name prop, out array<string> value, optional string delim = ";")
+{
+	local int PropertyId;
+	local string realval;
+	local int i;
+
+	if (GetPropertyId(prop, PropertyId))
+	{
+		if (GetStringProperty(PropertyId, realval))
+		{
+			value.length = 0;
+			ParseStringIntoArray(realval, value, delim, true);
+			for (i = 0; i < value.length; i++)
+			{
+				value[i] -= chr(10);
+				value[i] -= chr(13);
+			}
+			return true;
+		}
 	}
 	return false;
 }

@@ -11,7 +11,7 @@ class UTGameSettings extends WebAdminSettings abstract;
 
 var class<UTGame> UTGameClass;
 
-function init()
+function initSettings()
 {
 	if (UTGameClass == none) return;
  	SetIntPropertyByName('GoalScore', UTGameClass.default.GoalScore);
@@ -33,7 +33,7 @@ function init()
  	`endif
 }
 
-function save()
+function saveSettings()
 {
 	saveInternal();
 	UTGameClass.static.StaticSaveConfig();

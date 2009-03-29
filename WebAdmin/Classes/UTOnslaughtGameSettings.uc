@@ -11,9 +11,9 @@ class UTOnslaughtGameSettings extends UTTeamGameSettings abstract;
 
 var class<UTOnslaughtGame> UTOnslaughtGameClass;
 
-function init()
+function initSettings()
 {
-	super.init();
+	super.initSettings();
 	SetIntPropertyByName('bSwapSidesAfterReset', int(UTOnslaughtGameClass.default.bSwapSidesAfterReset));
 }
 
