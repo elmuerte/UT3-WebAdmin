@@ -1,5 +1,6 @@
-v1.14 - 2009-04-05
-------------------
+v1.14.0 - 2009-04-05 (for UT3 2.0)
+v1.14.1 - 2009-04-05 (for UT3 2.1)
+----------------------------------
 - added support to dynamically add skins to the webadmin. To register a skin
   simply create an .ini file in the Config directory with the following content
     [SomeName WebAdminSkin]
