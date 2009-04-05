@@ -5,7 +5,7 @@
  *
  * @author  Michiel 'elmuerte' Hendriks
  */
-class DataStoreCache extends Object;
+class DataStoreCache extends Object config(WebAdmin);
 
 /**
  * List of gametypes
@@ -50,6 +50,17 @@ struct GameTypeMutators
 var array<GameTypeMutators> gameTypeMutatorCache;
 
 var array<UTUIDataProvider_Weapon> weapons;
+
+struct MutatorAllowance
+{
+	var string id;
+	var bool allowed;
+};
+/**
+ * Cache mutator allowance to avoid loading packages at runtime as much as
+ * possible.
+ */
+var config array<MutatorAllowance> allowanceCache;
 
 function cleanup()
 {
@@ -392,13 +403,14 @@ function array<MutatorGroup> getMutators(optional string gametype = "", optional
 /**
  * Filter the source mutator group list on the provided gametype
  */
-static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, string gametype)
+function array<MutatorGroup> filterMutators(array<MutatorGroup> source, string gametype)
 {
 	local int i, j, k;
 	local array<MutatorGroup> result;
 	local MutatorGroup group;
 	local class<GameInfo> GameModeClass;
-	local bool findGameType;
+	local bool findGameType, allowanceChanged;
+	local string GameTypeMutatorId;
 
 	findGameType = true;
 
@@ -425,20 +437,36 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 				}
 			}
 			else {
-				if (GameModeClass == none && findGameType)
+				GameTypeMutatorId = gametype$"@"$source[i].mutators[j].ClassName;
+				k = allowanceCache.find('id', GameTypeMutatorId);
+				if (k != INDEX_NONE)
 				{
-					findGameType = false;
-					GameModeClass = class<GameInfo>(DynamicLoadObject(gametype, class'class'));
-					if (GameModeClass == none)
-					{
-						`Log("DataStoreCache::filterMutators() - Unable to find game class: "$gametype);
-					}
-				}
-				if(GameModeClass != none)
-				{
-					if (GameModeClass.static.AllowMutator(source[i].mutators[j].ClassName))
+					if (allowanceCache[k].allowed)
 					{
 						group.mutators.AddItem(source[i].mutators[j]);
+					}
+				}
+				else {
+					if (GameModeClass == none && findGameType)
+					{
+						findGameType = false;
+						GameModeClass = class<GameInfo>(DynamicLoadObject(gametype, class'class'));
+						if (GameModeClass == none)
+						{
+							`Log("DataStoreCache::filterMutators() - Unable to find game class: "$gametype);
+						}
+					}
+					if(GameModeClass != none)
+					{
+						allowanceChanged = true;
+						k = allowanceCache.length;
+						allowanceCache.length = k+1;
+						allowanceCache[k].id = GameTypeMutatorId;
+						if (GameModeClass.static.AllowMutator(source[i].mutators[j].ClassName))
+						{
+							group.mutators.AddItem(source[i].mutators[j]);
+							allowanceCache[k].allowed = true;
+						}
 					}
 				}
 			}
@@ -447,6 +475,10 @@ static function array<MutatorGroup> filterMutators(array<MutatorGroup> source, s
 		{
 			result.AddItem(group);
 		}
+	}
+	if (allowanceChanged)
+	{
+		SaveConfig();
 	}
 	return result;
 }

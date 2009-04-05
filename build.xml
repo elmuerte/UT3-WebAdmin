@@ -23,10 +23,10 @@
     <delete file="Web/images/jquery.js.gz" />
     <delete file="Web/images/base.js" />
     <delete file="Web/images/base.js.gz" />
+    <delete file="${ut3dir.user}/UTGame/${ut3dir.script}/WebAdmin.u" />
   </target>
 
   <target name="build" description="Build the UT3 WebAdmin">
-    <delete file="${ut3dir.user}/UTGame/${ut3dir.script}/WebAdmin.u" />
     <echo file="${basedir}/WebAdmin/build.uci">
         `define WEBADMIN_TIMESTAMP "${compile.timestamp}"
         `define WEBADMIN_VERSION "${webadmin.version}"

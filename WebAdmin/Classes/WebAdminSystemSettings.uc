@@ -48,7 +48,8 @@ function cleanup()
 
 function registerMenuItems(WebAdminMenu menu)
 {
-	menu.addMenu("/settings/system", "System", self, "Change the web administration configuration.", 999);
+	menu.addMenu("/settings/system", "WebAdmin", self, "Change the web administration configuration.", 999);
+	menu.addMenu("/system/allowancecache", "", self, "Rebuild the mutator allowance cache.");
 }
 
 function bool handleQuery(WebAdminQuery q)
@@ -57,6 +58,9 @@ function bool handleQuery(WebAdminQuery q)
 	{
 		case "/settings/system":
 			handleSettings(q);
+			return true;
+		case "/system/allowancecache":
+			handleRebuildAllowanceCache(q);
 			return true;
 	}
 	return false;
@@ -67,6 +71,30 @@ function bool unhandledQuery(WebAdminQuery q);
 function bool producesXhtml()
 {
 	return true;
+}
+
+function handleRebuildAllowanceCache(WebAdminQuery q)
+{
+	local array<UTUIDataProvider_GameModeInfo> gts;
+	local int i;
+
+	if (q.request.getVariable("action") ~= "rebuild")
+	{
+		webadmin.dataStoreCache.allowanceCache.length = 0;
+		gts = webadmin.dataStoreCache.getGameTypes();
+		for (i = 0; i < gts.length; i++)
+		{
+			webadmin.dataStoreCache.getMutators(gts[i].GameMode);
+		}
+		webadmin.addMessage(q, "Mutator allowance cache has been rebuild.");
+	}
+
+	webadmin.addMessage(q, "<form action=\""$WebAdmin.Path$q.Request.URI$"\" method=\"post\">"
+		$"<p>Only rebuild the mutator cache when the server is empty. It is strongly adviced to restart the game after rebuilding has been completed.</p>"
+		$"<p><button type=\"submit\" name=\"action\" value=\"rebuild\">Rebuild cache</button></p></form>", MT_Warning);
+
+	q.response.Subst("page.title", "Rebuild Mutator Allowance Cache");
+	webadmin.sendPage(q, "message.html");
 }
 
 function handleSettings(WebAdminQuery q)

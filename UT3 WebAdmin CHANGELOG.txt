@@ -1,4 +1,4 @@
-v1.14 - ??????????
+v1.14 - 2009-04-05
 ------------------
 - added support to dynamically add skins to the webadmin. To register a skin
   simply create an .ini file in the Config directory with the following content
@@ -7,6 +7,13 @@ v1.14 - ??????????
     CssFile=/images/myskin/main.css
 - added option to /current/bots to add an arbitrary number of bots
 - added a system settings page to change webadmin settins
+- reduced loading of gametype classes to filter the mutator lists, this reduces
+  loading of additional packages during the game (which clients would need to
+  download). You can force rebuild of the caches by visiting this (hidden) page:
+  http://<webadmin.ip>/ServerAdmin/system/allowancecache 
+  http://<webadmin.ip>/ServerAdmin/system/settingscache
+  (note: this is something you might want to do after installing new or 
+  upgrading gametypes/mutators)
 
 v1.13 - 2009-03-22
 ------------------

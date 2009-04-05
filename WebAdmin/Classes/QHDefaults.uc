@@ -26,6 +26,13 @@ struct ClassSettingsMapping
  */
 var config array<ClassSettingsMapping> SettingsClasses;
 
+struct HasSettingsClass
+{
+	var string className;
+	var bool hasSettings;
+};
+var config array<HasSettingsClass> HasSettingsCache;
+
 struct ClassSettingsCacheEntry
 {
 	var string cls;
@@ -147,6 +154,9 @@ function bool handleQuery(WebAdminQuery q)
 			handleMapListAdditional(q);
 			return true;
 		`endif
+		case "/system/settingscache":
+			handleRebuildSettingsCache(q);
+			return true;
 	}
 	return false;
 }
@@ -173,6 +183,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. Each game type can have a single map cycle.");
 	menu.addMenu("/settings/maplist/additional", "Additional Map Cycles", self, "Manage additional map cycle configurations.");
 	`endif
+	menu.addMenu("/system/settingscache", "", self, "Rebuild the settings cache.");
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -451,6 +462,51 @@ function handleSessionBans(WebAdminQuery q)
 }
 `endif
 
+function handleRebuildSettingsCache(WebAdminQuery q)
+{
+	local array<UTUIDataProvider_GameModeInfo> gts;
+	local int i;
+
+	if (q.request.getVariable("action") ~= "rebuild")
+	{
+		HasSettingsCache.length = 0;
+		gts = webadmin.dataStoreCache.getGameTypes();
+		for (i = 0; i < gts.length; i++)
+		{
+			HasSettings(gts[i].GameMode);
+		}
+		webadmin.dataStoreCache.loadMutators();
+		for (i = 0; i < webadmin.dataStoreCache.mutators.length; i++)
+		{
+			HasSettings(webadmin.dataStoreCache.mutators[i].ClassName);
+		}
+		webadmin.addMessage(q, "Settings cache has been rebuild.");
+	}
+
+	webadmin.addMessage(q, "<form action=\""$WebAdmin.Path$q.Request.URI$"\" method=\"post\">"
+		$"<p>Only rebuild the settings cache when the server is empty. It is strongly adviced to restart the game after rebuilding has been completed.</p>"
+		$"<p><button type=\"submit\" name=\"action\" value=\"rebuild\">Rebuild cache</button></p></form>", MT_Warning);
+
+	q.response.Subst("page.title", "Rebuild Settings Cache");
+	webadmin.sendPage(q, "message.html");
+}
+
+function bool HasSettings(string forClass)
+{
+	local int i;
+	i = HasSettingsCache.find('classname', forClass);
+	if (i != INDEX_NONE)
+	{
+		return HasSettingsCache[i].hasSettings;
+	}
+	i = HasSettingsCache.length;
+	HasSettingsCache.length = i+1;
+	HasSettingsCache[i].className = forClass;
+	HasSettingsCache[i].hasSettings = getSettingsClassFqn(forClass, true) != none;
+	SaveConfig();
+	return HasSettingsCache[i].hasSettings;
+}
+
 /**
  * Get the settings class by the fully qualified name
  */
@@ -603,7 +659,7 @@ function handleSettingsGametypes(WebAdminQuery q)
  			continue;
  		}
  		tmp = "";
- 		if (getSettingsClassFqn(gametype.GameMode) == none)
+ 		if (!HasSettings(gametype.GameMode))
  		{
  			//continue;
  			tmp = " &sup1;";
@@ -630,7 +686,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		gi = class<GameInfo>(DynamicLoadObject(editGametype.GameMode, class'class'));
 		if (gi != none)
 		{
-			settingsClass = getSettingsClassByClass(gi);
+			settingsClass = getSettingsClassFqn(editGametype.GameMode);
 		}
 		if (settingsClass != none)
 		{
@@ -854,7 +910,7 @@ function handleSettingsMutators(WebAdminQuery q)
  	substvar = "";
  	foreach webadmin.dataStoreCache.mutators(mutator)
  	{
- 		if (getSettingsClassFqn(mutator.ClassName, true) == none)
+ 		if (!HasSettings(mutator.ClassName))
  		{
  			continue;
  		}
@@ -881,7 +937,7 @@ function handleSettingsMutators(WebAdminQuery q)
 		mut = class<Mutator>(DynamicLoadObject(editMutator.ClassName, class'class'));
 		if (mut != none)
 		{
-			settingsClass = getSettingsClassByClass(mut);
+			settingsClass = getSettingsClassFqn(editMutator.ClassName);
 		}
 		if (settingsClass != none)
 		{
