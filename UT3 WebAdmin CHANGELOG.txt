@@ -1,3 +1,10 @@
+v1.15.0 - 2009-04-?? (for UT3 2.0)
+v1.15.1 - 2009-04-?? (for UT3 2.1)
+----------------------------------
+- fixed a few typos
+- added a setting to validate the IP in sessions. This increases security by 
+  making sessions less prone to hijacking.
+
 v1.14.0 - 2009-04-05 (for UT3 2.0)
 v1.14.1 - 2009-04-05 (for UT3 2.1)
 ----------------------------------

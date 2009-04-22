@@ -509,6 +509,7 @@ PropertyMappings[13]=(ColumnHeaderText="Hide News",ValueMappings=((name="No"),(n
 PropertyMappings[14]=(ColumnHeaderText="Filename")
 PropertyMappings[15]=(ColumnHeaderText="Force Uniqe Name",ValueMappings=((name="No"),(name="Yes")))
 PropertyMappings[16]=(ColumnHeaderText="Append Timestamp",ValueMappings=((name="No"),(name="Yes")))
+PropertyMappings[17]=(ColumnHeaderText="IP Octet Validation"))
 
 [WebAdminSystemSettings Tooltips]
 AuthenticationClass=Class that performs the authentication for web administrators. Takes effect after the current game.
@@ -528,3 +529,4 @@ hideNews=Hide the news on the page
 chatLogFilename=Mask for the filename. Following place holders can be used: %i = server ip; %p = server port; %c = computer name (as reported by the OS); %v = engine version.
 chatLogUnique=Make sure the chatlog filename is unique.
 chatLogIncludeTimeStamp=Append a timestamp to the chatlog filename.
+sessionOctetValidation=The number of IP segments to validate in the session. Increasing this value makes sessions less prone to hijacking.

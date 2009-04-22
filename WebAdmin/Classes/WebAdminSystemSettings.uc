@@ -130,6 +130,7 @@ protected function loadSettings()
 	SetStringPropertyByName('startpage', webadmin.startpage);
 	SetIntPropertyByName('bChatLog', int(webadmin.bChatLog));
 	SetIntPropertyByName('bUseStrictContentType', int(webadmin.bUseStrictContentType));
+	SetIntPropertyByName('sessionOctetValidation', webadmin.sessionOctetValidation);
 
 	// qhcurrent
 	if (qhcurrent != none)
@@ -186,6 +187,7 @@ function saveSettings()
 	{
 		webadmin.bUseStrictContentType = intval != 0;
 	}
+	GetIntPropertyByName('sessionOctetValidation', webadmin.sessionOctetValidation);
 	webadmin.SaveConfig();
 
 	// qhcurrent
@@ -317,4 +319,7 @@ defaultProperties
 	PropertyMappings.Add((Id=21,name="chatLogFilename" `modloc(,ColumnHeaderText="Filename") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
 	PropertyMappings.Add((Id=22,name="chatLogUnique" `modloc(,ColumnHeaderText="Force uniqe name") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	PropertyMappings.Add((Id=23,name="chatLogIncludeTimeStamp" `modloc(,ColumnHeaderText="Append timestamp") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
+
+	Properties.Add((PropertyId=31,Data=(Type=SDT_Int32)))
+	PropertyMappings.Add((Id=31,name="sessionOctetValidation" `modloc(,ColumnHeaderText="IP Octet Validation") ,MappingType=PVMT_PredefinedValues,PredefinedValues=((Value1=0,Type=SDT_Int32),(Value1=1,Type=SDT_Int32),(Value1=2,Type=SDT_Int32),(Value1=3,Type=SDT_Int32),(Value1=4,Type=SDT_Int32)),MinVal=0,MaxVal=4,RangeIncrement=1))
 }

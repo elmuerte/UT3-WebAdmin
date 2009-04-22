@@ -121,6 +121,13 @@ var array<WebAdminSkin> Skins;
 
 var string SkinData;
 
+/**
+ * Number of octets in the IPv4 to validate for the session. for example, a
+ * value of 3 allows the IP to be between x.y.z.0-x.y.z.255 . A value of 0
+ * disables validation. Values higher than 4 are useless (because of IPv4).
+ */
+var globalconfig int sessionOctetValidation;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -172,7 +179,7 @@ function init()
 		}
 
 		doSaveConfig = true;
-		cfgver=1;
+		cfgver = 1;
 	}
 	if (cfgver < 2)
 	{
@@ -182,7 +189,13 @@ function init()
 			QueryHandlers[QueryHandlers.length] = tmp;
 		}
 		doSaveConfig = true;
-		cfgver=2;
+		cfgver = 2;
+	}
+	if (cfgver < 3)
+	{
+		sessionOctetValidation = 3;
+		doSaveConfig = true;
+		cfgver = 3;
 	}
 
 	if (doSaveConfig)
@@ -592,10 +605,17 @@ protected function bool getSession(out WebAdminQuery q)
 	if (len(sessionId) > 0)
 	{
 		q.session = sessions.get(sessionId);
+		if (q.session != none && sessionOctetValidation > 0)
+		{
+			validateSessionOctet(q);
+		}
 	}
 	if (q.session == none)
 	{
 		q.session = sessions.create();
+		idx = inStr(q.request.RemoteAddr, ":");
+		if (idx == INDEX_NONE) idx = len(q.request.RemoteAddr);
+		q.session.putString("AuthIP", Left(q.request.RemoteAddr, idx));
 		q.response.headers[q.response.headers.length] = "Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/";
 	}
 	if (q.session == none)
@@ -605,6 +625,26 @@ protected function bool getSession(out WebAdminQuery q)
 	}
 	q.response.Subst("sessionid", q.session.getId());
 	return true;
+}
+
+protected function validateSessionOctet(out WebAdminQuery q)
+{
+	local array<string> ip1, ip2;
+	local int i;
+	i = inStr(q.request.RemoteAddr, ":");
+	if (i == INDEX_NONE) i = len(q.request.RemoteAddr);
+	ParseStringIntoArray(Left(q.request.RemoteAddr, i), ip1, ".", false);
+	ParseStringIntoArray(q.session.getString("AuthIP", "0.0.0.0"), ip2, ".", false);
+	ip1.length = sessionOctetValidation;
+	ip2.length = sessionOctetValidation;
+	for (i = 0; i < ip1.length; ++i)
+	{
+		if (int(ip1[i]) != int(ip2[i]))
+		{
+			q.session = none;
+			break;
+		}
+	}
 }
 
 /**
@@ -915,6 +955,7 @@ function pageAbout(WebAdminQuery q)
 	if (q.cookies.Find('key', "authcred") > INDEX_NONE) q.response.Subst("client.remember", "True");
 	else q.response.Subst("client.remember", "False");
 	q.response.Subst("client.sessionid", q.session.getId());
+	q.response.Subst("client.authip", q.session.getString("AuthIP"));
 	sendPage(q, "about.html");
 }
 
@@ -1013,6 +1054,7 @@ defaultproperties
 	// config
 	bHttpAuth=false
 	bChatLog=false
+	sessionOctetValidation=3
 	startpage="/current"
 	QueryHandlers[0]="WebAdmin.QHCurrent"
 	QueryHandlers[1]="WebAdmin.QHDefaults"
