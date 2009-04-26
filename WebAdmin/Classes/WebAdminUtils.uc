@@ -7,6 +7,17 @@
  */
 class WebAdminUtils extends Object;
 
+struct TranslitEntry
+{
+	/** from */
+	var string f;
+	/** to */
+	var string t;
+};
+
+/** translit characters */
+var localized array<TranslitEntry> translit;
+
 struct DateTime
 {
 	var int year;
@@ -17,12 +28,23 @@ struct DateTime
 	var int second;
 };
 
+static final function String translitText(coerce string inp)
+{
+	local int i;
+	for (i = 0; i < default.translit.length; i++)
+	{
+		inp = Repl(inp, default.translit[i].f, default.translit[i].t);
+	}
+	return inp;
+}
+
 /**
  * Escape HTML tags in the given string. Expects the input to not contain any
  * escaped entities (i.e. &...;)
  */
 static final function String HTMLEscape(coerce string inp)
 {
+	inp = translitText(inp);
 	inp = Repl(inp, "&", "&amp;");
 	inp = Repl(inp, "<", "&lt;");
 	inp = Repl(inp, "\"", "&quot;");

@@ -4,6 +4,17 @@ v1.15.1 - 2009-04-?? (for UT3 2.1)
 - fixed a few typos
 - added a setting to validate the IP in sessions. This increases security by 
   making sessions less prone to hijacking.
+- added a basic translit system which allows conversion for certain information.
+  this can be used to convert Cyrillic characters to their ASCII equivalent.
+  This translit system is also used by the chatlog. See the file
+  Localization/RUS/WebAdmin.rus how you should build your translit table.
+  The translit system is needed because the webadmin can only produce ASCII (or 
+  UTF-8) output. Internally UE3 uses UTF-16, which can not be used by the
+  webadmin. 
+  Note: The translit system is not used for input processing.
+  Note: Because the tanslit table is stored in a localization file you need to
+  have the appropriate Language set in UTEngine.ini or you have to manually
+  copy the table to WebAdmin.int
 
 v1.14.0 - 2009-04-05 (for UT3 2.0)
 v1.14.1 - 2009-04-05 (for UT3 2.1)

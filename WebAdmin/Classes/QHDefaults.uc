@@ -874,7 +874,7 @@ function handleSettingsPasswords(WebAdminQuery q)
 			webadmin.addMessage(q, "Admin password updated");
 		}
 	}
-	q.response.subst("has.gamepassword", webadmin.WorldInfo.Game.AccessControl.RequiresPassword());
+	q.response.subst("has.gamepassword", `HTMLEscape(webadmin.WorldInfo.Game.AccessControl.RequiresPassword()));
 	webadmin.sendPage(q, "default_settings_password.html");
 }
 

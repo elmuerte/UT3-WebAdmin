@@ -548,9 +548,9 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 		q.response.subst("player.teamcolor2", "transparent");
 		q.response.subst("player.teamname", "");
 	}
-	q.response.subst("player.admin", pri.bAdmin);
-	q.response.subst("player.bot", pri.bBot);
-	q.response.subst("player.spectator", pri.bIsSpectator);
+	q.response.subst("player.admin", `HTMLEscape(pri.bAdmin));
+	q.response.subst("player.bot", `HTMLEscape(pri.bBot));
+	q.response.subst("player.spectator", `HTMLEscape(pri.bIsSpectator));
 	q.response.subst("player.kills", pri.kills);
 	q.response.subst("player.starttime", pri.starttime);
 }

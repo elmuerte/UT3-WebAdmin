@@ -53,7 +53,8 @@ function ReceiveMessage( PlayerReplicationInfo Sender, string Msg, name Type )
 	else {
 		teamindex = Sender.Team.TeamIndex;
 	}
-	writer.Logf(TimeStamp()$tab$Sender.GetPlayerAlias()$tab$uniqueid$tab$type$tab$teamindex$tab$msg);
+	writer.Logf(TimeStamp() $ tab $ class'WebAdminUtils'.static.translitText(Sender.GetPlayerAlias()) $
+		tab $ uniqueid $ tab $ type $ tab $ teamindex $ tab $ class'WebAdminUtils'.static.translitText(msg));
 }
 
 reliable client event ReceiveLocalizedMessage( class<LocalMessage> Message, optional int Switch, optional PlayerReplicationInfo RelatedPRI_1, optional PlayerReplicationInfo RelatedPRI_2, optional Object OptionalObject )
