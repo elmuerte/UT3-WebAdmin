@@ -63,6 +63,19 @@ var `if(`UT3_PATCH_1_4)deprecated`endif
 
 var SettingsMagic settingsMagic;
 
+//!localized
+var localized string menuPolicy, menuPolicyDesc, menuBannedId, menuBannedIdDesc,
+	menuBannedHash, menuBannedHashDesc, menuSession, menuSessionDesc, menuSettings,
+	menuGeneral, menuGeneralDesc, menuPassword, menuPasswordDesc, menuGametypes,
+	menuGametypesDesc, menuMutators, menuMutatorsDesc, menuMapCycles, menuMapCyclesDesc,
+	menuMLAddition, menuMLAdditionDesc, msgSettingsCacheDesc, msgRemovedPolicy,
+	msgNoValidIpMask, msgInvalidPolicy, msgAddedPolicy, msdUpdatedPolicy,
+	msgNoValidId, msgAddedBanId, msgNoValidHash, msgBannedHash, msgRemovedSessionBan,
+	msgSettingsSaved, msgCantSaveSettings, msgCantLoadSettings, msgGamePWError,
+	msgGamePWSaved, msgAdminPWError, msgAdminPWSaved, msgAdminPWEmpty,
+	msgMapCycleSaved, msgCantLoadGT, msgImportedMapList, msgInvalidMaplist,
+	Untitled, msgCantFindMapCycle, msgCycleDeleted, msgCycleSaved, msgCycleActivated;
+
 function init(WebAdmin webapp)
 {
 	if (Len(GeneralSettingsClass) == 0)
@@ -165,25 +178,25 @@ function bool unhandledQuery(WebAdminQuery q);
 
 function registerMenuItems(WebAdminMenu menu)
 {
-	menu.addMenu("/policy", "Access Policy", self, "Change the IP policies that determine who can join the server.");
-	menu.addMenu("/policy/bans", "Banned IDs", self, "Change account ban records. These records ban a single online account.");
+	menu.addMenu("/policy", menuPolicy, self, menuPolicyDesc);
+	menu.addMenu("/policy/bans", menuBannedId, self, menuBannedIdDesc);
 	`if(`isdefined(WITH_BANCDHASH))
-	menu.addMenu("/policy/hashbans", "Banned Hashes", self, "Change client ban records. These records ban a single copy of the game.");
+	menu.addMenu("/policy/hashbans", menuBannedHash, self, menuBannedHashDesc);
 	`endif
 	`if(`UT3_PATCH_1_4)
-	menu.addMenu("/policy/session", "Session Bans", self, "View current session bans.");
+	menu.addMenu("/policy/session", menuSession, self, menuSessionDesc);
 	`endif
-	menu.addMenu("/settings", "Settings", self);
-	menu.addMenu("/settings/general", "General", self, "Change various server wide settings. These settings affect all game types. Changes will take effect in the next level.", -10);
-	menu.addMenu("/settings/general/passwords", "Passwords", self, "Change the game and/or administration passwords.");
-	menu.addMenu("/settings/gametypes", "Gametypes", self, "Change the default settings of the gametypes. Changes will take effect in the next level.");
-	menu.addMenu("/settings/mutators", "Mutators", self, "Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level.");
+	menu.addMenu("/settings", menuSettings, self);
+	menu.addMenu("/settings/general", menuGeneral, self, menuGeneralDesc, -10);
+	menu.addMenu("/settings/general/passwords", menuPassword, self, menuPasswordDesc);
+	menu.addMenu("/settings/gametypes", menuGametypes, self, menuGametypesDesc);
+	menu.addMenu("/settings/mutators", menuMutators, self, menuMutatorsDesc);
 	`if(`UT3_PATCH_1_4)
 	`else
-	menu.addMenu("/settings/maplist", "Map Cycles", self, "Change the game type specific map cycles. Each game type can have a single map cycle.");
-	menu.addMenu("/settings/maplist/additional", "Additional Map Cycles", self, "Manage additional map cycle configurations.");
+	menu.addMenu("/settings/maplist", menuMapCycles, self, menuMapCyclesDesc);
+	menu.addMenu("/settings/maplist/additional", menuMLAddition, self, menuMLAdditionDesc);
 	`endif
-	menu.addMenu("/system/settingscache", "", self, "Rebuild the settings cache.");
+	menu.addMenu("/system/settingscache", "", self, msgSettingsCacheDesc);
 }
 
 function handleIPPolicy(WebAdminQuery q)
@@ -219,7 +232,7 @@ function handleIPPolicy(WebAdminQuery q)
 				policy = webadmin.worldinfo.game.accesscontrol.IPPolicies[idx];
 				webadmin.worldinfo.game.accesscontrol.IPPolicies.Remove(idx, 1);
 				webadmin.worldinfo.game.accesscontrol.SaveConfig();
-				webadmin.addMessage(q, "Removed policy: "$policy);
+				webadmin.addMessage(q, msgRemovedPolicy@policy);
 			}
 		}
 		else {
@@ -234,27 +247,27 @@ function handleIPPolicy(WebAdminQuery q)
 				}
 				if (parts[i] != string(int(parts[i])) || int(parts[i]) > 255 || int(parts[i]) < 0 )
 				{
-					webadmin.addMessage(q, "<code>"$policy$"</code> is not a valid IP mask", MT_error);
+					webadmin.addMessage(q, repl(msgNoValidIpMask, "%s", "<code>"$policy$"</code>"), MT_error);
 					break;
 				}
 			}
 			if (parts.length > 4 || parts.length < 1)
 			{
-				webadmin.addMessage(q, "<code>"$policy$"</code> is not a valid IP mask", MT_error);
+				webadmin.addMessage(q, repl(msgNoValidIpMask, "%s", "<code>"$policy$"</code>"), MT_error);
 				i = -1;
 			}
 			if (i == parts.length)
 			{
 				if (q.request.getVariable("policy") == "")
 				{
-					webadmin.addMessage(q, "Invalid policy selected.", MT_error);
+					webadmin.addMessage(q, msgInvalidPolicy, MT_error);
 				}
 				else {
 					policy = q.request.getVariable("policy")$","$policy;
 					if (idx == -1)
 					{
 						webadmin.worldinfo.game.accesscontrol.IPPolicies.AddItem(policy);
-						webadmin.addMessage(q, "Added IP policy: "$policy);
+						webadmin.addMessage(q, msgAddedPolicy@policy);
 					}
 					else {
 						if (idx < -1 || idx > webadmin.worldinfo.game.accesscontrol.IPPolicies.length)
@@ -262,7 +275,7 @@ function handleIPPolicy(WebAdminQuery q)
 							idx = webadmin.worldinfo.game.accesscontrol.IPPolicies.length;
 						}
 						webadmin.worldinfo.game.accesscontrol.IPPolicies[idx] = policy;
-						webadmin.addMessage(q, "Updated IP policy: "$policy);
+						webadmin.addMessage(q, msdUpdatedPolicy@policy);
 					}
 					webadmin.worldinfo.game.accesscontrol.SaveConfig();
 				}
@@ -323,7 +336,7 @@ function handleBans(WebAdminQuery q)
 		action -= " ";
 		if (action != string(int(action)))
 		{
-			webadmin.addMessage(q, "<code>"$action$"</code> is not a valid ID", MT_error);
+			webadmin.addMessage(q, repl(msgNoValidId, "%s", "<code>"$action$"</code>"), MT_error);
 		}
 		else {
 			class'OnlineSubsystem'.static.StringToUniqueNetId(action, NewBanInfo.BannedID);
@@ -331,7 +344,7 @@ function handleBans(WebAdminQuery q)
 			NewBanInfo.TimeStamp = timestamp();
 			webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.AddItem(NewBanInfo);
 			webadmin.worldinfo.game.accesscontrol.SaveConfig();
-			webadmin.addMessage(q, "Added ban for UniqueID: "$action);
+			webadmin.addMessage(q, msgAddedBanId@action);
 		}
 	}
 
@@ -382,14 +395,14 @@ function handleHashBans(WebAdminQuery q)
 		action -= " ";
 		if (action == "0")
 		{
-			webadmin.addMessage(q, "<code>"$action$"</code> is not a valid client hash", MT_error);
+			webadmin.addMessage(q, repl(msgNoValidHash, "%s", "<code>"$action$"</code>"), MT_error);
 		}
 		else {
 			NewBanInfo.BannedHash = action;
 			NewBanInfo.playername = q.request.getVariable("playername");
 			webadmin.worldinfo.game.accesscontrol.BannedHashes.AddItem(NewBanInfo);
 			webadmin.worldinfo.game.accesscontrol.SaveConfig();
-			webadmin.addMessage(q, "Added ban for hash: "$action);
+			webadmin.addMessage(q, msgBannedHash@action);
 		}
 	}
 
@@ -422,7 +435,7 @@ function handleSessionBans(WebAdminQuery q)
 			sbi = webadmin.worldinfo.game.accesscontrol.SessionBans[i];
 			webadmin.worldinfo.game.accesscontrol.SessionBans.remove(i, 1);
 			unid = sbi.BanID;
-			webadmin.addMessage(q, "Removed session ban for UniqueID: "$class'OnlineSubsystem'.static.UniqueNetIdToString(unid)$"; Hash: "$sbi.BanHash$"; IP: "$sbi.BanIP);
+			webadmin.addMessage(q, repl(repl(repl(msgRemovedSessionBan, "%1", class'OnlineSubsystem'.static.UniqueNetIdToString(unid)), "%2", sbi.BanHash), "%3", sbi.BanIP));
 		}
 	}
 
@@ -710,7 +723,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 			{
 				if (IAdvWebAdminSettings(settings).saveSettings(q.request, webadmin.getMessagesObject(q)))
 				{
-					webadmin.addMessage(q, "Settings saved.");
+					webadmin.addMessage(q, msgSettingsSaved);
 				}
 			}
 			else {
@@ -720,7 +733,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 					UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
 				}
 				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
-				webadmin.addMessage(q, "Settings saved.");
+				webadmin.addMessage(q, msgSettingsSaved);
 			}
 		}
 		if (settingsRenderer == none)
@@ -738,7 +751,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 		}
 	}
 	else if (editGametype != none) {
-		webadmin.addMessage(q, "Unable to load a settings information for this game type.", MT_Warning);
+		webadmin.addMessage(q, msgCantSaveSettings, MT_Warning);
 	}
 
  	webadmin.sendPage(q, "default_settings_gametypes.html");
@@ -794,7 +807,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 			{
 				if (IAdvWebAdminSettings(settings).saveSettings(q.request, webadmin.getMessagesObject(q)))
 				{
-					webadmin.addMessage(q, "Settings saved.");
+					webadmin.addMessage(q, msgSettingsSaved);
 				}
 			}
 			else {
@@ -804,7 +817,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 					UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
 				}
 				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
-				webadmin.addMessage(q, "Settings saved.");
+				webadmin.addMessage(q, msgSettingsSaved);
 			}
 			// server name change takes immediate effect
 			if (WebAdmin.WorldInfo.Game.GameReplicationInfo != none	&& WebAdmin.WorldInfo.Game.GameSettings != none
@@ -832,7 +845,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 	}
 	else {
 		`Log("Failed to load the general settings class "$GeneralSettingsClass,,'WebAdmin');
-		webadmin.addMessage(q, "Unable to load settings.", MT_Warning);
+		webadmin.addMessage(q, msgCantLoadSettings, MT_Warning);
 	}
 
  	webadmin.sendPage(q, "default_settings_general.html");
@@ -848,12 +861,12 @@ function handleSettingsPasswords(WebAdminQuery q)
 		pw2 = q.request.getVariable("gamepw2");
 		if (pw1 != pw2)
 		{
-			webadmin.addMessage(q, "Game password and confirmation do not match", MT_Error);
+			webadmin.addMessage(q, msgGamePWError, MT_Error);
 		}
 		else {
 			webadmin.WorldInfo.Game.AccessControl.SetGamePassword(pw1);
 			webadmin.WorldInfo.Game.AccessControl.SaveConfig();
-			webadmin.addMessage(q, "Game password updated");
+			webadmin.addMessage(q, msgGamePWSaved);
 		}
 	}
 	else if (action ~= "adminpassword")
@@ -862,16 +875,16 @@ function handleSettingsPasswords(WebAdminQuery q)
 		pw2 = q.request.getVariable("adminpw2");
 		if (pw1 != pw2)
 		{
-			webadmin.addMessage(q, "Admin password and confirmation do not match", MT_Error);
+			webadmin.addMessage(q, msgAdminPWError, MT_Error);
 		}
 		else if (len(pw1) == 0)
 		{
-			webadmin.addMessage(q, "Admin password can not be empty", MT_Error);
+			webadmin.addMessage(q, msgAdminPWEmpty, MT_Error);
 		}
 		else {
 			webadmin.WorldInfo.Game.AccessControl.SetAdminPassword(pw1);
 			webadmin.WorldInfo.Game.AccessControl.SaveConfig();
-			webadmin.addMessage(q, "Admin password updated");
+			webadmin.addMessage(q, msgAdminPWSaved);
 		}
 	}
 	q.response.subst("has.gamepassword", `HTMLEscape(webadmin.WorldInfo.Game.AccessControl.RequiresPassword()));
@@ -953,13 +966,13 @@ function handleSettingsMutators(WebAdminQuery q)
 			{
 				if (IAdvWebAdminSettings(settings).saveSettings(q.request, webadmin.getMessagesObject(q)))
 				{
-					webadmin.addMessage(q, "Settings saved.");
+					webadmin.addMessage(q, msgSettingsSaved);
 				}
 			}
 			else {
 				applySettings(settings, q.request);
 				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
-				webadmin.addMessage(q, "Settings saved.");
+				webadmin.addMessage(q, msgSettingsSaved);
 			}
 		}
 		if (settingsRenderer == none)
@@ -978,7 +991,7 @@ function handleSettingsMutators(WebAdminQuery q)
 		q.response.subst("settings", webadmin.include(q, "default_settings_mutators.inc"));
 	}
 	else if (editMutator != none) {
-		webadmin.addMessage(q, "Unable to load a settings information for this mutator.", MT_Warning);
+		webadmin.addMessage(q, msgCantLoadSettings, MT_Warning);
 	}
 
 	webadmin.sendPage(q, "default_settings_mutators.html");
@@ -1073,7 +1086,7 @@ function handleMapList(WebAdminQuery q)
 			{
 				UTGame(webadmin.WorldInfo.Game).GameSpecificMapCycles = class'UTGame'.default.GameSpecificMapCycles;
 			}
-			webadmin.addMessage(q, "Map cycle saved.");
+			webadmin.addMessage(q, msgMapCycleSaved);
 		}
 
 		substvar = "";
@@ -1095,7 +1108,7 @@ function handleMapList(WebAdminQuery q)
 		q.response.subst("maplist_editor", webadmin.include(q, "default_maplist_editor.inc"));
 	}
 	else {
-		webadmin.addMessage(q, "Unable to load the selected game type.", MT_Warning);
+		webadmin.addMessage(q, msgCantLoadGT, MT_Warning);
 	}
  	webadmin.sendPage(q, "default_maplist.html");
 }
@@ -1138,7 +1151,7 @@ function handleMapListAdditional(WebAdminQuery q)
 				}
 				class'WebAdminUtils'.static.getDateTime(datetime);
 				cycle.id = "imported"$i@datetime.year$datetime.month$datetime.day$datetime.hour$datetime.minute$datetime.second;
-				cycle.FriendlyName = "Imported map cycle";
+				cycle.FriendlyName = msgImportedMapList;
 				cycle.cycle = class'UTGame'.default.GameSpecificMapCycles[i];
 				additionalML.mapCycles.AddItem(cycle);
 			}
@@ -1155,13 +1168,13 @@ function handleMapListAdditional(WebAdminQuery q)
 		gi = class<GameInfo>(DynamicLoadObject(q.request.getVariable("gametype"), class'class', true));
 		if (gi == none)
 		{
-			webadmin.addMessage(q, "Invalid gametype selected.", MT_Error);
+			webadmin.addMessage(q, msgInvalidMaplist, MT_Error);
 		}
 		else {
 			currentCycle.FriendlyName = q.request.getVariable("name");
 			if (Len(currentCycle.FriendlyName) == 0)
 			{
-				currentCycle.FriendlyName = "Untitled";
+				currentCycle.FriendlyName = Untitled;
 			}
 			currentCycle.cycle.GameClassName = gi.name;
 			currentCycle.cycle.maps.length = 0;
@@ -1177,10 +1190,10 @@ function handleMapListAdditional(WebAdminQuery q)
 		currentCycleIdx = additionalML.mapCycles.find('id', editCycleId);
 		if (currentCycleIdx == INDEX_NONE)
 		{
-			webadmin.addMessage(q, "Unable to find the map cycle", MT_Error);
+			webadmin.addMessage(q, msgCantFindMapCycle, MT_Error);
 		}
 		else {
-			webadmin.addMessage(q, "Map cycle <em>"$`HTMLEscape(additionalML.mapCycles[currentCycleIdx].FriendlyName)$"</em> deleted.");
+			webadmin.addMessage(q, repl(msgCycleDeleted, "%s", "<em>"$`HTMLEscape(additionalML.mapCycles[currentCycleIdx].FriendlyName)$"</em>");
 			additionalML.mapCycles.remove(currentCycleIdx, 1);
 			additionalML.SaveConfig();
 			currentCycleIdx = INDEX_NONE;
@@ -1218,7 +1231,7 @@ function handleMapListAdditional(WebAdminQuery q)
 			}
 			additionalML.mapCycles[currentCycleIdx] = currentCycle;
 			additionalML.SaveConfig();
-			webadmin.addMessage(q, "Map cycle <em>"$`HTMLEscape(currentCycle.FriendlyName)$"</em> saved");
+			webadmin.addMessage(q, repl(msgCycleSaved, "%s", "<em>"$`HTMLEscape(currentCycle.FriendlyName)$"</em>");
 		}
 		if (postAction ~= "activate")
 		{
@@ -1233,7 +1246,7 @@ function handleMapListAdditional(WebAdminQuery q)
 			{
 				UTGame(webadmin.WorldInfo.Game).GameSpecificMapCycles = class'UTGame'.default.GameSpecificMapCycles;
 			}
-			webadmin.addMessage(q, "Map cycle activated for the game type "$currentCycle.cycle.GameClassName);
+			webadmin.addMessage(q, repl(msgCycleActivated, "%s", currentCycle.cycle.GameClassName));
 		}
 
 		q.response.subst("editmaplist.friendlyname", `HTMLEscape(class'WebAdminUtils'.static.getLocalized(currentCycle.FriendlyName)));

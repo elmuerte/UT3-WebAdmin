@@ -15,6 +15,8 @@ v1.15.1 - 2009-04-?? (for UT3 2.1)
   Note: Because the tanslit table is stored in a localization file you need to
   have the appropriate Language set in UTEngine.ini or you have to manually
   copy the table to WebAdmin.int
+- made all text localized, people can now localize the WebAdmin if they feel
+  like it.
 
 v1.14.0 - 2009-04-05 (for UT3 2.0)
 v1.14.1 - 2009-04-05 (for UT3 2.1)

@@ -105,6 +105,15 @@ var NewsDesk newsDesk;
  */
 var config array<string> notes;
 
+//!localization
+var localized string menuCurrent, menuCurrentDesc, menuPlayers, menuPlayersDesc,
+	menuChat, menuChatDesc, menuChange, menuChangeDesc, menuConsole, menuConsoleDesc,
+	menuBots, menuBotsDesc, NotesSaved, msgPlayerNotFound, msgNoHumanPlayer,
+	msgVoiceMuted, msgVoiceUnmuted, msgTextMuted, msgTextUnmuted, msgCantBanAdmin,
+	msgSessionBanned, msgCantKickAdmin, msgPlayerRemoved, msgTextMute, msgTextUnmute,
+	msgExecDisabled, msgChangingGame, msgAddingBots, msgRemovedBots, msgAddedBots,
+	msgRostedSaved;
+
 function init(WebAdmin webapp)
 {
 	local class<AdminCommandHandler> achc;
@@ -193,23 +202,20 @@ function bool producesXhtml()
 
 function registerMenuItems(WebAdminMenu menu)
 {
-	menu.addMenu("/current", "Current Game", self, "The current game status.", -100);
+	menu.addMenu("/current", menuCurrent, self, menuCurrentDesc, -100);
 	menu.addMenu("/current/data", "", self);
-	menu.addMenu("/current/players", "Players", self, "Manage the players currently on the server.");
+	menu.addMenu("/current/players", menuPlayers, self, menuPlayersDesc);
 	menu.addMenu("/current/players/data", "", self);
-	menu.addMenu("/current/chat", "Chat console", self, "This console allows you to chat with the players on the server.");
+	menu.addMenu("/current/chat", menuChat, self, menuChatDesc);
 	menu.addMenu("/current/chat/data", "", self);
-	menu.addMenu("/current/change", "Change Game", self, "Change the current game.");
+	menu.addMenu("/current/change", menuChange, self, menuChangeDesc);
 	menu.addMenu("/current/change/data", "", self);
 	menu.addMenu("/current/change/check", "", self);
 	if (bConsoleEnabled)
 	{
-		menu.addMenu("/console", "Management Console", self,
-			"Execute console commands as if they are directly entered on the console of the server."$
-			"You may not have access to the same commands as you would when logged in as admin when playing on the server."
-		);
+		menu.addMenu("/console", menuConsole, self, menuConsoleDesc);
 	}
-	menu.addMenu("/current/bots", "Bots", self, "Add or remove bots from the current game.");
+	menu.addMenu("/current/bots", menuBots, self, menuBotsDesc);
 }
 
 function bool handleQuery(WebAdminQuery q)
@@ -292,7 +298,7 @@ function handleCurrentData(WebAdminQuery q)
 			notes[notes.length] = tmp;
 		}
 		SaveConfig();
-		webadmin.addMessage(q, "Notes saved");
+		webadmin.addMessage(q, NotesSaved);
 	}
 
 	if (q.request.getVariable("ajax") == "1")
@@ -579,7 +585,7 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 		}
 		if (PRI == none)
 		{
-			webadmin.addMessage(q, "Unable to find the requested player.", MT_Warning);
+			webadmin.addMessage(q, msgPlayerNotFound, MT_Warning);
 		}
 		else {
 			PC = PlayerController(PRI.Owner);
@@ -589,7 +595,7 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 			}
 			if (PC == none)
 			{
-				webadmin.addMessage(q, "No human player associated with this player.", MT_Warning);
+				webadmin.addMessage(q, msgNoHumanPlayer, MT_Warning);
 			}
 			else {
 				if (action ~= "mutevoice")
@@ -598,7 +604,7 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 					{
 						otherPC.ServerMutePlayer(PC.PlayerReplicationInfo.UniqueId);
 					}
-					webadmin.addMessage(q, "Player "$PRI.PlayerName$"'s voice has been muted for everybody.");
+					webadmin.addMessage(q, repl(msgVoiceMuted, "%s", PRI.PlayerName));
 					return 0;
 				}
 				else if (action ~= "unmutevoice")
@@ -607,7 +613,7 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 					{
 						otherPC.ServerUnMutePlayer(PC.PlayerReplicationInfo.UniqueId);
 					}
-					webadmin.addMessage(q, "Player "$PRI.PlayerName$"'s voice has been unmuted for everybody.");
+					webadmin.addMessage(q, repl(msgVoiceUnmuted, "%s", PRI.PlayerName));
 					return 0;
 				}
 				else if (action ~= "toggletext")
@@ -616,7 +622,8 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 					if (UTPC != none)
 					{
 						UTPC.bServerMutedText = !UTPC.bServerMutedText;
-						webadmin.addMessage(q, "Player "$PRI.PlayerName$" has been "$(UTPC.bServerMutedText?"muted":"unmuted")$".");
+						if (UTPC.bServerMutedText) webadmin.addMessage(q, repl(msgTextMuted, "%s", PRI.PlayerName));
+						else webadmin.addMessage(q, repl(msgTextUnmuted, "%s", PRI.PlayerName));
 						return (UTPC.bServerMutedText?2:3);
 					}
 					return 0;
@@ -641,22 +648,22 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 				{
 					if (webadmin.WorldInfo.Game.AccessControl.IsAdmin(PC))
 					{
-						webadmin.addMessage(q, "Unable to session ban the player "$PRI.PlayerName$". Logged in admins can not be removed.", MT_Error);
+						webadmin.addMessage(q, repl(msgCantBanAdmin, "%s", PRI.PlayerName), MT_Error);
 						return 0;
 					}
 					else {
 						webadmin.WorldInfo.Game.AccessControl.SessionBanPlayer(PC);
-						webadmin.addMessage(q, "Player "$PRI.PlayerName$" was banned for this session.");
+						webadmin.addMessage(q, repl(msgSessionBanned, "%s", PRI.PlayerName));
 						return 1;
 					}
 				}
 				`endif
 				if (!webadmin.WorldInfo.Game.AccessControl.KickPlayer(PC, webadmin.WorldInfo.Game.AccessControl.DefaultKickReason))
 				{
-					webadmin.addMessage(q, "Unable to kick the player "$PRI.PlayerName$". Logged in admins can not be kicked.", MT_Error);
+					webadmin.addMessage(q, repl(msgCantKickAdmin, "%s", PRI.PlayerName), MT_Error);
 				}
 				else {
-					webadmin.addMessage(q, "Player "$PRI.PlayerName$" was removed from the server.");
+					webadmin.addMessage(q, repl(msgPlayerRemoved, "%s", PRI.PlayerName));
 					return 1;
 				}
 			}
@@ -696,10 +703,10 @@ function handleCurrentPlayers(WebAdminQuery q)
 		`endif
 		if (UTPlayerController(PC) != none && UTPlayerController(PC).bServerMutedText)
 		{
-			q.response.subst("player.mutetext", "Text Unmute");
+			q.response.subst("player.mutetext", msgTextUnmute);
 		}
 		else {
-			q.response.subst("player.mutetext", "Text Mute");
+			q.response.subst("player.mutetext", msgTextMute);
 		}
 		players $= webadmin.include(q, "current_players_row.inc");
 	}
@@ -726,10 +733,10 @@ function handleCurrentPlayersData(WebAdminQuery q)
 	switch (handleCurrentPlayersAction(q))
 	{
 		case 3: // is NOT muted
-			q.response.SendText("<text playerkey=\""$q.request.getVariable("playerkey")$"\" label=\"Text Mute\"/>");
+			q.response.SendText("<text playerkey=\""$q.request.getVariable("playerkey")$"\" label=\""$msgTextMute$"\"/>");
 			break;
 		case 2: // is muted
-			q.response.SendText("<text playerkey=\""$q.request.getVariable("playerkey")$"\" label=\"Text Unmute\"/>");
+			q.response.SendText("<text playerkey=\""$q.request.getVariable("playerkey")$"\" label=\""$msgTextUnmute$"\"/>");
 			break;
 		case 1:
 			q.response.SendText("<kicked playerkey=\""$q.request.getVariable("playerkey")$"\"/>");
@@ -954,7 +961,7 @@ function handleConsole(WebAdminQuery q)
 		}
 		else {
 			q.response.subst("console.command", `HTMLEscape(cmd));
-			q.response.subst("console.results", `HTMLEscape("Execution of this command has been disabled."));
+			q.response.subst("console.results", `HTMLEscape(msgExecDisabled));
 			q.response.subst("console.visible", cssVisible);
 		}
 	}
@@ -1054,7 +1061,7 @@ function handleCurrentChange(WebAdminQuery q)
  			}
  		}
 
-		webadmin.addMessage(q, "Changing the game. This could take a little while...");
+		webadmin.addMessage(q, msgChangingGame);
 		q.response.subst("newurl", `HTMLEscape(substvar));
 		webadmin.sendPage(q, "current_changing.html");
 
@@ -1372,7 +1379,7 @@ function handleBots(WebAdminQuery q)
 		if (i > 0)
 		{
 			UTGame(webadmin.WorldInfo.Game).AddBots(i);
-			webadmin.addMessage(q, "Attempted to add "$i$" bots. It might take a little while before they have all been spawned.");
+			webadmin.addMessage(q, repl(msgAddingBots, "%d", string(i)));
 		}
 	}
 
@@ -1411,7 +1418,7 @@ function handleBots(WebAdminQuery q)
 		}
 		if (len(sv1) > 0)
 		{
-			webadmin.addMessage(q, "Removed bots: "$sv1);
+			webadmin.addMessage(q, msgRemovedBots@sv1);
 		}
 		bots.length = 0;
 
@@ -1436,7 +1443,7 @@ function handleBots(WebAdminQuery q)
 		}
 		if (len(sv1) > 0)
 		{
-			webadmin.addMessage(q, "Added bots: "$sv1);
+			webadmin.addMessage(q, msgAddedBots@sv1);
 		}
 	}
 	else if (sv1 ~= "roster")
@@ -1465,7 +1472,7 @@ function handleBots(WebAdminQuery q)
 			}
 			UTGame(webadmin.worldinfo.Game).ActiveBots = activeBots;
 		}
-		webadmin.addMessage(q, "Roster saved.");
+		webadmin.addMessage(q, msgRostedSaved);
 	}
 
 	sv1 = "";

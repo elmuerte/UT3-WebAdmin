@@ -128,6 +128,13 @@ var string SkinData;
  */
 var globalconfig int sessionOctetValidation;
 
+
+//!localization
+var localized string menuLogout, menuLogoutDesc, AccessDenied, msgNoPrivs,
+	msgNoStartPage, msgLogoutNotice, msgUnableToLogout, error404, msgNotFound,
+	msgSessionCreateFail, msgWrongAuthCookie, error403, error401, pageLogin,
+	pageLoginDesc, pageAboutTitle, pageAboutDesc, pageCreditsTitle, msgUnknownDataType;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -210,7 +217,7 @@ function init()
 	menu.addMenu("/about", "", none,, MaxInt-1);
 	menu.addMenu("/credits", "", none,, MaxInt-1);
 	menu.addMenu("/data", "", none,, MaxInt-1);
-	menu.addMenu("/logout", "Log out", none, "Log out from the webadmin and clear all authentication information.", MaxInt);
+	menu.addMenu("/logout", menuLogout, none, menuLogoutDesc, MaxInt);
 
 	if (len(AuthenticationClass) != 0)
 	{
@@ -468,7 +475,7 @@ function Query(WebRequest Request, WebResponse Response)
 	if (wamenu == none)
 	{
 		Response.HTTPResponse("HTTP/1.1 403 Forbidden");
-		pageGenericError(currentQuery, "You do not have the privileges to view this page.", "Access Denied");
+		pageGenericError(currentQuery, msgNoPrivs, AccessDenied);
 		return;
 	}
 	response.Subst("navigation.menu", currentQuery.session.getString("WebAdminMenu.rendered"));
@@ -480,7 +487,7 @@ function Query(WebRequest Request, WebResponse Response)
 			Response.Redirect(path$startpage);
 			return;
 		}
-		pageGenericError(currentQuery, "No starting page.");
+		pageGenericError(currentQuery, msgNoStartPage);
 		return;
 	}
 	else if (request.URI == "/logout")
@@ -495,14 +502,14 @@ function Query(WebRequest Request, WebResponse Response)
 			{
 				response.Subst("navigation.menu", "");
 				response.headers[response.headers.length] = "Set-Cookie: forceAuthentication=1; Path="$path$"/";
-				addMessage(currentQuery, "To properly log out you will need to close the webbrowser to clear the saved authentication information.", MT_Warning);
+				addMessage(currentQuery, msgLogoutNotice, MT_Warning);
 				pageGenericInfo(currentQuery, "");
 				return;
 			}
 			Response.Redirect(path$"/");
 			return;
 		}
-		pageGenericError(currentQuery, "Unable to log out.");
+		pageGenericError(currentQuery, msgUnableToLogout);
 		return;
 	}
 	else if (request.URI == "/about")
@@ -552,11 +559,11 @@ function Query(WebRequest Request, WebResponse Response)
 	if (menu.getHandlerFor(request.URI, title, description) == none)
 	{
 		Response.HTTPResponse("HTTP/1.1 404 Not Found");
-		pageGenericError(currentQuery, "The requested page was not found.", "Error 404 - Page not found");
+		pageGenericError(currentQuery, msgNotFound, error404);
 	}
 	else {
 		Response.HTTPResponse("HTTP/1.1 403 Forbidden");
-		pageGenericError(currentQuery, "You do not have the privileges to view this page.", "Access Denied");
+		pageGenericError(currentQuery, msgNoPrivs, AccessDenied);
 	}
 }
 
@@ -620,7 +627,7 @@ protected function bool getSession(out WebAdminQuery q)
 	}
 	if (q.session == none)
 	{
-		pageGenericError(q, "Unable to create a session. See the log file for details."); // TODO: localize
+		pageGenericError(q, msgSessionCreateFail); // TODO: localize
 		return false;
 	}
 	q.response.Subst("sessionid", q.session.getId());
@@ -771,7 +778,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 			// unset cookie
 			q.response.headers[q.response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
 			q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
-			addMessage(q, "Authentication cookie does not contain correct information.", MT_Error);
+			addMessage(q, msgWrongAuthCookie, MT_Error);
 			rememberCookie = "";
 		}
 		pageAuthentication(q);
@@ -920,20 +927,20 @@ function pageAuthentication(WebAdminQuery q)
 	if (q.request.getVariable("ajax") == "1")
 	{
 		q.response.HTTPResponse("HTTP/1.1 403 Forbidden");
-		pageGenericError(q, "Unauthorized access.", "Error 403 - Forbidden");
+		pageGenericError(q, msgNoPrivs, error403);
 		return;
 	}
 	if (bHttpAuth)
 	{
 		q.response.HTTPResponse("HTTP/1.1 401 Unauthorized");
-		pageGenericError(q, "Unauthorized access. You need to log in.", "Error 401 - Unauthorized");
+		pageGenericError(q, msgNoPrivs, error401);
 		return;
 	}
 	if (q.acceptsXhtmlXml) q.response.AddHeader("Content-Type: application/xhtml+xml");
 	token = Right(ToHex(Rand(MaxInt)), 4)$Right(ToHex(Rand(MaxInt)), 4);
 	q.session.putString("AuthFormToken", token);
-	q.response.Subst("page.title", "Login");
-	q.response.Subst("page.description", "Log in using the administrator username and password. Cookies must be enabled for this site.");
+	q.response.Subst("page.title", pageLogin);
+	q.response.Subst("page.description", pageLoginDesc);
 	q.response.Subst("token", token);
 	sendPage(q, "login.html");
 }
@@ -943,8 +950,8 @@ function pageAuthentication(WebAdminQuery q)
  */
 function pageAbout(WebAdminQuery q)
 {
-	q.response.Subst("page.title", "About");
-	q.response.Subst("page.description", "Various information about the UT3 WebAdmin");
+	q.response.Subst("page.title", pageAboutTitle);
+	q.response.Subst("page.description", pageAboutDesc);
 	q.response.Subst("engine.version", worldinfo.EngineVersion);
 	q.response.Subst("engine.netversion", worldinfo.MinNetVersion);
 	q.response.Subst("game.version", Localize("UTUIFrontEnd", "VersionText", "utgame"));
@@ -964,7 +971,7 @@ function pageAbout(WebAdminQuery q)
  */
 function pageCredits(WebAdminQuery q)
 {
-	q.response.Subst("page.title", "Credits");
+	q.response.Subst("page.title", pageCreditsTitle);
 	q.response.Subst("credits", Localize("Credits", "01", "UTGameCredits"));
 	sendPage(q, "credits.html");
 }
@@ -1032,7 +1039,7 @@ function pageData(WebAdminQuery q)
  		}
 	}
 	else {
-		addMessage(q, "Requested unknown data type: "$tmp, MT_Error);
+		addMessage(q, msgUnknownDataType@tmp, MT_Error);
 	}
 
 	q.response.SendText("<messages><![CDATA[");
@@ -1058,5 +1065,26 @@ defaultproperties
 	startpage="/current"
 	QueryHandlers[0]="WebAdmin.QHCurrent"
 	QueryHandlers[1]="WebAdmin.QHDefaults"
+
+	//!localization
+	menuLogout="Log out"
+	menuLogoutDesc="Log out from the webadmin and clear all authentication information."
+	AccessDenied="Access Denied"
+	msgNoPrivs="You do not have the privileges to view this page."
+	msgNoStartPage="No starting page."
+	msgLogoutNotice="To properly log out you will need to close the webbrowser to clear the saved authentication information."
+	msgUnableToLogout="Unable to log out."
+	error404="Error 404 - Page not found"
+	error403="Error 403 - Forbidden"
+	error401="Error 401 - Unauthorized"
+	msgNotFound="The requested page was not found."
+	msgSessionCreateFail="Unable to create a session. See the log file for details."
+	msgWrongAuthCookie="Authentication cookie does not contain correct information."
+	pageLogin="Login"
+	pageLoginDesc="Log in using the administrator username and password. Cookies must be enabled for this site."
+	pageAboutTitle="About"
+	pageAboutDesc="Various information about the UT3 WebAdmin"
+	pageCreditsTitle="Credits"
+	msgUnknownDataType="Requested unknown data type:"
 	`endif
 }

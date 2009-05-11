@@ -17,11 +17,16 @@ class GeneralSettings extends WebAdminSettings;
 `endif
 `endif
 
+//!localization
+var localized string grpServer, grpConnection, grpCheatDetection, grpGame,
+	grpAdministration, grpPlayers, grpVoting;
+
 function string GetSpecialValue(name PropertyName)
 {
 	if (PropertyName == `{WA_GROUP_SETTINGS})
 	{
-		return "Server Information=0,10;Connection=10,20;Cheat Detection=20,30;Game=30,40;Administration=40,50;Players=50,60;Voting=60,80";
+		return grpServer$"=0,10;"$grpConnection$"=10,20;"$grpCheatDetection$"=20,30;"$
+			grpGame$"=30,40;"$grpAdministration$"=40,50;"$grpPlayers$"=50,60;"$grpVoting$"=60,80";
 	}
 	return super.GetSpecialValue(PropertyName);
 }

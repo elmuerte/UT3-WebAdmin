@@ -23,6 +23,9 @@ struct UserRecord
 };
 var array<UserRecord> records;
 
+//!localization
+var localized string InvalidCreds, NoAdmins;
+
 function init(WorldInfo wi)
 {
 	worldinfo = wi;
@@ -137,7 +140,7 @@ function bool removeAdminRecord(string username)
 	}
 	data = records[idx].data;
 	data.ClearConfig();
-	
+
 	records.remove(idx, 1);
 	for (idx = users.length-1; idx >= 0; idx--)
 	{
@@ -171,10 +174,10 @@ function IWebAdminUser authenticate(string username, string password, out string
 	adminData = getRecord(username);
 	if (adminData == none)
     {
-        errorMsg = "Invalid credentials.";
+        errorMsg = InvalidCreds;
         if (records.length == 0)
         {
-        	errorMsg @= "No administrators have been created. Please update the configuration.";
+        	errorMsg @= NoAdmins;
         }
         return none;
     }
@@ -187,7 +190,7 @@ function IWebAdminUser authenticate(string username, string password, out string
 		users.AddItem(user);
 		return user;
 	}
-	errorMsg = "Invalid credentials.";
+	errorMsg = InvalidCreds;
 	return none;
 }
 
@@ -204,14 +207,14 @@ function bool validate(string username, string password, out string errorMsg)
 	adminData = getRecord(username);
 	if (adminData == none)
     {
-        errorMsg = "Invalid credentials.";
+        errorMsg = InvalidCreds;
         return false;
     }
     if (adminData.matchesPassword(password))
 	{
 		return true;
 	}
-	errorMsg = "Invalid credentials.";
+	errorMsg = InvalidCreds;
 	return false;
 }
 

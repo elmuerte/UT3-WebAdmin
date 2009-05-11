@@ -21,6 +21,9 @@ var array<BasicWebAdminUser> users;
  */
 var config array<string> RequireUsername;
 
+//!localization
+var localized string NoAccessControl, InvalidCreds, NoPassSet;
+
 function init(WorldInfo wi)
 {
 	local int i;
@@ -53,12 +56,12 @@ function IWebAdminUser authenticate(string username, string password, out string
 	if (ac == none)
 	{
 		`Log("No AccessControl instance.",,'WebAdminAuth');
-		errorMsg = "No AccessControl instance.";
+		errorMsg = NoAccessControl;
 		return none;
 	}
 	if (RequireUsername.length > 0 && RequireUsername.find(username) == INDEX_NONE)
     {
-        errorMsg = "Invalid credentials.";
+        errorMsg = InvalidCreds;
         return none;
     }
 	if (ac.ValidLogin(username, password))
@@ -69,10 +72,10 @@ function IWebAdminUser authenticate(string username, string password, out string
 		users.AddItem(user);
 		return user;
 	}
-	errorMsg = "Invalid credentials.";
+	errorMsg = InvalidCreds;
 	if (len(worldinfo.game.consolecommand("get engine.accesscontrol adminpassword", false)) == 0)
 	{
-		errorMsg @= "No administrator password has been set for this server. Add an entry \"AdminPassword\" in the section \"[Engine.AccessControl]\" in the UTGame.ini configuration file.";
+		errorMsg @= NoPassSet;
 	}
 	return none;
 }
@@ -88,14 +91,14 @@ function bool validate(string username, string password, out string errorMsg)
 {
 	if (RequireUsername.length > 0 && RequireUsername.find(username) == INDEX_NONE)
     {
-        errorMsg = "Invalid credentials.";
+        errorMsg = InvalidCreds;
         return false;
     }
 	if (ac.ValidLogin(username, password))
 	{
 		return true;
 	}
-	errorMsg = "Invalid credentials.";
+	errorMsg = InvalidCreds;
 	return false;
 }
 
