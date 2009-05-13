@@ -1,4 +1,7 @@
 [WebAdmin]
+;;Defines a subdirectory that contains localized HTML files, will be used instead
+;;of the files in the Web/WebAdmin directory.
+;HTMLSubDirectory=INT
 menuLogout="Log out"
 menuLogoutDesc="Log out from the webadmin and clear all authentication information."
 AccessDenied="Access Denied"

@@ -16,7 +16,9 @@ v1.15.1 - 2009-04-?? (for UT3 2.1)
   have the appropriate Language set in UTEngine.ini or you have to manually
   copy the table to WebAdmin.int
 - made all text localized, people can now localize the WebAdmin if they feel
-  like it.
+  like it. To localize the HTML files define the HTMLSubDirectory localized
+  variable, and create the proper files in the Web/WebAdmin/??? directory.
+  Note: the <!-- #include ... --> files are not transparently handled.
 
 v1.14.0 - 2009-04-05 (for UT3 2.0)
 v1.14.1 - 2009-04-05 (for UT3 2.1)

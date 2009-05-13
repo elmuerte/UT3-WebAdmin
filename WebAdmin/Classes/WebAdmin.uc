@@ -135,6 +135,12 @@ var localized string menuLogout, menuLogoutDesc, AccessDenied, msgNoPrivs,
 	msgSessionCreateFail, msgWrongAuthCookie, error403, error401, pageLogin,
 	pageLoginDesc, pageAboutTitle, pageAboutDesc, pageCreditsTitle, msgUnknownDataType;
 
+/**
+ * Defines a subdirectory who's files will override the standard files. Used for
+ * localized files.
+ */
+var localized string HTMLSubDirectory;
+
 function init()
 {
 	local class/*<IWebAdminAuth>*/ authClass;
@@ -881,6 +887,10 @@ function string renderMessages(WebAdminQuery q)
  */
 function string include(WebAdminQuery q, string file)
 {
+	if ((len(HTMLSubDirectory) > 0) && q.response.FileExists(Path $ "/" $ HTMLSubDirectory $ "/" $ file))
+	{
+		return q.response.LoadParsedUHTM(Path $ "/" $ HTMLSubDirectory $ "/" $ file);
+	}
 	return q.response.LoadParsedUHTM(Path $ "/" $ file);
 }
 
@@ -890,7 +900,13 @@ function string include(WebAdminQuery q, string file)
 function sendPage(WebAdminQuery q, string file)
 {
 	q.response.Subst("messages", renderMessages(q));
-	q.response.IncludeUHTM(Path $ "/" $ file);
+	if ((len(HTMLSubDirectory) > 0) && q.response.FileExists(Path $ "/" $ HTMLSubDirectory $ "/" $ file))
+	{
+		q.response.IncludeUHTM(Path $ "/" $ HTMLSubDirectory $ "/" $ file);
+	}
+	else {
+		q.response.IncludeUHTM(Path $ "/" $ file);
+	}
 	q.response.ClearSubst();
 }
 
