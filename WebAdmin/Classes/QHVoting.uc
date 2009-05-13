@@ -40,6 +40,14 @@ struct MapList
  */
 var array<MapList> maplists;
 
+//!localized
+var localized string msgNoMaplistManager, menuVoting, menuVotingDesc, menuProfiles,
+	menuProfilesDesc, menuMapList, menuMapListDesc, menuMuts, menuMutsDesc,
+	msgCreatedML, errCreateML, errDupMLName, errEmplyMLName, msgRemovedML,
+	msgNoMaplist, setMapReplyLabel, setMapReplyTooltip, errDupProfile, msgCreatedProfile,
+	msgRenamedProfile, msgProfileSaved, errCantFindProfile, msgProfileDeleted,
+	msgSettingsSaved;
+
 /**
  * Called when the WebAdmin creates and initializes this query handler.
  */
@@ -88,7 +96,7 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/voting/maplist":
 			if (MapListManager == none) {
-				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+				webadmin.addMessage(q, msgNoMaplistManager, MT_Error);
 				webadmin.sendPage(q, "message.html");
 				return true;
 			}
@@ -96,7 +104,7 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/voting/mutators":
 			if (MapListManager == none) {
-				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+				webadmin.addMessage(q, msgNoMaplistManager, MT_Error);
 				webadmin.sendPage(q, "message.html");
 				return true;
 			}
@@ -104,7 +112,7 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/voting/profiles":
 			if (MapListManager == none) {
-				webadmin.addMessage(q, "Maplist editing is not available because no map list manager is loaded.", MT_Error);
+				webadmin.addMessage(q, msgNoMaplistManager, MT_Error);
 				webadmin.sendPage(q, "message.html");
 				return true;
 			}
@@ -135,11 +143,11 @@ function bool unhandledQuery(WebAdminQuery q)
  */
 function registerMenuItems(WebAdminMenu menu)
 {
-	menu.addMenu("/voting", "Voting", self, "Generic voting settings");
-	menu.addMenu("/voting/profiles", "Game Profiles", self, "Game profiles are votable preconfigured game types. Here you can manage the various profiles. Changes will take effect in the next game session.", -1);
+	menu.addMenu("/voting", menuVoting, self, menuVotingDesc);
+	menu.addMenu("/voting/profiles", menuProfiles, self, menuProfilesDesc, -1);
 	menu.addMenu("/voting/profiles/data", "", self);
-	menu.addMenu("/voting/maplist", "Map lists", self, "The map list management allows you to create and edit the map lists as used by the game profiles.");
-	menu.addMenu("/voting/mutators", "Mutators", self, "These mutators can be voted on by the players, unless the current game profile has the mutators in the exclude list.");
+	menu.addMenu("/voting/maplist", menuMapList, self, menuMapListDesc);
+	menu.addMenu("/voting/mutators", menuMuts, self, menuMutsDesc);
 }
 
 function convertLegacyMaplists()
@@ -229,20 +237,20 @@ function handleMaplist(WebAdminQuery q)
 						maplists[i].name = editMLname;
 						maplists[i].friendlyName = tmp;
 					}
-					webadmin.addMessage(q, "Created the map list "$`HTMLEscape(tmp));
+					webadmin.addMessage(q, repl(msgCreatedML, "%s", `HTMLEscape(tmp)));
 				}
 				else {
-					webadmin.addMessage(q, "Error creating map list: "$`HTMLEscape(tmp), MT_Error);
+					webadmin.addMessage(q, repl(errCreateML, "%s", `HTMLEscape(tmp)), MT_Error);
 					editMLname = "";
 				}
 			}
 			else {
-				webadmin.addMessage(q, "There is already a map list with the name: "$`HTMLEscape(tmp), MT_Error);
+				webadmin.addMessage(q, repl(errDupMLName, "%s", `HTMLEscape(tmp)), MT_Error);
 				editMLname = "";
 			}
 		}
 		else {
-			webadmin.addMessage(q, "Map list name can not be empty", MT_Error);
+			webadmin.addMessage(q, errEmplyMLName, MT_Error);
 		}
 	}
 
@@ -259,10 +267,10 @@ function handleMaplist(WebAdminQuery q)
 				editMLname = maplists[i].friendlyName;
 				maplists.remove(i, 1);
 			}
-			webadmin.addMessage(q, "Removed the map list: "$editMLname);
+			webadmin.addMessage(q, repl(msgRemovedML, "%s", editMLname));
 		}
 		else {
-			webadmin.addMessage(q, "No map list available with the id: "$`HTMLEscape(editMLname), MT_Error);
+			webadmin.addMessage(q, repl(msgNoMaplist, "%s", `HTMLEscape(editMLname)), MT_Error);
 		}
 		editMLname = "";
 	}
@@ -386,13 +394,13 @@ function handleMaplist(WebAdminQuery q)
 			`if(`UT3_PATCH_2_1)
 			q.response.subst("setting.formname", "replaylimit");
 			q.response.subst("setting.name", "MapReplayLimit");
-			q.response.subst("setting.text", "Map Replay Limit");
+			q.response.subst("setting.text", setMapReplyLabel);
 			q.response.subst("setting.value", ml.MapReplayLimit);
 			q.response.subst("setting.minval", "-1");
 			q.response.subst("setting.maxval", MaxInt);
 			q.response.subst("setting.increment", "1");
 			q.response.subst("setting.asint", "true");
-			q.response.subst("setting.tooltip", "The maximum number of times a map can be voted for in a row. Use -1 to use the global map replay limit.");
+			q.response.subst("setting.tooltip", setMapReplyTooltip);
 			q.response.subst("setting.html", webadmin.include(q, "settings_ranged.inc"));
 			q.response.subst("mapreplaylimit", webadmin.include(q, "settings_entry.inc"));
 			`endif
@@ -400,7 +408,7 @@ function handleMaplist(WebAdminQuery q)
 			q.response.subst("editor", webadmin.include(q, "voting_maplist_editor.inc"));
 		}
 		else {
-			webadmin.addMessage(q, "No map list available with the id: "$`HTMLEscape(editMLname), MT_Error);
+			webadmin.addMessage(q, repl(msgNoMaplist, "%s", `HTMLEscape(editMLname)), MT_Error);
 		}
 	}
 
@@ -474,7 +482,7 @@ function handleProfiles(WebAdminQuery q)
 
 		if (idx != INDEX_NONE)
 		{
-			webadmin.addMessage(q, "There is already a game profile with the name: "$`HTMLEscape(tmp), MT_Error);
+			webadmin.addMessage(q, repl(errDupProfile, "%s", `HTMLEscape(tmp)), MT_Error);
 		}
 		else {
 			idx = MapListManager.default.GameProfiles.length;
@@ -482,7 +490,7 @@ function handleProfiles(WebAdminQuery q)
 			MapListManager.default.GameProfiles[idx].GameName = tmp;
 			MapListManager.default.GameProfiles[idx].GameClass = q.request.getVariable("newgameclass");
 			MapListManager.static.StaticSaveConfig();
-			webadmin.addMessage(q, "Created game profile: "$`HTMLEscape(tmp));
+			webadmin.addMessage(q, repl(msgCreatedProfile, "%s", `HTMLEscape(tmp)));
 			editProfile = tmp;
 		}
 	}
@@ -498,7 +506,7 @@ function handleProfiles(WebAdminQuery q)
 				{
 					MapListManager.ActiveGameProfileName = tmp;
 				}
-				webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' renamed to '"$`HTMLEscape(tmp)$"'");
+				webadmin.addMessage(q, repl(repl(msgRenamedProfile, "%1", `HTMLEscape(editProfile)), "%2", `HTMLEscape(tmp)));
 				editProfile = tmp;
 			}
 			MapListManager.default.GameProfiles[idx].GameClass = q.request.getVariable("gameclass");
@@ -539,10 +547,10 @@ function handleProfiles(WebAdminQuery q)
 			MapListManager.default.GameProfiles[idx].ExcludedMuts = tmp;
 
 			MapListManager.static.StaticSaveConfig();
-			webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' saved");
+			webadmin.addMessage(q, repl(msgProfileSaved, "%s", `HTMLEscape(editProfile)));
 		}
 		else {
-			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
+			webadmin.addMessage(q, repl(errCantFindProfile, "%s", `HTMLEscape(editProfile)), MT_Error);
 		}
 	}
 	else if (q.request.getVariable("action") ~= "delete")
@@ -556,10 +564,10 @@ function handleProfiles(WebAdminQuery q)
 			}
 			MapListManager.static.StaticSaveConfig();
    			idx = INDEX_NONE;
-			webadmin.addMessage(q, "Game profile '"$`HTMLEscape(editProfile)$"' deleted");
+			webadmin.addMessage(q, repl(msgProfileDeleted, "%s", `HTMLEscape(editProfile)));
 		}
 		else {
-			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
+			webadmin.addMessage(q, repl(errCantFindProfile, "%s", `HTMLEscape(editProfile)), MT_Error);
 		}
 	}
 	else if (q.request.getVariable("action") ~= "activate")
@@ -571,7 +579,7 @@ function handleProfiles(WebAdminQuery q)
 			// TODO: map change?
 		}
 		else {
-			webadmin.addMessage(q, "Unable to find the game profile: "$`HTMLEscape(editProfile), MT_Error);
+			webadmin.addMessage(q, repl(errCantFindProfile, "%s", `HTMLEscape(editProfile)), MT_Error);
 		}
 	}
 
@@ -879,7 +887,7 @@ function handleMutators(WebAdminQuery q)
 			class'UTVoteCollector'.default.VotableMutators[idx].MutName = mutname;
 		}
 		class'UTVoteCollector'.static.StaticSaveConfig();
-		webadmin.addMessage(q, "Settings saved.");
+		webadmin.addMessage(q, msgSettingsSaved);
 	}
 
 	tmp = "";

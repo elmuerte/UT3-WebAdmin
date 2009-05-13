@@ -15,6 +15,10 @@ var ChatLog chatlog;
 
 var SettingsRenderer settingsRenderer;
 
+//!localized
+var localized string menuSystem, menuSystemDesc, msgSettingsSaved, grpGeneral,
+	grpChatLogging, grpAuthentication, grpAdvanced;
+
 function init(WebAdmin webapp)
 {
 	webadmin = webapp;
@@ -48,7 +52,7 @@ function cleanup()
 
 function registerMenuItems(WebAdminMenu menu)
 {
-	menu.addMenu("/settings/system", "WebAdmin", self, "Change the web administration configuration.", 999);
+	menu.addMenu("/settings/system", menuSystem, self, menuSystemDesc, 999);
 	menu.addMenu("/system/allowancecache", "", self, "Rebuild the mutator allowance cache.");
 }
 
@@ -111,7 +115,7 @@ function handleSettings(WebAdminQuery q)
 	{
 		class'QHDefaults'.static.applySettings(self, q.request);
 		saveSettings();
-		webadmin.addMessage(q, "Settings saved.");
+		webadmin.addMessage(q, msgSettingsSaved);
 	}
 
 	settingsRenderer.render(self, q.response);
@@ -271,7 +275,7 @@ function string GetSpecialValue(name PropertyName)
 {
 	if (PropertyName == `{WA_GROUP_SETTINGS})
 	{
-		return "General=0,20;Chat Logging=20,30;Authentication=30,40;Advanced=100,120";
+		return grpGeneral$"=0,20;"$grpChatLogging$"=20,30;"$grpAuthentication$"=30,40;"$grpAdvanced$"=100,120";
 	}
 	return super.GetSpecialValue(PropertyName);
 }

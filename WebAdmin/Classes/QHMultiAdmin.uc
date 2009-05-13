@@ -21,6 +21,11 @@ var config array<string> protectedAdmins;
 
 var string fullMenu;
 
+//!localization
+var localized string menuAdmins, menuAdminsDesc, msgCreatedAdmin, msgDupName,
+	msgCantRemoveLast, msgCantDelete, msgRemovedAdmin, msgUnableToRemove,
+	msgSavedAdmin, msgPassError;
+
 function init(WebAdmin webapp)
 {
 	local int i;
@@ -88,7 +93,7 @@ function bool unhandledQuery(WebAdminQuery q)
 function registerMenuItems(WebAdminMenu menu)
 {
 	if (authModule == none) return;
-	menu.addMenu("/multiadmin", "Administrators", self, "Manage WebAdmin administrators.", 1000);
+	menu.addMenu("/multiadmin", menuAdmins, self, menuAdminsDesc, 1000);
 }
 
 function handleAdmins(WebAdminQuery q)
@@ -125,10 +130,10 @@ function handleAdmins(WebAdminQuery q)
 					authModule.records[i].name = editAdmin;
 					authModule.records[i].data = adminData;
 				}
-				webadmin.addMessage(q, "Created a new administrator with the name: "$editAdmin);
+				webadmin.addMessage(q, repl(msgCreatedAdmin, "%s", editAdmin));
 			}
 			else {
-				webadmin.addMessage(q, "Unable to create a new administrator. There is already a admin with the name: "$editAdmin, MT_Error);
+				webadmin.addMessage(q, repl(msgDupName, "%s", editAdmin), MT_Error);
 				editAdmin = "";
 			}
 		}
@@ -141,20 +146,20 @@ function handleAdmins(WebAdminQuery q)
 	{
 		if (authModule.records.length <= 1)
 		{
-			webadmin.addMessage(q, "You can not remove the last administrator.", MT_Error);
+			webadmin.addMessage(q, msgCantRemoveLast, MT_Error);
 		}
 		else if (len(editAdmin) > 0)
 		{
 			if (!canDeleteAdmin(editAdmin, q.user))
 			{
-				webadmin.addMessage(q, "Administrator "$editAdmin$" can not be deleted.", MT_Error);
+				webadmin.addMessage(q, repl(msgCantDelete, "%s", editAdmin), MT_Error);
 			}
 			else if (authModule.removeAdminRecord(editAdmin))
 			{
-				webadmin.addMessage(q, "Removed administrator: "$editAdmin);
+				webadmin.addMessage(q, repl(msgRemovedAdmin, "%s", editAdmin));
 			}
 			else {
-				webadmin.addMessage(q, "Unable to remove: "$editAdmin, MT_Error);
+				webadmin.addMessage(q, repl(msgUnableToRemove, "%s", editAdmin), MT_Error);
 			}
 		}
 	}
@@ -219,10 +224,10 @@ function handleAdmins(WebAdminQuery q)
 				}
 
 				adminData.saveconfig();
-				webadmin.addMessage(q, "Saved administrator information");
+				webadmin.addMessage(q, msgSavedAdmin);
 			}
 			else {
-				webadmin.addMessage(q, "Passwords do not match.", MT_Error);
+				webadmin.addMessage(q, msgPassError, MT_Error);
 			}
 		}
 
