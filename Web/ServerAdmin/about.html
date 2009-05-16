@@ -1,6 +1,17 @@
 <!-- #include file="header.inc" -->
 
 <div id="content">
+
+<h2>About</h2>
+
+<p>
+The web administration interface for Unreal Tournament 3 has been created by
+Michiel Hendriks on contract of Epic Games, Inc. Usage of this software, and
+its content, falls under the same terms as Unreal Tournament 3.
+</p>
+
+<h3>System Information</h3>
+
 <dl>
     <dt>Engine Version</dt>
     <dd><%engine.version%></dd>
@@ -25,7 +36,9 @@
     <dt>Remote Address</dt>
     <dd><%client.address%></dd>
     <dt>IP during authentication</dt>
-    <dd><%client.authip%></dd>        
+    <dd><%client.authip%></dd>
+    <dt>User Agent</dt>
+    <dd><%client.useragent%></dd>       
 </dl>
 
 <dl id="webadmininfo">

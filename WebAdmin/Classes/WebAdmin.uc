@@ -423,7 +423,14 @@ function Query(WebRequest Request, WebResponse Response)
 
 	if (InStr(Request.GetHeader("accept-encoding")$",", "gzip,") != INDEX_NONE)
 	{
-		response.Subst("client.gzip", ".gz");
+		if (InStr(Request.GetHeader("user-agent"), "Safari/") != INDEX_NONE)
+		{
+			// Safari lies, it doesn't support gzip encoded files
+			response.Subst("client.gzip", "");
+		}
+		else {
+			response.Subst("client.gzip", ".gz");
+		}
 	}
 	else {
 		response.Subst("client.gzip", "");
@@ -979,6 +986,7 @@ function pageAbout(WebAdminQuery q)
 	else q.response.Subst("client.remember", "False");
 	q.response.Subst("client.sessionid", q.session.getId());
 	q.response.Subst("client.authip", q.session.getString("AuthIP"));
+	q.response.Subst("client.useragent", q.request.GetHeader("user-agent"));
 	sendPage(q, "about.html");
 }
 
@@ -988,7 +996,7 @@ function pageAbout(WebAdminQuery q)
 function pageCredits(WebAdminQuery q)
 {
 	q.response.Subst("page.title", pageCreditsTitle);
-	q.response.Subst("credits", Localize("Credits", "01", "UTGameCredits"));
+	q.response.Subst("credits", `HTMLEscape(Localize("Credits", "01", "UTGameCredits")));
 	sendPage(q, "credits.html");
 }
 

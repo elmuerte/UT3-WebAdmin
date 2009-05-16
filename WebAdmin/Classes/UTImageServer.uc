@@ -46,12 +46,21 @@ function Query(WebRequest Request, WebResponse Response)
 		ext = Mid(Request.URI, idx+1);
 		if (ext ~= "gz")
 		{
-			part = Left(Request.URI, idx);
-			idx = InStr(part, ".", true);
-			if (idx != INDEX_NONE)
+			if (InStr(Request.GetHeader("accept-encoding")$",", "gzip,") != INDEX_NONE)
 			{
-				ext = Mid(part, idx+1);
-				response.AddHeader("Content-Encoding: gzip");
+				part = Left(Request.URI, idx);
+				idx = InStr(part, ".", true);
+				if (idx != INDEX_NONE)
+				{
+					ext = Mid(part, idx+1);
+					response.AddHeader("Content-Encoding: gzip");
+				}
+			}
+			else {
+				// browser doesn't understand it afterall
+				Response.SendStandardHeaders("application/x-gzip", true);
+				Response.IncludeBinaryFile( Path $ Request.URI );
+				return;
 			}
 		}
 	}
