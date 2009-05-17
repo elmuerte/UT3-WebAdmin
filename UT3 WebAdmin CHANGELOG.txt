@@ -1,4 +1,4 @@
-v1.15 - 2009-05-?? (requires UT3 2.1)
+v1.15 - 2009-05-17 (requires UT3 2.1)
 -------------------------------------
 - fixed a few typos
 - added a setting to validate the IP in sessions. This increases security by 
