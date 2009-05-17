@@ -125,9 +125,7 @@
       </fileset>
     </copy>
     <copy todir="build/UTGame/Localization">
-      <fileset dir="Localization">
-        <include name="**/*.int" />
-      </fileset>
+      <fileset dir="Localization" />
     </copy>
   </target>
 
