@@ -58,6 +58,7 @@ function Query(WebRequest Request, WebResponse Response)
 			}
 			else {
 				// browser doesn't understand it afterall
+				//`log("Browser doesn't accept gzip encoded files",,'WebAdmin');
 				Response.SendStandardHeaders("application/x-gzip", true);
 				Response.IncludeBinaryFile( Path $ Request.URI );
 				return;

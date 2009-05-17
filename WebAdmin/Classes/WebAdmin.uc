@@ -429,6 +429,11 @@ function Query(WebRequest Request, WebResponse Response)
 			// Safari lies, it doesn't support gzip encoded files
 			response.Subst("client.gzip", "");
 		}
+		else if (InStr(Request.GetHeader("user-agent"), "MSIE 6.") != INDEX_NONE)
+		{
+			// MSIE 6. has issues with gzip
+			response.Subst("client.gzip", "");
+		}
 		else {
 			response.Subst("client.gzip", ".gz");
 		}
