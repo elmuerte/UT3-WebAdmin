@@ -20,6 +20,7 @@ v1.15 - 2009-05-?? (requires UT3 2.1)
   Note: the <!-- #include ... --> files are not transparently handled.
 - Don't send gzip encoded files to Safari browsers, they lies about supporting
   gzip encoded files (or at least, for javascript)
+- various browser tweaks
 
 v1.14.0 - 2009-04-05 (for UT3 2.0)
 v1.14.1 - 2009-04-05 (for UT3 2.1)

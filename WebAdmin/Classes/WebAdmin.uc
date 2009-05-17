@@ -400,6 +400,7 @@ function Query(WebRequest Request, WebResponse Response)
 	response.Subst("webadmin.path", path);
 	response.Subst("page.uri", Request.URI);
 	response.Subst("page.fulluri", Path$Request.URI);
+	response.Subst("random", Rand(MaxInt));
 
 	if (len(SkinData) == 0)
 	{
