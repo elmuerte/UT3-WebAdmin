@@ -72,6 +72,14 @@ var globalconfig string startpage;
  */
 var protected string serverIp;
 
+`if(`isdefined(COOKIE_PREFIX))
+/**
+ * Prefix used in cookie names to make them safer for multiple servers on the
+ * same machine.
+ */
+var string cookiePrefix;
+`endif
+
 /**
  * Will contain the timestamp when this package was compiled
  */
@@ -271,6 +279,10 @@ function init()
 	{
 		serverIp = left(serverIp, i);
 	}
+
+	`if(`isdefined(COOKIE_PREFIX))
+	cookiePrefix = "%"$worldinfo.Game.GetServerPort()$"_";
+	`endif
 
 	initQueryHandlers();
 }
@@ -514,13 +526,17 @@ function Query(WebRequest Request, WebResponse Response)
 		if (auth.logout(currentQuery.user))
 		{
 			sessions.destroy(currentQuery.session);
-			response.headers[response.headers.length] = "Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0";
-			response.headers[response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
-			response.headers[response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
+			//response.headers[response.headers.length] = "Set-Cookie: sessionid=; Path="$path$"/; Max-Age=0";
+			sendCookie(currentQuery, "sessionid", "", path, 0);
+			//response.headers[response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
+			sendCookie(currentQuery, "authcred", "", path, 0);
+			//response.headers[response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
+			sendCookie(currentQuery, "authtimeout", "", path, 0);
 			if (bHttpAuth)
 			{
 				response.Subst("navigation.menu", "");
-				response.headers[response.headers.length] = "Set-Cookie: forceAuthentication=1; Path="$path$"/";
+				//response.headers[response.headers.length] = "Set-Cookie: forceAuthentication=1; Path="$path$"/";
+				sendCookie(currentQuery, "forceAuthentication", "1", path);
 				addMessage(currentQuery, msgLogoutNotice, MT_Warning);
 				pageGenericInfo(currentQuery, "");
 				return;
@@ -596,6 +612,11 @@ protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookie
 	local int pos;
 	local KeyValuePair kvp;
 
+	`if(`isdefined(COOKIE_PREFIX))
+	local string prefix;
+	local int pfpos;
+	`endif
+
 	ParseStringIntoArray(cookiehdr, cookieParts, ";", true);
 	foreach cookieParts(entry)
 	{
@@ -604,11 +625,67 @@ protected function parseCookies(String cookiehdr, out array<KeyValuePair> cookie
 		{
 			kvp.key = Left(entry, pos);
 			kvp.key -= " ";
+			`if(`isdefined(COOKIE_PREFIX))
+			if (left(kvp.key, 1) == "%")
+			{
+				// check prefix
+				pfpos = InStr(kvp.key, "_");
+				if (pfpos != INDEX_NONE)
+				{
+					prefix = mid(kvp.key, 1, pfpos-1);
+					if (prefix == string(int(prefix)))
+					{
+						if (left(kvp.key, len(cookiePrefix)) != cookiePrefix)
+						{
+							continue;
+						}
+						kvp.key = mid(kvp.key, len(cookiePrefix));
+						pfpos = cookies.Find('key', kvp.key);
+						if (pfpos != INDEX_NONE)
+						{
+							cookies.remove(pfpos, 1);
+						}
+					}
+				}
+			}
+			`endif
 			kvp.value = Mid(entry, pos+1);
 			//`Log("Received cookie with name="$kvp.key$" ; value="$kvp.value,,'WebAdmin');
 			cookies.AddItem(kvp);
 		}
 	}
+}
+
+/**
+ * Send a cookie to the client. Returns true when the cookie was included in
+ * the output. If the headers where already send false will be returned.
+ */
+function bool sendCookie(out WebAdminQuery q, string key, coerce string value,
+	optional string cpath = "", optional int maxage = -1, optional string domain = "")
+{
+	local string cookie;
+	if (q.response.SentText()) return false;
+	key = `trim(key);
+	if (len(key) == 0) return false;
+	`if(`isdefined(COOKIE_PREFIX))
+	key = cookiePrefix$key; // add prefix
+	`endif
+	cookie = "Set-Cookie: "$key$"="$value;
+	if (len(cpath) > 0)
+	{
+		if (right(cpath, 1) != "/") cpath $= "/";
+		cookie $= "; path="$cpath;
+	}
+	if (len(domain) > 0)
+	{
+		cookie $= "; domain="$domain;
+	}
+	if (maxage > -1)
+	{
+		cookie $= "; max-age="$maxage;
+	}
+	q.response.headers[q.response.headers.length] = cookie;
+	return true;
 }
 
 /**
@@ -642,7 +719,8 @@ protected function bool getSession(out WebAdminQuery q)
 		idx = inStr(q.request.RemoteAddr, ":");
 		if (idx == INDEX_NONE) idx = len(q.request.RemoteAddr);
 		q.session.putString("AuthIP", Left(q.request.RemoteAddr, idx));
-		q.response.headers[q.response.headers.length] = "Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/";
+		//q.response.headers[q.response.headers.length] = "Set-Cookie: sessionid="$q.session.getId()$"; Path="$path$"/";
+		sendCookie(q, "sessionid", q.session.getId(), path);
 	}
 	if (q.session == none)
 	{
@@ -744,7 +822,8 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 			idx = q.cookies.Find('key', "forceAuthentication");
 			if (idx != INDEX_NONE && q.cookies[idx].value == "1")
 			{
-				q.response.headers[q.response.headers.length] = "Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0";
+				//q.response.headers[q.response.headers.length] = "Set-Cookie: forceAuthentication=; Path="$path$"/; Max-Age=0";
+				sendCookie(q, "forceAuthentication", "", path, 0);
 				pageAuthentication(q);
 				return false;
 			}
@@ -795,8 +874,10 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 		if (len(rememberCookie) > 0)
 		{
 			// unset cookie
-			q.response.headers[q.response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
-			q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
+			//q.response.headers[q.response.headers.length] = "Set-Cookie: authcred=; Path="$path$"/; Max-Age=0";
+			sendCookie(q, "authcred", "", path, 0);
+			//q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout=; Path="$path$"/; Max-Age=0";
+			sendCookie(q, "authtimeout", "", path, 0);
 			addMessage(q, msgWrongAuthCookie, MT_Error);
 			rememberCookie = "";
 		}
@@ -847,13 +928,16 @@ function setAuthCredCookie(out WebAdminQuery q, string creddata, int timeout)
 	}
 	if (timeout > 0)
 	{
-		q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/; Max-Age="$timeout;
-		q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout="$timeout$"; Path="$path$"/; Max-Age="$timeout;
+		//q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/; Max-Age="$timeout;
+		sendCookie(q, "authcred", creddata, path, timeout);
+		//q.response.headers[q.response.headers.length] = "Set-Cookie: authtimeout="$timeout$"; Path="$path$"/; Max-Age="$timeout;
+		sendCookie(q, "authtimeout", timeout, path, timeout);
 		q.session.putString("AuthTimeout", "1");
 	}
 	else if (timeout == -1)
 	{
-		q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/";
+		//q.response.headers[q.response.headers.length] = "Set-Cookie: authcred="$creddata$"; Path="$path$"/";
+		sendCookie(q, "authcred", creddata, path);
 	}
 	// else don't remember
 }
