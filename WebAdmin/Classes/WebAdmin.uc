@@ -487,6 +487,12 @@ function Query(WebRequest Request, WebResponse Response)
 	{
 		return;
 	}
+
+	if (len(pageAboutTitle) == 0)
+	{
+		addMessage(currentQuery, "No localization data. Please make sure the file Localization/INT/WebAdmin.int is up to date.", MT_Error);
+	}
+
 	if (!getWebAdminUser(currentQuery))
 	{
 		return;
