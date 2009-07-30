@@ -114,6 +114,10 @@ msgCantFindMapCycle="Unable to find the map cycle"
 msgCycleDeleted="Map cycle %s deleted."
 msgCycleSaved="Map cycle %s saved"
 msgCycleActivated="Map cycle activated for the game type %s"
+menuServerActors="Server Actors"
+menuServerActorsDesc="Server actors are special addons that often add extra functionality to the server."
+msgServerActorsSaved="Server actors list saved. Changes take effect in the next map."
+msgServerActorsSavedWarn="Server actors list saved. However, changes will not take effect until a server restart."
 
 [QHMultiAdmin]
 menuAdmins="Administrators"

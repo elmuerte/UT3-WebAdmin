@@ -74,7 +74,8 @@ var localized string menuPolicy, menuPolicyDesc, menuBannedId, menuBannedIdDesc,
 	msgSettingsSaved, msgCantSaveSettings, msgCantLoadSettings, msgGamePWError,
 	msgGamePWSaved, msgAdminPWError, msgAdminPWSaved, msgAdminPWEmpty,
 	msgMapCycleSaved, msgCantLoadGT, msgImportedMapList, msgInvalidMaplist,
-	Untitled, msgCantFindMapCycle, msgCycleDeleted, msgCycleSaved, msgCycleActivated;
+	Untitled, msgCantFindMapCycle, msgCycleDeleted, msgCycleSaved, msgCycleActivated,
+	menuServerActors, menuServerActorsDesc, msgServerActorsSaved, msgServerActorsSavedWarn;
 
 function init(WebAdmin webapp)
 {
@@ -170,6 +171,9 @@ function bool handleQuery(WebAdminQuery q)
 		case "/system/settingscache":
 			handleRebuildSettingsCache(q);
 			return true;
+		case "/settings/serveractors":
+			handleServerActors(q);
+			return true;
 	}
 	return false;
 }
@@ -196,6 +200,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/maplist", menuMapCycles, self, menuMapCyclesDesc);
 	menu.addMenu("/settings/maplist/additional", menuMLAddition, self, menuMLAdditionDesc);
 	`endif
+	menu.addMenu("/settings/serveractors", menuServerActors, self, menuServerActorsDesc);
 	menu.addMenu("/system/settingscache", "", self, msgSettingsCacheDesc);
 }
 
@@ -1324,6 +1329,47 @@ function handleMapListAdditional(WebAdminQuery q)
 	webadmin.sendPage(q, "default_maplist_additional.html");
 }
 `endif
+
+function handleServerActors(WebAdminQuery q)
+{
+	local string tmp;
+	local array<string> tmpa;
+	local int i;
+	local GameEngine gameengine;
+
+	if (q.request.getVariable("action") ~= "save")
+	{
+		ParseStringIntoArray(q.request.getVariable("serveractors"), tmpa, chr(10), true);
+		class'GameEngine'.default.ServerActors.length = 0;
+		for (i = 0; i < tmpa.length; i++)
+		{
+			tmp = `Trim(tmpa[i]);
+			if (len(tmp) > 0)
+			{
+				class'GameEngine'.default.ServerActors.addItem(tmp);
+			}
+		}
+		class'GameEngine'.static.StaticSaveConfig();
+		gameengine = GameEngine(FindObject("Transient.GameEngine_0", class'GameEngine'));
+		if (gameengine != none)
+		{
+			gameengine.ServerActors = class'GameEngine'.default.ServerActors;
+			webadmin.addMessage(q, msgServerActorsSaved);
+		}
+		else {
+			webadmin.addMessage(q, msgServerActorsSavedWarn, MT_Warning);
+		}
+	}
+
+	tmp = "";
+	for (i = 0; i < class'GameEngine'.default.ServerActors.length; i++)
+	{
+		if (i > 0) tmp $= chr(10);
+		tmp $= class'GameEngine'.default.ServerActors[i];
+	}
+	q.response.subst("serveractors", tmp);
+	webadmin.sendPage(q, "default_serveractors.html");
+}
 
 defaultproperties
 {

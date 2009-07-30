@@ -1,8 +1,9 @@
-v1.16 - 2009-??-?? (requires UT3 2.1)
+v1.16 - 2009-07-30 (requires UT3 2.1)
 -------------------------------------
 - added a warning when the localization file is corrupt. This causes missing
   menus.
 - changed the method of detecting active mutators
+- added functionality to configure server actors
 
 v1.15 - 2009-05-17 (requires UT3 2.1)
 -------------------------------------
