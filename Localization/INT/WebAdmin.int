@@ -669,7 +669,7 @@ PropertyMappings[2]=(ColumnHeaderText="HTTP Authentication",ValueMappings=((name
 PropertyMappings[3]=(ColumnHeaderText="Starting Page")
 PropertyMappings[4]=(ColumnHeaderText="Chat Logging",ValueMappings=((name="No"),(name="Yes")))
 PropertyMappings[5]=(ColumnHeaderText="Send XHTML headers",ValueMappings=((name="No"),(name="Yes")))
-PropertyMappings[6]=(ColumnHeaderText="Chat Windows Refresh")
+PropertyMappings[6]=(ColumnHeaderText="Chat Window Refresh")
 PropertyMappings[7]=(ColumnHeaderText="Management Console Enabled",ValueMappings=((name="No"),(name="Yes")))
 PropertyMappings[8]=(ColumnHeaderText="Deny URL options")
 PropertyMappings[9]=(ColumnHeaderText="Deny Console Commands")
