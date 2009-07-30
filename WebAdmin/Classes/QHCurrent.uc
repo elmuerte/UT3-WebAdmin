@@ -316,9 +316,10 @@ function handleCurrent(WebAdminQuery q)
 {
 	local string players;
 	local PlayerReplicationInfo pri;
-	local int idx;
+	local int idx, i;
 	local mutator mut;
 	local string tmp, tmp2;
+	local array<string> activeMuts;
 
 	handleCurrentData(q);
 
@@ -345,12 +346,24 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("map.name", webadmin.WorldInfo.GetPackageName());
 
 	webadmin.dataStoreCache.loadMutators();
+	ParseStringIntoArray(webadmin.WorldInfo.Game.ParseOption(webadmin.WorldInfo.Game.ServerOptions, "mutator"), activeMuts, ",", true);
+
 	mut = webadmin.WorldInfo.Game.BaseMutator;
-	tmp = "";
 	while (mut != none)
 	{
-		if (len(tmp) > 0) tmp $= ", ";
 		tmp2 = mut.class.getPackageName()$"."$mut.class;
+		if (activeMuts.find(tmp2) == INDEX_none)
+		{
+			activeMuts.addItem(tmp2);
+		}
+		mut = mut.NextMutator;
+	}
+
+	tmp = "";
+	for (i = 0; i < activeMuts.length; i++)
+	{
+		if (len(tmp) > 0) tmp $= ", ";
+		tmp2 = activeMuts[i];
 		for (idx = 0; idx < webadmin.dataStoreCache.mutators.Length; ++idx)
 		{
 			if (webadmin.dataStoreCache.mutators[idx].ClassName ~= tmp2)
@@ -363,7 +376,6 @@ function handleCurrent(WebAdminQuery q)
 		{
 			tmp $= tmp2;
 		}
-		mut = mut.NextMutator;
 	}
 	q.response.subst("mutators", tmp);
 
@@ -1089,6 +1101,7 @@ function handleCurrentChange(WebAdminQuery q)
  	{
  		currentGameType = string(webadmin.WorldInfo.Game.class);
  		curmap = string(webadmin.WorldInfo.GetPackageName());
+ 		ParseStringIntoArray(webadmin.WorldInfo.Game.ParseOption(webadmin.WorldInfo.Game.ServerOptions, "mutator"), currentMutators, ",", true);
 		mut = webadmin.WorldInfo.Game.BaseMutator;
 		while (mut != none)
 		{
