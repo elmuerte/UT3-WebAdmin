@@ -13,35 +13,141 @@
 `endif
 
 //
+// Set up a specific build profile
+//
+
+`if(`isdefined(UT3v1_2_1))
+	`define BUILD_PROFILE "UT3 version 1.2.1"
+	`define WITH_BASE64ENC present
+	`define WITH_BANCDHASH present
+	`define WITH_WEBCONX_FIX present
+	`define WITH_BANNEDINFO present
+	`define WITH_VOTING_1_3 present
+`endif
+`if(`isdefined(UT3v1_3))
+	`define BUILD_PROFILE "UT3 version 1.3"
+	`define WITH_BASE64ENC present
+	`define WITH_BANCDHASH present
+	`define WITH_WEBCONX_FIX present
+	`define WITH_BANNEDINFO present
+	`define WITH_VOTING_1_3 present
+	`define WITH_NO_CUSTOM_CHARS present
+`endif
+`if(`isdefined(UT3v2_0)) // aka 1.4
+	`define BUILD_PROFILE "UT3 version 2.0"
+	`define WITH_BASE64ENC present
+	`define WITH_BANCDHASH present
+	`define WITH_WEBCONX_FIX present
+	`define WITH_BANNEDINFO present
+	`define WITH_VOTING_1_4 present
+	`define WITH_NO_CUSTOM_CHARS present
+	`define WITH_NO_SEAMLESS_TRAVEL present
+	`define WITH_SPAWN_PROTECTION present
+	`define WITH_SESSION_BAN present
+	`define WITH_CLEAR_CONFIG present
+`endif
+`if(`isdefined(UT3v2_1))
+	`define BUILD_PROFILE "UT3 version 2.1"
+	`define WITH_BASE64ENC present
+	`define WITH_BANCDHASH present
+	`define WITH_WEBCONX_FIX present
+	`define WITH_BANNEDINFO present
+	`define WITH_VOTING_1_4 present
+	`define WITH_NO_CUSTOM_CHARS present
+	`define WITH_NO_SEAMLESS_TRAVEL present
+	`define WITH_SPAWN_PROTECTION present
+	`define WITH_SESSION_BAN present
+	`define WITH_CLEAR_CONFIG present
+	`define WITH_MAP_REPLAY_LIMIT present
+`endif
+
+
+`if(`notdefined(BUILD_PROFILE))
+	//!WARNING! No build profile defined
+	`define BUILD_PROFILE "unknown"
+`endif
+
+//
 // Swicthes used for conditional compilation
 //
 
 // When this is set the WebAdmin package is build as a mod package. This means
 // that various parts in the defaultproperties sections are enabled. This is
-// only possible in case of mod building, and not in case of normale engine 
+// only possible in case of mod building, and not in case of normale engine
 // builds (in which case default properties can not contain values for localized
 // and config variables)
 // `define BUILD_AS_MOD
 
+// You shouldn't touch these definitions
+
 // Use base64 encoding functions, this functionality wasn't available in the
 // early versions of UWeb
-`define WITH_BASE64ENC
+`if(`notdefined(WITH_BASE64ENC))
+	`define WITH_BASE64ENC
+`endif
 
-// Enable CDHash banning functionality. This was added to UT3 1.2 at a later
-// stage
-`define WITH_BANCDHASH
+// Enable CDHash banning functionality when non-empty. This was added to UT3
+// 1.2 at a later stage
+`if(`notdefined(WITH_BANCDHASH))
+	`define WITH_BANCDHASH
+`endif
 
-// workaround for bug #37
-`define WITH_WEBCONX_FIX
+// include workaround for bug #37 if non-empty
+`if(`notdefined(WITH_WEBCONX_FIX))
+	`define WITH_WEBCONX_FIX
+`endif
 
-// Set to non-empty to enable UT3 patch 1.3 changes
-`define UT3_PATCH_1_3 present
+// TODO
+`if(`notdefined(WITH_BANNEDINFO))
+	`define WITH_BANNEDINFO
+`endif
 
-// Set to non-empty to enable UT3 patch 1.4 (=2.0) changes
-`define UT3_PATCH_1_4 present
+// If non-empty use the voting system in UT3 1.3.
+`if(`notdefined(WITH_VOTING_1_3))
+	`define WITH_VOTING_1_3
+`endif
 
-// Set to non-empty to enable UT3 patch 2.1 changes
-`define UT3_PATCH_2_1 present
+// If non-empty use the voting system in UT3 1.4
+`if(`notdefined(WITH_VOTING_1_4))
+	`define WITH_VOTING_1_4
+`endif
+
+// validate this switch
+`if(`WITH_VOTING_1_3)
+	`if(`WITH_VOTING_1_4)
+		#ERROR Cannot enable both WITH_VOTING_1_3 and WITH_VOTING_1_4
+	`endif
+`endif
+
+// If non-empty, the "no custom characters option" is available (UT3 1.3+)
+`if(`notdefined(WITH_NO_CUSTOM_CHARS))
+	`define WITH_NO_CUSTOM_CHARS
+`endif
+
+// If non-empty, the "no custom seamless travel option" is available (UT3 1.4+)
+`if(`notdefined(WITH_NO_SEAMLESS_TRAVEL))
+	`define WITH_NO_SEAMLESS_TRAVEL
+`endif
+
+// If non-empty, the "spawn protection setting" is available (UT3 1.4+)
+`if(`notdefined(WITH_SPAWN_PROTECTION))
+	`define WITH_SPAWN_PROTECTION
+`endif
+
+// If non-emtpy, include session banning support  (UT3 1.4+)
+`if(`notdefined(WITH_SESSION_BAN))
+	`define WITH_SESSION_BAN
+`endif
+
+// If non-emtpy, ClearConfig() function exists  (UT3 1.4+)
+`if(`notdefined(WITH_CLEAR_CONFIG))
+	`define WITH_CLEAR_CONFIG
+`endif
+
+// If non-emtpy the map replay limit option exists (UT3 2.1+)
+`if(`notdefined(WITH_MAP_REPLAY_LIMIT))
+	`define WITH_MAP_REPLAY_LIMIT
+`endif
 
 //
 // Other macros
@@ -49,7 +155,7 @@
 
 // this macro is used to filter out inline localized variables being set
 `if(`isdefined(BUILD_AS_MOD))
-    `define modloc(c,data) `c,`data 
+    `define modloc(c,data) `c,`data
 `else
     `define modloc(c,data)
 `endif

@@ -649,13 +649,13 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 				{
 					banByID(PC);
 				}
-				`if(`isdefined(WITH_BANCDHASH))
+				`if(`WITH_BANCDHASH)
 				else if (action ~= "banhash" || action ~= "ban client hash")
 				{
 					banByHash(PC);
 				}
 				`endif
-				`if(`UT3_PATCH_1_4)
+				`if(`WITH_SESSION_BAN)
 				else if (action ~= "sessionban" || action ~= "session ban")
 				{
 					if (webadmin.WorldInfo.Game.AccessControl.IsAdmin(PC))
@@ -710,7 +710,7 @@ function handleCurrentPlayers(WebAdminQuery q)
 		IP = Left(IP, InStr(IP, ":"));
 		q.response.subst("player.ip", IP);
 		q.response.subst("player.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(pri.UniqueId));
-		`if(`isdefined(WITH_BANCDHASH))
+		`if(`WITH_BANCDHASH)
 		q.response.subst("player.hashresponse", PC.HashResponseCache);
 		`endif
 		if (UTPlayerController(PC) != none && UTPlayerController(PC).bServerMutedText)
@@ -786,7 +786,7 @@ protected function banByID(PlayerController PC)
 	}
 }
 
-`if(`isdefined(WITH_BANCDHASH))
+`if(`WITH_BANCDHASH)
 protected function banByHash(PlayerController PC)
 {
 	local BannedHashInfo NewBanHashInfo;

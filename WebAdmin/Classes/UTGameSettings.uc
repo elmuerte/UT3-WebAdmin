@@ -21,14 +21,14 @@ function initSettings()
  	SetIntPropertyByName('bWarmupRound', int(UTGameClass.default.bWarmupRound));
  	SetIntPropertyByName('WarmupTime', UTGameClass.default.WarmupTime);
  	SetIntPropertyByName('bForceMidGameMenuAtStart', int(UTGameClass.default.bForceMidGameMenuAtStart));
- 	`if(`notdefined(UT3_PATCH_1_4))
+ 	`if(`WITH_VOTING_1_3)
  	SetIntPropertyByName('VoteDuration', UTGameClass.default.VoteDuration);
  	`endif
  	SetIntPropertyByName('MaxCustomChars', UTGameClass.default.MaxCustomChars);
  	SetIntPropertyByName('ResetTimeDelay', UTGameClass.default.ResetTimeDelay);
  	SetIntPropertyByName('NetWait', UTGameClass.default.NetWait);
  	SetIntPropertyByName('ClientProcessingTimeout', UTGameClass.default.ClientProcessingTimeout);
- 	`if(`UT3_PATCH_1_4)
+ 	`if(`WITH_SPAWN_PROTECTION)
  	SetFloatPropertyByName('SpawnProtectionTime', UTGameClass.default.SpawnProtectionTime);
  	`endif
 }
@@ -56,7 +56,7 @@ protected function saveInternal()
  	{
  		UTGameClass.default.bForceMidGameMenuAtStart = (retval != 0);
  	}
- 	`if(`notdefined(UT3_PATCH_1_4))
+ 	`if(`WITH_VOTING_1_3)
  	GetIntPropertyByName('VoteDuration', UTGameClass.default.VoteDuration);
  	`endif
  	GetIntPropertyByName('MaxCustomChars', UTGameClass.default.MaxCustomChars);
@@ -64,7 +64,7 @@ protected function saveInternal()
  	GetIntPropertyByName('NetWait', UTGameClass.default.NetWait);
  	GetIntPropertyByName('ClientProcessingTimeout', UTGameClass.default.ClientProcessingTimeout);
 
- 	`if(`UT3_PATCH_1_4)
+ 	`if(`WITH_SPAWN_PROTECTION)
  	GetFloatPropertyByName('SpawnProtectionTime', UTGameClass.default.SpawnProtectionTime);
  	`endif
 }
@@ -93,7 +93,7 @@ defaultproperties
 	PropertyMappings[5]=(Id=5,Name="WarmupTime" `modloc(,ColumnHeaderText="Warmup time") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=30)
 
 	PropertyMappings[6]=(Id=6,name="bForceMidGameMenuAtStart" `modloc(,ColumnHeaderText="Force MidGameMenu at Start") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") )))
-	`if(`notdefined(UT3_PATCH_1_4))
+	`if(`WITH_VOTING_1_3)
 	PropertyMappings[7]=(Id=7,Name="VoteDuration" `modloc(,ColumnHeaderText="Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
 	`endif
 	PropertyMappings[8]=(Id=8,Name="ResetTimeDelay" `modloc(,ColumnHeaderText="New Round Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
@@ -101,7 +101,7 @@ defaultproperties
 	PropertyMappings[10]=(Id=10,Name="NetWait" `modloc(,ColumnHeaderText="Delay When Waiting for Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
 	PropertyMappings[11]=(Id=11,Name="ClientProcessingTimeout" `modloc(,ColumnHeaderText="Client Processing Timeout") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
 
-	`if(`UT3_PATCH_1_4)
+	`if(`WITH_SPAWN_PROTECTION)
 	PropertyMappings[12]=(Id=12,name="SpawnProtectionTime" `modloc(,ColumnHeaderText="Spawn Protection Time") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=1)
 	`endif
 }

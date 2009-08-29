@@ -174,9 +174,10 @@ function init()
 
     CleanupMsgSpecs();
 
-    `if(`isdefined(WITH_WEBCONX_FIX))
+    `if(WITH_WEBCONX_FIX)
 	WebServer.AcceptClass = class'WebConnectionEx';
     `endif
+
 	if (class'WebConnection'.default.MaxValueLength < 4096)
 	{
 		class'WebConnection'.default.MaxValueLength = 4096;
@@ -892,7 +893,7 @@ protected function bool getWebAdminUser(out WebAdminQuery q)
 	}
 	q.session.putObject("IWebAdminUser", q.user);
 
-	`if(`isdefined(WITH_BASE64ENC))
+	`if(`WITH_BASE64ENC)
 	if (q.request.GetVariable("remember") != "")
 	{
 		rememberCookie = q.request.EncodeBase64(username$chr(10)$password);
@@ -1083,6 +1084,7 @@ function pageAbout(WebAdminQuery q)
 	q.response.Subst("client.sessionid", q.session.getId());
 	q.response.Subst("client.authip", q.session.getString("AuthIP"));
 	q.response.Subst("client.useragent", q.request.GetHeader("user-agent"));
+	q.response.Subst("webadmin.build.profile", `BUILD_PROFILE);
 	sendPage(q, "about.html");
 }
 

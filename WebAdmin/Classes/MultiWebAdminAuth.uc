@@ -125,7 +125,7 @@ function MultiAdminData getRecord(string username)
 
 function bool removeAdminRecord(string username)
 {
-    `if(`UT3_PATCH_1_4)
+    `if(`WITH_CLEAR_CONFIG)
 	local int idx;
 	local MultiAdminData data;
 

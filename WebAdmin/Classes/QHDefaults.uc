@@ -58,7 +58,7 @@ var SettingsRenderer settingsRenderer;
 
 var config string AdditionalMLClass;
 
-var `if(`UT3_PATCH_1_4)deprecated`endif
+var `if(`WITH_VOTING_1_4)deprecated`endif
 	AdditionalMapLists additionalML;
 
 var SettingsMagic settingsMagic;
@@ -84,8 +84,7 @@ function init(WebAdmin webapp)
 		GeneralSettingsClass = class.getPackageName()$".GeneralSettings";
 		SaveConfig();
 	}
-	`if(`UT3_PATCH_1_4)
-	`else
+	`if(`WITH_VOTING_1_3)
 	if (Len(AdditionalMLClass) == 0)
 	{
 		AdditionalMLClass = class.getPackageName()$".AdditionalMapLists";
@@ -134,12 +133,12 @@ function bool handleQuery(WebAdminQuery q)
 		case "/policy/bans":
 			handleBans(q);
 			return true;
-		`if(`isdefined(WITH_BANCDHASH))
+		`if(`WITH_BANCDHASH)
 		case "/policy/hashbans":
 			handleHashBans(q);
 			return true;
 		`endif
-		`if(`UT3_PATCH_1_4)
+		`if(`WITH_SESSION_BAN)
 		case "/policy/session":
 			handleSessionBans(q);
 			return true;
@@ -159,8 +158,7 @@ function bool handleQuery(WebAdminQuery q)
 		case "/settings/mutators":
 			handleSettingsMutators(q);
 			return true;
-		`if(`UT3_PATCH_1_4)
-		`else
+		`if(`WITH_VOTING_1_3)
 		case "/settings/maplist":
 			handleMapList(q);
 			return true;
@@ -184,10 +182,10 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/policy", menuPolicy, self, menuPolicyDesc);
 	menu.addMenu("/policy/bans", menuBannedId, self, menuBannedIdDesc);
-	`if(`isdefined(WITH_BANCDHASH))
+	`if(`WITH_BANCDHASH)
 	menu.addMenu("/policy/hashbans", menuBannedHash, self, menuBannedHashDesc);
 	`endif
-	`if(`UT3_PATCH_1_4)
+	`if(`WITH_SESSION_BAN)
 	menu.addMenu("/policy/session", menuSession, self, menuSessionDesc);
 	`endif
 	menu.addMenu("/settings", menuSettings, self);
@@ -195,8 +193,7 @@ function registerMenuItems(WebAdminMenu menu)
 	menu.addMenu("/settings/general/passwords", menuPassword, self, menuPasswordDesc);
 	menu.addMenu("/settings/gametypes", menuGametypes, self, menuGametypesDesc);
 	menu.addMenu("/settings/mutators", menuMutators, self, menuMutatorsDesc);
-	`if(`UT3_PATCH_1_4)
-	`else
+	`if(`WITH_VOTING_1_3)
 	menu.addMenu("/settings/maplist", menuMapCycles, self, menuMapCyclesDesc);
 	menu.addMenu("/settings/maplist/additional", menuMLAddition, self, menuMLAdditionDesc);
 	`endif
@@ -377,7 +374,7 @@ function handleBans(WebAdminQuery q)
 	webadmin.sendPage(q, "policy_bans.html");
 }
 
-`if(`isdefined(WITH_BANCDHASH))
+`if(`WITH_BANCDHASH)
 function handleHashBans(WebAdminQuery q)
 {
 	local string bans, action;
@@ -424,7 +421,7 @@ function handleHashBans(WebAdminQuery q)
 }
 `endif
 
-`if(`UT3_PATCH_1_4)
+`if(`WITH_SESSION_BAN)
 function handleSessionBans(WebAdminQuery q)
 {
 	local UniqueNetId unid, empty;
@@ -1002,8 +999,7 @@ function handleSettingsMutators(WebAdminQuery q)
 	webadmin.sendPage(q, "default_settings_mutators.html");
 }
 
-`if(`UT3_PATCH_1_4)
-`else
+`if(`WITH_VOTING_1_3)
 function handleMapList(WebAdminQuery q)
 {
 	local string currentGameType, substvar;

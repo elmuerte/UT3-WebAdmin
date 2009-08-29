@@ -287,7 +287,7 @@ function handleAdmins(WebAdminQuery q)
  */
 function bool canDeleteAdmin(string adminName, IWebAdminUser me)
 {
-    `if(`UT3_PATCH_1_4)
+    `if(`WITH_CLEAR_CONFIG)
 	if (protectedAdmins.find(adminName) != INDEX_NONE)
 	{
 		return false;

@@ -9,14 +9,6 @@ class GeneralSettings extends WebAdminSettings;
 
 `include(WebAdmin.uci)
 
-`if(`UT3_PATCH_1_4)
-	`define VOTING_1_4
-`else
-`if(`UT3_PATCH_1_3)
-	`define VOTING_1_3
-`endif
-`endif
-
 //!localization
 var localized string grpServer, grpConnection, grpCheatDetection, grpGame,
 	grpAdministration, grpPlayers, grpVoting;
@@ -46,7 +38,7 @@ function initSettings()
 	SetIntPropertyByName('MaxSpectators', class'GameInfo'.default.MaxSpectators);
 	SetIntPropertyByName('MaxPlayers', class'GameInfo'.default.MaxPlayers);
 	SetIntPropertyByName('bKickLiveIdlers', int(class'GameInfo'.default.bKickLiveIdlers));
-	`if(`isdefined(WITH_BANCDHASH))
+	`if(`WITH_BANCDHASH)
 	SetIntPropertyByName('bKickMissingCDHashKeys', int(class'GameInfo'.default.bKickMissingCDHashKeys));
 	SetFloatPropertyByName('TimeToWaitForHashKey', class'GameInfo'.default.TimeToWaitForHashKey);
 	`endif
@@ -65,7 +57,7 @@ function initSettings()
 
 	// Administration settings
 	SetIntPropertyByName('bAdminCanPause', int(class'GameInfo'.default.bAdminCanPause));
-	`if(`UT3_PATCH_1_4)
+	`if(`WITH_NO_SEAMLESS_TRAVEL)
 	SetIntPropertyByName('bForceNoSeamlessTravel', int(class'GameInfo'.default.bForceNoSeamlessTravel));
 	`endif
 
@@ -77,12 +69,12 @@ function initSettings()
 	SetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
 	SetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
 	SetIntPropertyByName('bForceDefaultCharacter', int(class'UTGameReplicationInfo'.default.bForceDefaultCharacter));
-	`if(`UT3_PATCH_1_3)
+	`if(`WITH_NO_CUSTOM_CHARS)
 	SetIntPropertyByName('bNoCustomCharacters', int(class'UTGame'.default.bNoCustomCharacters));
 	`endif
 
 	// map voting
-	`if(`isdefined(VOTING_1_3))
+	`if(`WITH_VOTING_1_3)
 	SetIntPropertyByName('bAllowMapVoting', int(class'UTGame'.default.bAllowMapVoting));
 	SetIntPropertyByName('bMidGameMapVoting', int(class'UTGame'.default.bMidGameMapVoting));
 	SetIntPropertyByName('VoteDuration', class'UTGame'.default.VoteDuration);
@@ -91,7 +83,7 @@ function initSettings()
 	SetIntPropertyByName('InitialVoteDelay', class'UTGame'.default.InitialVoteDelay);
 	`endif
 
-	`if(`isdefined(VOTING_1_4))
+	`if(`WITH_VOTING_1_4)
 	SetIntPropertyByName('bAllowMapVoting', int(class'UTVoteCollector'.default.bAllowMapVoting));
 	SetIntPropertyByName('bMidGameVoting', int(class'UTVoteCollector'.default.bMidGameVoting));
 	SetIntPropertyByName('GameVoteDuration', class'UTVoteCollector'.default.GameVoteDuration);
@@ -159,14 +151,14 @@ function saveSettings()
 	GetFloatPropertyByName('BotRatio', class'UTGame'.default.BotRatio);
 	GetIntPropertyByName('MinNetPlayers', class'UTGame'.default.MinNetPlayers);
 
-	`if(`UT3_PATCH_1_3)
+	`if(`WITH_NO_CUSTOM_CHARS)
 	if (GetIntPropertyByName('bNoCustomCharacters', val))
 	{
 		class'UTGame'.default.bNoCustomCharacters = val != 0;
 	}
 	`endif
 
-	`if(`isdefined(VOTING_1_3))
+	`if(`WITH_VOTING_1_3)
 	if (GetIntPropertyByName('bAllowMapVoting', val))
 	{
 		class'UTGame'.default.bAllowMapVoting = val != 0;
@@ -183,7 +175,7 @@ function saveSettings()
 
 	class'UTGame'.static.StaticSaveConfig();
 
-	`if(`isdefined(VOTING_1_4))
+	`if(`WITH_VOTING_1_4)
 	if (GetIntPropertyByName('bAllowMapVoting', val))
 	{
 		class'UTVoteCollector'.default.bAllowMapVoting = val != 0;
@@ -231,7 +223,7 @@ function saveSettings()
 	{
 		class'GameInfo'.default.bKickLiveIdlers = val != 0;
 	}
-	`if(`isdefined(WITH_BANCDHASH))
+	`if(`WITH_BANCDHASH)
 	if (GetIntPropertyByName('bKickMissingCDHashKeys', val))
 	{
 		class'GameInfo'.default.bKickMissingCDHashKeys = val != 0;
@@ -251,7 +243,7 @@ function saveSettings()
 	{
 		class'GameInfo'.default.bAdminCanPause = val != 0;
 	}
-	`if(`UT3_PATCH_1_4)
+	`if(`WITH_NO_SEAMLESS_TRAVEL)
 	if (GetIntPropertyByName('bForceNoSeamlessTravel', val))
 	{
 		class'GameInfo'.default.bForceNoSeamlessTravel = val != 0;
@@ -288,7 +280,7 @@ defaultproperties
  	PropertyMappings.Add((Id=11,Name="MaxPlayers" `modloc(,ColumnHeaderText="Maximum Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
  	PropertyMappings.Add((Id=12,name="bKickLiveIdlers" `modloc(,ColumnHeaderText="Kick Idlers") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 
- 	`if(`isdefined(WITH_BANCDHASH))
+ 	`if(`WITH_BANCDHASH)
 	Properties.Add((PropertyId=13,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=14,Data=(Type=SDT_Float)))
  	PropertyMappings.Add((Id=13,Name="bKickMissingCDHashKeys" `modloc(,ColumnHeaderText="Kick Missing Unique Hash") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
@@ -337,13 +329,13 @@ defaultproperties
 	PropertyMappings.Add((Id=54,name="BotRatio" `modloc(,ColumnHeaderText="Bot/Player Ratio") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=0.1))
 	PropertyMappings.Add((Id=55,Name="MinNetPlayers" `modloc(,ColumnHeaderText="Minimal Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1))
 	PropertyMappings.Add((Id=56,Name="bForceDefaultCharacter" `modloc(,ColumnHeaderText="Force default Character") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
-	`if(`UT3_PATCH_1_3)
+	`if(`WITH_NO_CUSTOM_CHARS)
 	Properties.Add((PropertyId=57,Data=(Type=SDT_Int32)))
 	PropertyMappings.Add((Id=57,name="bNoCustomCharacters" `modloc(,ColumnHeaderText="No Custom Characters") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))
 	`endif
 
 	// mapvoting
-	`if(`isdefined(VOTING_1_3))
+	`if(`WITH_VOTING_1_3)
 	Properties.Add((PropertyId=60,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=61,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=62,Data=(Type=SDT_Int32)))
@@ -359,7 +351,7 @@ defaultproperties
 	PropertyMappings.Add((Id=65,name="InitialVoteDelay" `modloc(,ColumnHeaderText="Mid-Game Vote Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5))
 	`endif
 
-	`if(`isdefined(VOTING_1_4))
+	`if(`WITH_VOTING_1_4)
 	Properties.Add((PropertyId=60,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=61,Data=(Type=SDT_Int32)))
 	Properties.Add((PropertyId=62,Data=(Type=SDT_Int32)))
@@ -395,7 +387,7 @@ defaultproperties
 	// RushVoteTransferTime
 	`endif
 
-	`if(`UT3_PATCH_1_4)
+	`if(`WITH_NO_SEAMLESS_TRAVEL)
 	// some more admin
 	Properties.Add((PropertyId=41,Data=(Type=SDT_Int32)))
 	PropertyMappings.Add((Id=41,name="bForceNoSeamlessTravel" `modloc(,ColumnHeaderText="Disable Seamless Loading") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="No") ),(Id=1 `modloc(,name="Yes") ))))

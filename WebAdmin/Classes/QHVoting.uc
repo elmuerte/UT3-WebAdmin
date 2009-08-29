@@ -8,7 +8,8 @@
 class QHVoting extends Object implements(IQueryHandler) config(WebAdmin);
 
 `include(WebAdmin.uci)
-`if(`UT3_PATCH_1_4)
+
+`if(`WITH_VOTING_1_4)
 
 var WebAdmin webadmin;
 
@@ -351,7 +352,7 @@ function handleMaplist(WebAdminQuery q)
 					}
 				}
 
-				`if(`UT3_PATCH_2_1)
+				`if(`WITH_MAP_REPLAY_LIMIT)
 				ml.MapReplayLimit = max(int(q.request.getVariable("replaylimit")), INDEX_NONE);
 				`endif
 
@@ -391,7 +392,7 @@ function handleMaplist(WebAdminQuery q)
 			}
 			q.response.subst("mapcycle", `HTMLEscape(tmp));
 
-			`if(`UT3_PATCH_2_1)
+			`if(`WITH_MAP_REPLAY_LIMIT)
 			q.response.subst("setting.formname", "replaylimit");
 			q.response.subst("setting.name", "MapReplayLimit");
 			q.response.subst("setting.text", setMapReplyLabel);
@@ -926,4 +927,5 @@ function cleanup();
 function bool handleQuery(WebAdminQuery q);
 function bool unhandledQuery(WebAdminQuery q);
 function registerMenuItems(WebAdminMenu menu);
+function bool producesXhtml();
 `endif
