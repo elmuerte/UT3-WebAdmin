@@ -40,7 +40,7 @@ function init(WorldInfo wi)
 
 function cleanup()
 {
-	local IWebAdminUser user;
+	local BasicWebAdminUser user;
 	foreach users(user)
 	{
 		user.logout();

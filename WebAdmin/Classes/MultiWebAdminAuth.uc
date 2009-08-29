@@ -156,7 +156,7 @@ function bool removeAdminRecord(string username)
 
 function cleanup()
 {
-	local IWebAdminUser user;
+	local MultiWebAdminUser user;
 	foreach users(user)
 	{
 		user.logout();

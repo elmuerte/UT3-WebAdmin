@@ -681,8 +681,11 @@ static function bool compareWeapon(UTUIDataProvider_Weapon w1, UTUIDataProvider_
 	{
 		return w1.AmmoClassPath > w2.AmmoClassPath;
 	}
+	/*
+	// not available everywhere, and not really that interesting
 	else if (sorton ~= "MeshReference")
 	{
 		return w1.MeshReference > w2.MeshReference;
 	}
+	*/
 }
