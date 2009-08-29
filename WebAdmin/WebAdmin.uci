@@ -97,7 +97,7 @@
 	`define WITH_WEBCONX_FIX
 `endif
 
-// TODO
+// If non-empty use bannedinfo records in the accesscontrol
 `if(`notdefined(WITH_BANNEDINFO))
 	`define WITH_BANNEDINFO
 `endif

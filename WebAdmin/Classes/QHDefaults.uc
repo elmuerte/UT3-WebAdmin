@@ -306,22 +306,26 @@ function handleBans(WebAdminQuery q)
 {
 	local string bans, action;
 	local int i;
+	`if(`WITH_BANNEDINFO)
 	local BannedInfo NewBanInfo;
+	`endif
 	local UniqueNetId unid;
 
 	action = q.request.getVariable("action");
 	if (action ~= "delete")
 	{
 		action = q.request.getVariable("banid");
-		i = InStr(action, "legacy:");
+		i = InStr(action, "plainid:");
 		if (i == INDEX_NONE)
 		{
+			`if(`WITH_BANNEDINFO)
 			i = int(action);
 			if (i > -1 && i < webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.Length)
 			{
 				webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.Remove(i, 1);
 				webadmin.worldinfo.game.accesscontrol.SaveConfig();
 			}
+			`endif
 		}
 		else {
 			i = int(Mid(action, i+1));
@@ -341,15 +345,21 @@ function handleBans(WebAdminQuery q)
 			webadmin.addMessage(q, repl(msgNoValidId, "%s", "<code>"$action$"</code>"), MT_error);
 		}
 		else {
+			`if(`WITH_BANNEDINFO)
 			class'OnlineSubsystem'.static.StringToUniqueNetId(action, NewBanInfo.BannedID);
 			NewBanInfo.playername = q.request.getVariable("playername");
 			NewBanInfo.TimeStamp = timestamp();
 			webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.AddItem(NewBanInfo);
+			`else
+			class'OnlineSubsystem'.static.StringToUniqueNetId(action, unid);
+			webadmin.worldinfo.game.accesscontrol.BannedIDs.addItem(unid);
+			`endif
 			webadmin.worldinfo.game.accesscontrol.SaveConfig();
 			webadmin.addMessage(q, msgAddedBanId@action);
 		}
 	}
 
+	`if(`WITH_BANNEDINFO)
 	for (i = 0; i < webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.Length; i++)
 	{
 		q.response.subst("ban.banid", ""$i);
@@ -359,10 +369,11 @@ function handleBans(WebAdminQuery q)
 		q.response.subst("ban.timestamp", `HTMLEscape(webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo[i].TimeStamp));
 		bans $= webadmin.include(q, "policy_bans_row.inc");
 	}
+	`endif
 
 	for (i = 0; i < webadmin.worldinfo.game.accesscontrol.BannedIDs.Length; i++)
 	{
-		q.response.subst("ban.banid", "legacy:"$i);
+		q.response.subst("ban.banid", "plainid:"$i);
 		unid = webadmin.worldinfo.game.accesscontrol.BannedIDs[i];
 		q.response.subst("ban.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(unid));
 		q.response.subst("ban.playername", "");
@@ -452,13 +463,17 @@ function handleSessionBans(WebAdminQuery q)
 		}
 		else {
 			q.response.subst("ban.uniqueid", class'OnlineSubsystem'.static.UniqueNetIdToString(unid));
+			`if(`WITH_BANNEDINFO)
 			if (webadmin.worldinfo.game.accesscontrol.BannedPlayerInfo.find('BannedID', unid) != INDEX_NONE)
 			{
 				q.response.subst("ban.uniqueid.visible", "display: none");
 			}
 			else {
+			`endif
 				q.response.subst("ban.uniqueid.visible", "");
+			`if(`WITH_BANNEDINFO)
 			}
+			`endif
 		}
 		tmp = webadmin.worldinfo.game.accesscontrol.SessionBans[i].BanHash;
 		q.response.subst("ban.hash", tmp);

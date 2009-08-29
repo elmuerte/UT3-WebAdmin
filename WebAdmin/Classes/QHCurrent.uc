@@ -774,6 +774,7 @@ protected function banByIP(PlayerController PC)
 
 protected function banByID(PlayerController PC)
 {
+	`if(`WITH_BANNEDINFO)
 	local BannedInfo NewBanInfo;
 	if ( PC.PlayerReplicationInfo.UniqueId != PC.PlayerReplicationInfo.default.UniqueId &&
 			!webadmin.WorldInfo.Game.AccessControl.IsIDBanned(PC.PlayerReplicationInfo.UniqueID) )
@@ -784,6 +785,14 @@ protected function banByID(PlayerController PC)
 		webadmin.WorldInfo.Game.AccessControl.BannedPlayerInfo.AddItem(NewBanInfo);
 		webadmin.WorldInfo.Game.AccessControl.SaveConfig();
 	}
+	`else
+	if ( PC.PlayerReplicationInfo.UniqueId != PC.PlayerReplicationInfo.default.UniqueId &&
+			!webadmin.WorldInfo.Game.AccessControl.IsIDBanned(PC.PlayerReplicationInfo.UniqueID) )
+	{
+		webadmin.WorldInfo.Game.AccessControl.BannedIDs.AddItem(PC.PlayerReplicationInfo.UniqueId);
+		webadmin.WorldInfo.Game.AccessControl.SaveConfig();
+	}
+	`endif
 }
 
 `if(`WITH_BANCDHASH)
