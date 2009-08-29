@@ -38,6 +38,7 @@ function Settings find(class<GameInfo> GameClass)
 		return magicCache[idx].inst;
 	}
 
+	`if(WITH_FULL_UT3)
 	if (class<UTOnslaughtGame_Content>(GameClass) != none)
 	{
 		result = _UTOnslaughtGame_Content(class<UTOnslaughtGame_Content>(GameClass));
@@ -46,15 +47,21 @@ function Settings find(class<GameInfo> GameClass)
 	{
 		result = _UTOnslaughtGame(class<UTOnslaughtGame>(GameClass));
 	}
-	else if (class<UTVehicleCTFGame_Content>(GameClass) != none)
+	else
+	`endif
+	if (class<UTVehicleCTFGame_Content>(GameClass) != none)
 	{
 		result = _UTVehicleCTFGame_Content(class<UTVehicleCTFGame_Content>(GameClass));
 	}
-	else if (class<UTDuelGame>(GameClass) != none)
+	else
+	`if(WITH_FULL_UT3)
+	if (class<UTDuelGame>(GameClass) != none)
 	{
 		result = _UTDuelGame(class<UTDuelGame>(GameClass));
 	}
-	else if (class<UTCTFGame_Content>(GameClass) != none)
+	else
+	`endif
+	if (class<UTCTFGame_Content>(GameClass) != none)
 	{
 		result = _UTCTFGame_Content(class<UTCTFGame_Content>(GameClass));
 	}
@@ -84,6 +91,7 @@ function Settings find(class<GameInfo> GameClass)
 	return result;
 }
 
+`if(`WITH_FULL_UT3)
 function UTOnslaughtGame_ContentSettings _UTOnslaughtGame_Content(class<UTOnslaughtGame_Content> cls)
 {
 	local UTOnslaughtGame_ContentSettings r;
@@ -104,15 +112,6 @@ function UTOnslaughtGameSettings _UTOnslaughtGame(class<UTOnslaughtGame> cls)
 	return r;
 }
 
-function UTVehicleCTFGame_ContentSettings _UTVehicleCTFGame_Content(class<UTVehicleCTFGame_Content> cls)
-{
-	local UTVehicleCTFGame_ContentSettings r;
-	r = new class'UTVehicleCTFGame_ContentSettings';
-	r.UTGameClass=cls;
-	r.UTTeamGameClass=cls;
-	return r;
-}
-
 function UTDuelGameSettings _UTDuelGame(class<UTDuelGame> cls)
 {
 	local UTDuelGameSettings r;
@@ -120,6 +119,16 @@ function UTDuelGameSettings _UTDuelGame(class<UTDuelGame> cls)
 	r.UTGameClass=cls;
 	r.UTTeamGameClass=cls;
 	r.UTDuelGameClass=cls;
+	return r;
+}
+`endif
+
+function UTVehicleCTFGame_ContentSettings _UTVehicleCTFGame_Content(class<UTVehicleCTFGame_Content> cls)
+{
+	local UTVehicleCTFGame_ContentSettings r;
+	r = new class'UTVehicleCTFGame_ContentSettings';
+	r.UTGameClass=cls;
+	r.UTTeamGameClass=cls;
 	return r;
 }
 
