@@ -7,9 +7,13 @@
  */
 class UTOnslaughtGame_ContentSettings extends UTOnslaughtGameSettings;
 
+`include(WebAdmin.uci)
+
+`if(`WITH_FULL_UT3)
 defaultproperties
 {
 	UTGameClass=class'UTOnslaughtGame_Content'
 	UTTeamGameClass=class'UTOnslaughtGame_Content'
 	UTOnslaughtGameClass=class'UTOnslaughtGame_Content'
 }
+`endif
