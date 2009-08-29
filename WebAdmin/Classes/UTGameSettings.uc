@@ -24,7 +24,9 @@ function initSettings()
  	`if(`WITH_VOTING_1_3)
  	SetIntPropertyByName('VoteDuration', UTGameClass.default.VoteDuration);
  	`endif
+ 	`if(`WITH_MAX_CUSTCHARS)
  	SetIntPropertyByName('MaxCustomChars', UTGameClass.default.MaxCustomChars);
+ 	`endif
  	SetIntPropertyByName('ResetTimeDelay', UTGameClass.default.ResetTimeDelay);
  	SetIntPropertyByName('NetWait', UTGameClass.default.NetWait);
  	SetIntPropertyByName('ClientProcessingTimeout', UTGameClass.default.ClientProcessingTimeout);
@@ -59,7 +61,9 @@ protected function saveInternal()
  	`if(`WITH_VOTING_1_3)
  	GetIntPropertyByName('VoteDuration', UTGameClass.default.VoteDuration);
  	`endif
+ 	`if(`WITH_MAX_CUSTCHARS)
  	GetIntPropertyByName('MaxCustomChars', UTGameClass.default.MaxCustomChars);
+ 	`endif
  	GetIntPropertyByName('ResetTimeDelay', UTGameClass.default.ResetTimeDelay);
  	GetIntPropertyByName('NetWait', UTGameClass.default.NetWait);
  	GetIntPropertyByName('ClientProcessingTimeout', UTGameClass.default.ClientProcessingTimeout);
@@ -97,7 +101,9 @@ defaultproperties
 	PropertyMappings[7]=(Id=7,Name="VoteDuration" `modloc(,ColumnHeaderText="Vote Duration") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
 	`endif
 	PropertyMappings[8]=(Id=8,Name="ResetTimeDelay" `modloc(,ColumnHeaderText="New Round Delay") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=5)
+	`if(WITH_MAX_CUSTCHARS)
 	PropertyMappings[9]=(Id=9,Name="MaxCustomChars" `modloc(,ColumnHeaderText="Maximum Custom Characters") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=64,RangeIncrement=1)
+	`endif
 	PropertyMappings[10]=(Id=10,Name="NetWait" `modloc(,ColumnHeaderText="Delay When Waiting for Players") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
 	PropertyMappings[11]=(Id=11,Name="ClientProcessingTimeout" `modloc(,ColumnHeaderText="Client Processing Timeout") ,MappingType=PVMT_Ranged,MinVal=0,MaxVal=9999,RangeIncrement=10)
 

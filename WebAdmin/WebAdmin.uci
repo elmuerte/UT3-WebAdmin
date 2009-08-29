@@ -22,6 +22,7 @@
 	`define WITH_BANCDHASH present
 	`define WITH_WEBCONX_FIX present
 	`define WITH_BANNEDINFO present
+	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_3 present
 	`define WITH_FULL_UT3 present
 `endif
@@ -31,6 +32,7 @@
 	`define WITH_BANCDHASH present
 	`define WITH_WEBCONX_FIX present
 	`define WITH_BANNEDINFO present
+	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_3 present
 	`define WITH_NO_CUSTOM_CHARS present
 	`define WITH_FULL_UT3 present
@@ -41,6 +43,7 @@
 	`define WITH_BANCDHASH present
 	`define WITH_WEBCONX_FIX present
 	`define WITH_BANNEDINFO present
+	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_4 present
 	`define WITH_NO_CUSTOM_CHARS present
 	`define WITH_NO_SEAMLESS_TRAVEL present
@@ -55,6 +58,7 @@
 	`define WITH_BANCDHASH present
 	`define WITH_WEBCONX_FIX present
 	`define WITH_BANNEDINFO present
+	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_4 present
 	`define WITH_NO_CUSTOM_CHARS present
 	`define WITH_NO_SEAMLESS_TRAVEL present
@@ -104,6 +108,10 @@
 // If non-empty use bannedinfo records in the accesscontrol
 `if(`notdefined(WITH_BANNEDINFO))
 	`define WITH_BANNEDINFO
+`endif
+
+`if(`notdefined(WITH_MAX_CUSTCHARS))
+	`define WITH_MAX_CUSTCHARS
 `endif
 
 // If non-empty use the voting system in UT3 1.3.
