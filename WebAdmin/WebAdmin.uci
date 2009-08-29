@@ -162,6 +162,10 @@
 	`define WITH_GENERIC_NEWS_INTERFACE
 `endif
 
+`if(`notdefined(CHARINFO_CLASSNAME))
+	`define CHARINFO_CLASSNAME UTCustomChar_Data
+`endif
+
 //
 // Other macros
 //

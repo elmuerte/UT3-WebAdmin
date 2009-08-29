@@ -1350,14 +1350,14 @@ function handleBots(WebAdminQuery q)
 
 	if (factions.length == 0)
 	{
-		for (i = 0; i < class'UTCustomChar_Data'.default.Factions.Length; i++)
+		for (i = 0; i < class'`CHARINFO_CLASSNAME'.default.Factions.Length; i++)
 		{
-			facchar.fi = class'UTCustomChar_Data'.default.Factions[i];
-			facchar.factionName = class'WebAdminUtils'.static.getLocalized(class'UTCustomChar_Data'.default.Factions[i].FriendlyName);
+			facchar.fi = class'`CHARINFO_CLASSNAME'.default.Factions[i];
+			facchar.factionName = class'WebAdminUtils'.static.getLocalized(class'`CHARINFO_CLASSNAME'.default.Factions[i].FriendlyName);
 			facchar.chars.Length = 0;
-			for (j = 0; j < class'UTCustomChar_Data'.default.Characters.length; j++)
+			for (j = 0; j < class'`CHARINFO_CLASSNAME'.default.Characters.length; j++)
 			{
-				ci1 = class'UTCustomChar_Data'.default.Characters[j];
+				ci1 = class'`CHARINFO_CLASSNAME'.default.Characters[j];
 				if (ci1.Faction != facchar.fi.Faction)
 				{
 					continue;
@@ -1407,10 +1407,10 @@ function handleBots(WebAdminQuery q)
 
 	foreach webadmin.WorldInfo.AllControllers(class'UTBot', bot)
 	{
-		i = class'UTCustomChar_Data'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
+		i = class'`CHARINFO_CLASSNAME'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
 		if (i != INDEX_NONE)
 		{
-			ci1 = class'UTCustomChar_Data'.default.Characters[i];
+			ci1 = class'`CHARINFO_CLASSNAME'.default.Characters[i];
 			activeRoster.length = activeRoster.length+1;
 			activeRoster[activeRoster.length-1] = ci1.Faction$"."$ci1.CharID;
 		}
@@ -1422,10 +1422,10 @@ function handleBots(WebAdminQuery q)
 		sv1 = "";
 		foreach bots(bot)
 		{
-			i = class'UTCustomChar_Data'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
+			i = class'`CHARINFO_CLASSNAME'.default.Characters.find('CharName', bot.PlayerReplicationInfo.PlayerName);
 			if (i != INDEX_NONE)
 			{
-				ci1 = class'UTCustomChar_Data'.default.Characters[i];
+				ci1 = class'`CHARINFO_CLASSNAME'.default.Characters[i];
 				sv2 = ci1.Faction$"."$ci1.CharID;
 				if (q.request.getVariable(sv2) != "1")
 				{
@@ -1445,9 +1445,9 @@ function handleBots(WebAdminQuery q)
 		bots.length = 0;
 
 		sv1 = "";
-		for (i = 0; i < class'UTCustomChar_Data'.default.Characters.length; i++)
+		for (i = 0; i < class'`CHARINFO_CLASSNAME'.default.Characters.length; i++)
 		{
-			ci1 = class'UTCustomChar_Data'.default.Characters[i];
+			ci1 = class'`CHARINFO_CLASSNAME'.default.Characters[i];
 			sv2 = ci1.Faction$"."$ci1.CharID;
 			if (q.request.getVariable(sv2) == "1")
 			{
