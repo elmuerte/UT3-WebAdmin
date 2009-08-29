@@ -92,7 +92,11 @@ function OnReadGameNewsCompleted(bool bWasSuccessful)
 	local int i,j;
 	if (bWasSuccessful)
 	{
+		`if(`WITH_GENERIC_NEWS_INTERFACE)
+		ParseStringIntoArray(newsIface.GetNews(0, ONT_GameNews), data, chr(10), false);
+		`else
 		ParseStringIntoArray(newsIface.GetGameNews(0), data, chr(10), false);
+		`endif
 		gameNews.length = data.length;
 		j = 0;
 		for (i = 0; i < data.length; i++)
@@ -124,7 +128,11 @@ function OnReadContentAnnouncementsCompleted(bool bWasSuccessful)
 	local int i,j;
 	if (bWasSuccessful)
 	{
+		`if(`WITH_GENERIC_NEWS_INTERFACE)
+		ParseStringIntoArray(newsIface.GetNews(0, ONT_ContentAnnouncements), data, chr(10), false);
+		`else
 		ParseStringIntoArray(newsIface.GetContentAnnouncements(0), data, chr(10), false);
+		`endif
 		contentNews.length = data.length;
 		j = 0;
 		for (i = 0; i < data.length; i++)
