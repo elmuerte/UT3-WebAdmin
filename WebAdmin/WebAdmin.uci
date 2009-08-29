@@ -157,6 +157,11 @@
 	`define WITH_FULL_UT3
 `endif
 
+
+`if(`notdefined(WITH_GENERIC_NEWS_INTERFACE))
+	`define WITH_GENERIC_NEWS_INTERFACE
+`endif
+
 //
 // Other macros
 //

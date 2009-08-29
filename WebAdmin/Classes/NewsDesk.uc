@@ -18,8 +18,12 @@ var OnlineNewsInterface newsIface;
 
 function cleanup()
 {
+	`if(`WITH_GENERIC_NEWS_INTERFACE)
+	newsIface.ClearReadNewsCompletedDelegate(OnReadNewsCompleted);
+	`else
 	newsIface.ClearReadGameNewsCompletedDelegate(OnReadGameNewsCompleted);
 	newsIface.ClearReadContentAnnouncementsCompletedDelegate(OnReadContentAnnouncementsCompleted);
+	`endif
 	newsIface = none;
 }
 
@@ -45,6 +49,11 @@ function getNews(optional bool forceUpdate)
 	if (class'GameEngine'.static.GetOnlineSubsystem() != none)
 	{
 		newsIface = class'GameEngine'.static.GetOnlineSubsystem().NewsInterface;
+		`if(`WITH_GENERIC_NEWS_INTERFACE)
+		newsIface.AddReadNewsCompletedDelegate(OnReadNewsCompleted);
+		newsIface.ReadNews(0, ONT_GameNews);
+		newsIface.ReadNews(0, ONT_ContentAnnouncements);
+		`else
 		newsIface.AddReadGameNewsCompletedDelegate(OnReadGameNewsCompleted);
 		if (!newsIface.ReadGameNews(0))
 		{
@@ -55,8 +64,23 @@ function getNews(optional bool forceUpdate)
 		{
 			OnReadContentAnnouncementsCompleted(false);
 		}
+		`endif
 	}
 }
+
+`if(`WITH_GENERIC_NEWS_INTERFACE)
+function OnReadNewsCompleted(bool bWasSuccessful,EOnlineNewsType NewsType)
+{
+	if (NewsType == ONT_GameNews)
+	{
+		OnReadGameNewsCompleted(bWasSuccessful);
+	}
+	else if (NewsType == ONT_ContentAnnouncements)
+	{
+		OnReadContentAnnouncementsCompleted(bWasSuccessful);
+	}
+}
+`endif
 
 /**
  * Callback when the news was received
@@ -84,7 +108,10 @@ function OnReadGameNewsCompleted(bool bWasSuccessful)
 		lastUpdate = TimeStamp();
 		SaveConfig();
 	}
+	`if(`WITH_GENERIC_NEWS_INTERFACE)
+	`else
 	newsIface.ClearReadGameNewsCompletedDelegate(OnReadGameNewsCompleted);
+	`endif
 }
 
 /**
@@ -113,7 +140,10 @@ function OnReadContentAnnouncementsCompleted(bool bWasSuccessful)
 		lastUpdate = TimeStamp();
 		SaveConfig();
 	}
+	`if(`WITH_GENERIC_NEWS_INTERFACE)
+	`else
 	newsIface.ClearReadContentAnnouncementsCompletedDelegate(OnReadContentAnnouncementsCompleted);
+	`endif
 }
 
 function string renderNews(WebAdmin webadmin, WebAdminQuery q)
