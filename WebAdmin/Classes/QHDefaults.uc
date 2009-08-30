@@ -841,6 +841,7 @@ function handleSettingsGeneral(WebAdminQuery q)
 				webadmin.addMessage(q, msgSettingsSaved);
 			}
 			// server name change takes immediate effect
+			`if(`GAME_UT3)
 			if (WebAdmin.WorldInfo.Game.GameReplicationInfo != none	&& WebAdmin.WorldInfo.Game.GameSettings != none
 				&& WebAdmin.WorldInfo.Game.GameInterface != none
 				&& (WebAdmin.WorldInfo.Game.GameReplicationInfo.ServerName != class'GameReplicationInfo'.default.ServerName))
@@ -849,6 +850,9 @@ function handleSettingsGeneral(WebAdminQuery q)
 				WebAdmin.WorldInfo.Game.GameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName;
 				WebAdmin.WorldInfo.Game.GameInterface.UpdateOnlineGame(WebAdmin.WorldInfo.Game.GameSettings);
 			}
+			`else
+			// TODO: update online info
+			`endif
 		}
 		if (settingsRenderer == none)
 		{
