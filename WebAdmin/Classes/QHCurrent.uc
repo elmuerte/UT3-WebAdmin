@@ -515,11 +515,11 @@ static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInf
 	{
 		return pri1.playerranking > pri2.playerranking;
 	}
-	`endif
 	else if (key ~= "teamid")
 	{
 		return pri1.teamid > pri2.teamid;
 	}
+	`endif
 	else if (key ~= "kills")
 	{
 		return pri1.kills > pri2.kills;
@@ -556,9 +556,9 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	`endif
 	q.response.subst("player.ping", pri.ping * 4); // this ping value is divided by 4 (250 = 1sec) see bug #40
 	q.response.subst("player.exactping", pri.ExactPing);
-	q.response.subst("player.packetloss", pri.PacketLoss);
 	q.response.subst("player.lives", pri.numlives);
 	`if(`GAME_UT3)
+	q.response.subst("player.packetloss", pri.PacketLoss);
 	q.response.subst("player.ranking", pri.playerranking);
 	`endif
 	if (pri.Team != none)
