@@ -38,7 +38,7 @@ function Settings find(class<GameInfo> GameClass)
 		return magicCache[idx].inst;
 	}
 
-	`if(`WITH_FULL_UT3)
+	`if(`GAME_UT3)
 	if (class<UTOnslaughtGame_Content>(GameClass) != none)
 	{
 		result = _UTOnslaughtGame_Content(class<UTOnslaughtGame_Content>(GameClass));
@@ -54,7 +54,7 @@ function Settings find(class<GameInfo> GameClass)
 		result = _UTVehicleCTFGame_Content(class<UTVehicleCTFGame_Content>(GameClass));
 	}
 	else
-	`if(`WITH_FULL_UT3)
+	`if(`GAME_UT3)
 	if (class<UTDuelGame>(GameClass) != none)
 	{
 		result = _UTDuelGame(class<UTDuelGame>(GameClass));
@@ -91,7 +91,7 @@ function Settings find(class<GameInfo> GameClass)
 	return result;
 }
 
-`if(`WITH_FULL_UT3)
+`if(`GAME_UT3)
 function UTOnslaughtGame_ContentSettings _UTOnslaughtGame_Content(class<UTOnslaughtGame_Content> cls)
 {
 	local UTOnslaughtGame_ContentSettings r;

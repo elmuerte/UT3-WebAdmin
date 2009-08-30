@@ -745,10 +745,12 @@ function handleSettingsGametypes(WebAdminQuery q)
 			}
 			else {
 				applySettings(settings, q.request);
+				`if(`GAME_UT3)
 				if (UTGame(WebAdmin.WorldInfo.Game) != none)
 				{	// this prevents some saving of variables at a level change
 					UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
 				}
+				`endif
 				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 				webadmin.addMessage(q, msgSettingsSaved);
 			}
@@ -829,10 +831,12 @@ function handleSettingsGeneral(WebAdminQuery q)
 			}
 			else {
 				applySettings(settings, q.request);
+				`if(`GAME_UT3)
 				if (UTGame(WebAdmin.WorldInfo.Game) != none)
 				{	// this prevents some saving of variables at a level change
 					UTGame(WebAdmin.WorldInfo.Game).bAdminModifiedOptions = true;
 				}
+				`endif
 				settings.SetSpecialValue(`{WA_SAVE_SETTINGS}, "");
 				webadmin.addMessage(q, msgSettingsSaved);
 			}

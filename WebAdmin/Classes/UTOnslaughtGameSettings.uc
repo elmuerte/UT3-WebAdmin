@@ -9,7 +9,7 @@ class UTOnslaughtGameSettings extends UTTeamGameSettings abstract;
 
 `include(WebAdmin.uci)
 
-`if(`WITH_FULL_UT3)
+`if(`GAME_UT3)
 
 var class<UTOnslaughtGame> UTOnslaughtGameClass;
 

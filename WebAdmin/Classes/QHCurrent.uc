@@ -400,7 +400,7 @@ function handleCurrent(WebAdminQuery q)
 	buildSortedPRI(q.request.getVariable("sortby", "score"), q.request.getVariable("reverse", "true") ~= "true");
 	foreach sortedPRI(pri, idx)
 	{
-		if (int(idx % 2) == 0) q.response.subst("evenodd", "even");
+		if (`mod(idx, 2) == 0) q.response.subst("evenodd", "even");
 		else q.response.subst("evenodd", "odd");
 		substPri(q, pri);
 		players $= webadmin.include(q, "current_player_row.inc");
@@ -510,10 +510,12 @@ static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInf
 	{
 		return pri1.NumLives > pri2.numlives;
 	}
+	`if(`GAME_UT3)
 	else if (key ~= "ranking")
 	{
 		return pri1.playerranking > pri2.playerranking;
 	}
+	`endif
 	else if (key ~= "teamid")
 	{
 		return pri1.teamid > pri2.teamid;
@@ -547,12 +549,18 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 	q.response.subst("player.playername", `HTMLEscape(pri.PlayerName));
 	q.response.subst("player.playeralias", `HTMLEscape(pri.PlayerAlias));
 	q.response.subst("player.score", int(pri.score));
+	`if(`GAME_UT3)
 	q.response.subst("player.deaths", int(pri.deaths));
+	`else
+	q.response.subst("player.deaths", pri.deaths);
+	`endif
 	q.response.subst("player.ping", pri.ping * 4); // this ping value is divided by 4 (250 = 1sec) see bug #40
 	q.response.subst("player.exactping", pri.ExactPing);
 	q.response.subst("player.packetloss", pri.PacketLoss);
 	q.response.subst("player.lives", pri.numlives);
+	`if(`GAME_UT3)
 	q.response.subst("player.ranking", pri.playerranking);
+	`endif
 	if (pri.Team != none)
 	{
 		q.response.subst("player.teamid", pri.Team.TeamIndex);
@@ -702,7 +710,7 @@ function handleCurrentPlayers(WebAdminQuery q)
 			continue;
 		}
 
-		if (int(idx % 2) == 0) q.response.subst("evenodd", "even");
+		if (`mod(idx, 2) == 0) q.response.subst("evenodd", "even");
 		else q.response.subst("evenodd", "odd");
 
 		substPri(q, pri);
