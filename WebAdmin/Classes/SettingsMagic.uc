@@ -12,7 +12,7 @@ class SettingsMagic extends Object config(WebAdmin);
 struct MagicCacheEntry
 {
 	var class<GameInfo> cls;
-	var Settings inst;
+	var `{SETTINGS_CLASSNAME} inst;
 };
 var array<MagicCacheEntry> magicCache;
 
@@ -27,9 +27,9 @@ function cleanup()
 	magicCache.length = 0;
 }
 
-function Settings find(class<GameInfo> GameClass)
+function `{SETTINGS_CLASSNAME} find(class<GameInfo> GameClass)
 {
-	local Settings result;
+	local `{SETTINGS_CLASSNAME} result;
 	local int idx;
 
 	idx = magicCache.find('cls', GameClass);

@@ -24,7 +24,6 @@
 	`define WITH_BANNEDINFO present
 	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_3 present
-	`define WITH_FULL_UT3 present
 	`define GAME_UT3 present
 `endif
 `if(`isdefined(UT3v1_3))
@@ -36,7 +35,6 @@
 	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_3 present
 	`define WITH_NO_CUSTOM_CHARS present
-	`define WITH_FULL_UT3 present
 	`define GAME_UT3 present
 `endif
 `if(`isdefined(UT3v2_0)) // aka 1.4
@@ -52,7 +50,6 @@
 	`define WITH_SPAWN_PROTECTION present
 	`define WITH_SESSION_BAN present
 	`define WITH_CLEAR_CONFIG present
-	`define WITH_FULL_UT3 present
 	`define GAME_UT3 present
 `endif
 `if(`isdefined(UT3v2_1))
@@ -69,7 +66,6 @@
 	`define WITH_SESSION_BAN present
 	`define WITH_CLEAR_CONFIG present
 	`define WITH_MAP_REPLAY_LIMIT present
-	`define WITH_FULL_UT3 present
 	`define GAME_UT3 present
 `endif
 
@@ -77,6 +73,16 @@
 `if(`notdefined(BUILD_PROFILE))
 	//!WARNING! No build profile defined
 	`define BUILD_PROFILE "unknown"
+`endif
+
+// If not empty we're compiling for UT3
+`if(`notdefined(GAME_UT3))
+	`define GAME_UT3
+`endif
+
+// These always existed in UT3
+`if(`GAME_UT3)
+	`define WITH_SPECIALVALUE present
 `endif
 
 //
@@ -91,11 +97,6 @@
 // `define BUILD_AS_MOD
 
 // You shouldn't touch these definitions
-
-// If not empty we're compiling for UT3
-`if(`notdefined(GAME_UT3))
-	`define GAME_UT3
-`endif
 
 // Use base64 encoding functions, this functionality wasn't available in the
 // early versions of UWeb
@@ -178,6 +179,19 @@
 // The classname for the character information class
 `if(`notdefined(CHARINFO_CLASSNAME))
 	`define CHARINFO_CLASSNAME UTCustomChar_Data
+`endif
+
+// If not empty, the engine supports GetSpecialValue and SetSpecialValue
+`if(`notdefined(WITH_SPECIALVALUE))
+	`define WITH_SPECIALVALUE
+`endif
+
+`if (`notdefined(SETTINGS_CLASSNAME))
+	`if(`WITH_SPECIALVALUE)
+		`define SETTINGS_CLASSNAME Settings
+	`else
+		`define SETTINGS_CLASSNAME WebAdminSettings
+	`endif
 `endif
 
 // If non empty the engine contains an integer mod operator

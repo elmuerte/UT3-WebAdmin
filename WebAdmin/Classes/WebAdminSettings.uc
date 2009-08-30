@@ -27,6 +27,20 @@ function SetSpecialValue(name PropertyName, string NewValue)
 	{
 		saveSettings();
 	}
+	`if(`WITH_SPECIALVALUE)
+	else {
+		super.SetSpecialValue(PropertyName, NewValue);
+	}
+	`endif
+}
+
+function string GetSpecialValue(name PropertyName)
+{
+	`if(`WITH_SPECIALVALUE)
+	return super.GetSpecialValue(PropertyName);
+	`else
+	return "";
+	`endif
 }
 
 function initSettings();

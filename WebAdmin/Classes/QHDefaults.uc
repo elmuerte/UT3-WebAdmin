@@ -36,14 +36,14 @@ var config array<HasSettingsClass> HasSettingsCache;
 struct ClassSettingsCacheEntry
 {
 	var string cls;
-	var class<Settings> settingsCls;
+	var class<`{SETTINGS_CLASSNAME}> settingsCls;
 };
 var array<ClassSettingsCacheEntry> classSettingsCache;
 
 struct SettingsInstance
 {
-	var class<Settings> cls;
-	var Settings instance;
+	var class<`{SETTINGS_CLASSNAME}> cls;
+	var `{SETTINGS_CLASSNAME} instance;
 };
 var array<SettingsInstance> settingsInstances;
 
@@ -540,7 +540,7 @@ function bool HasSettings(string forClass)
 /**
  * Get the settings class by the fully qualified name
  */
-function class<Settings> getSettingsClassFqn(string forClass, optional bool bSilent=false)
+function class<`{SETTINGS_CLASSNAME}> getSettingsClassFqn(string forClass, optional bool bSilent=false)
 {
 	local int idx;
 	if (len(forClass) == 0) return none;
@@ -558,10 +558,10 @@ function class<Settings> getSettingsClassFqn(string forClass, optional bool bSil
 /**
  * Find the settings class. package name could be empty
  */
-function class<Settings> getSettingsClass(string pkgName, string clsName, optional bool bSilent=false)
+function class<`{SETTINGS_CLASSNAME}> getSettingsClass(string pkgName, string clsName, optional bool bSilent=false)
 {
 	local string className, settingsClass;
-	local class<Settings> result;
+	local class<`{SETTINGS_CLASSNAME}> result;
 	local int idx;
 	local ClassSettingsCacheEntry cacheEntry;
 
@@ -583,7 +583,7 @@ function class<Settings> getSettingsClass(string pkgName, string clsName, option
 	}
 	if (idx != INDEX_NONE)
 	{
-		result = class<Settings>(DynamicLoadObject(settingsClasses[idx].settingsClass, class'Class'));
+		result = class<`{SETTINGS_CLASSNAME}>(DynamicLoadObject(settingsClasses[idx].settingsClass, class'Class'));
 		if (result == none)
 		{
 			`Log("Unable to load settings class "$settingsClasses[idx].settingsClass$" for the class "$settingsClasses[idx].className,,'WebAdmin');
@@ -602,7 +602,7 @@ function class<Settings> getSettingsClass(string pkgName, string clsName, option
 	else if (settingsClass ~= "UT3Gold") settingsClass = string(class.getPackageName());
 	else if (settingsClass ~= "UT3GoldGame") settingsClass = string(class.getPackageName());
 	settingsClass $= "."$clsName$"Settings";
-	result = class<Settings>(DynamicLoadObject(settingsClass, class'class', true));
+	result = class<`{SETTINGS_CLASSNAME}>(DynamicLoadObject(settingsClass, class'class', true));
 	if (result != none)
 	{
 		cacheEntry.settingsCls = result;
@@ -610,7 +610,7 @@ function class<Settings> getSettingsClass(string pkgName, string clsName, option
 		return result;
 	}
 	// not in the same package, try the find the object (only works when it was loaded)
-	result = class<Settings>(FindObject(clsName$"Settings", class'class'));
+	result = class<`{SETTINGS_CLASSNAME}>(FindObject(clsName$"Settings", class'class'));
 	if (result == none)
 	{
 		if (!bSilent)
@@ -627,14 +627,14 @@ function class<Settings> getSettingsClass(string pkgName, string clsName, option
 /**
  * Try to find the settings class for the provided class
  */
-function class<Settings> getSettingsClassByClass(class forClass, optional bool bSilent=false)
+function class<`{SETTINGS_CLASSNAME}> getSettingsClassByClass(class forClass, optional bool bSilent=false)
 {
 	return getSettingsClass(string(forClass.getPackageName()), string(forClass.name), bSilent);
 }
 
-function Settings getSettingsInstance(class<Settings> cls)
+function `{SETTINGS_CLASSNAME} getSettingsInstance(class<`{SETTINGS_CLASSNAME}> cls)
 {
-	local Settings instance;
+	local `{SETTINGS_CLASSNAME} instance;
 	local int idx;
 	idx = settingsInstances.find('cls', cls);
 	if (idx == INDEX_NONE)
@@ -660,9 +660,9 @@ function handleSettingsGametypes(WebAdminQuery q)
 	local string currentGameType, substvar, tmp;
 	local UTUIDataProvider_GameModeInfo editGametype, gametype;
 	local int idx;
-	local class<Settings> settingsClass;
+	local class<`{SETTINGS_CLASSNAME}> settingsClass;
 	local class<GameInfo> gi;
-	local Settings settings;
+	local `{SETTINGS_CLASSNAME} settings;
 
 	currentGameType = q.request.getVariable("gametype");
 	if (currentGameType == "")
@@ -779,7 +779,7 @@ function handleSettingsGametypes(WebAdminQuery q)
 /**
  * Apply the settings received from the response to the settings instance
  */
-static function applySettings(Settings settings, WebRequest request, optional string prefix = "settings_")
+static function applySettings(`{SETTINGS_CLASSNAME} settings, WebRequest request, optional string prefix = "settings_")
 {
 	local int i, idx;
 	local name sname;
@@ -809,10 +809,10 @@ static function applySettings(Settings settings, WebRequest request, optional st
 
 function handleSettingsGeneral(WebAdminQuery q)
 {
-	local class<Settings> settingsClass;
-	local Settings settings;
+	local class<`{SETTINGS_CLASSNAME}> settingsClass;
+	local `{SETTINGS_CLASSNAME} settings;
 
-	settingsClass = class<Settings>(DynamicLoadObject(GeneralSettingsClass, class'class'));
+	settingsClass = class<`{SETTINGS_CLASSNAME}>(DynamicLoadObject(GeneralSettingsClass, class'class'));
 	if (settingsClass != none)
 	{
 		settings = getSettingsInstance(settingsClass);
@@ -917,8 +917,8 @@ function handleSettingsMutators(WebAdminQuery q)
 	local UTUIDataProvider_Mutator mutator, editMutator;
 	local string currentMutator, substvar;
 	local class<Mutator> mut;
-	local class<Settings> settingsClass;
-	local Settings settings;
+	local class<`{SETTINGS_CLASSNAME}> settingsClass;
+	local `{SETTINGS_CLASSNAME} settings;
 	local int idx;
 
 	currentMutator = q.request.getVariable("mutator");

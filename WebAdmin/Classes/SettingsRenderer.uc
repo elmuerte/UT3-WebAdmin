@@ -50,7 +50,7 @@ struct SettingsGroup
 };
 var array<SettingsGroup> groups;
 
-var protected Settings curSettings;
+var protected `{SETTINGS_CLASSNAME} curSettings;
 var protected WebResponse curResponse;
 
 /**
@@ -88,7 +88,7 @@ function cleanup()
 /**
  * Used to initialize the rendered for an IAdvWebAdminSettings instance
  */
-function initEx(Settings settings, WebResponse response)
+function initEx(`{SETTINGS_CLASSNAME} settings, WebResponse response)
 {
 	curSettings = settings;
 	curResponse = response;
@@ -197,7 +197,7 @@ function createGroups()
 /**
  * Render all properties of the given settings instance
  */
-function render(Settings settings, WebResponse response, optional string substName = "settings")
+function render(`{SETTINGS_CLASSNAME} settings, WebResponse response, optional string substName = "settings")
 {
 	local string result, entry;
 	local int i;
