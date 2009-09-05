@@ -7,7 +7,9 @@
  */
 class UTBetrayalGameSettings extends UTDeathmatchSettings;
 
+`if(`GAME_UT3)
 defaultProperties
 {
 	UTGameClass=class'UTBetrayalGame'
 }
+`endif

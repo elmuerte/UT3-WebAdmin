@@ -7,8 +7,10 @@
  */
 class UTGreedGame_ContentSettings extends UTGreedGameSettings;
 
+`if(`GAME_UT3)
 defaultProperties
 {
 	UTGameClass=class'UTGreedGame_Content'
 	UTTeamGameClass=class'UTGreedGame_Content'
 }
+`endif
