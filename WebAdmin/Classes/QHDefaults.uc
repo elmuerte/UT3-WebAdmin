@@ -1173,7 +1173,7 @@ function handleMapListAdditional(WebAdminQuery q)
 				{
 					continue;
 				}
-				class'WebAdminUtils'.static.getDateTime(datetime);
+				class'WebAdminUtils'.static.getDateTime(datetime, timestamp());
 				cycle.id = "imported"$i@datetime.year$datetime.month$datetime.day$datetime.hour$datetime.minute$datetime.second;
 				cycle.FriendlyName = msgImportedMapList;
 				cycle.cycle = class'UTGame'.default.GameSpecificMapCycles[i];
@@ -1202,7 +1202,7 @@ function handleMapListAdditional(WebAdminQuery q)
 			}
 			currentCycle.cycle.GameClassName = gi.name;
 			currentCycle.cycle.maps.length = 0;
-			class'WebAdminUtils'.static.getDateTime(datetime);
+			class'WebAdminUtils'.static.getDateTime(datetime, timestamp());
 			editCycleId = gi.name@datetime.year$datetime.month$datetime.day$datetime.hour$datetime.minute$datetime.second;
 			currentCycle.id = editCycleId;
 			currentCycleIdx = additionalML.mapCycles.length;

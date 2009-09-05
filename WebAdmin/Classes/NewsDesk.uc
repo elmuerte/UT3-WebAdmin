@@ -36,7 +36,7 @@ function getNews(optional bool forceUpdate)
 
 	if (len(lastUpdate) > 0 && !forceUpdate)
 	{
-		class'WebAdminUtils'.static.getDateTime(now);
+		class'WebAdminUtils'.static.getDateTime(now, timestamp());
 		class'WebAdminUtils'.static.getDateTime(last, lastUpdate);
 		// YY,YYM,MDD
 		// 20,081,231

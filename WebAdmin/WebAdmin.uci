@@ -24,7 +24,6 @@
 	`define WITH_BANNEDINFO present
 	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_3 present
-	`define WITH_TIMESTAMP
 	`define GAME_UT3 present
 `endif
 `if(`isdefined(UT3v1_3))
@@ -36,7 +35,6 @@
 	`define WITH_MAX_CUSTCHARS present
 	`define WITH_VOTING_1_3 present
 	`define WITH_NO_CUSTOM_CHARS present
-	`define WITH_TIMESTAMP
 	`define GAME_UT3 present
 `endif
 `if(`isdefined(UT3v2_0)) // aka 1.4
@@ -52,7 +50,6 @@
 	`define WITH_SPAWN_PROTECTION present
 	`define WITH_SESSION_BAN present
 	`define WITH_CLEAR_CONFIG present
-	`define WITH_TIMESTAMP
 	`define GAME_UT3 present
 `endif
 `if(`isdefined(UT3v2_1))
@@ -69,7 +66,6 @@
 	`define WITH_SESSION_BAN present
 	`define WITH_CLEAR_CONFIG present
 	`define WITH_MAP_REPLAY_LIMIT present
-	`define WITH_TIMESTAMP
 	`define GAME_UT3 present
 `endif
 
@@ -201,11 +197,6 @@
 // If non empty the engine contains an integer mod operator
 `if(`notdefined(WITH_INT_MOD))
 	`define WITH_INT_MOD
-`endif
-
-// If non empty the engine has the Timestamp() function
-`if(`notdefined(WITH_TIMESTAMP))
-	`define WITH_TIMESTAMP
 `endif
 
 //

@@ -25,7 +25,7 @@ function ISession create()
 
 	`if(WITH_BROKEN_RAND)
 	// seed the broken rand function
-	class'WebAdminUtils'.static.getDateTime(dt);
+	class'WebAdminUtils'.static.getDateTime(dt, timestamp());
 	for (i = 0; i < dt.second+dt.minute+dt.day; i++)
 	{
 		rand(0xffff);
