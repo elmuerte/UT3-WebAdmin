@@ -7,6 +7,7 @@
  */
 class UTGreedGame_ContentSettings extends UTGreedGameSettings;
 
+`include(WebAdmin.uci)
 `if(`GAME_UT3)
 defaultProperties
 {

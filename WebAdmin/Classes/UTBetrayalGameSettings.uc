@@ -7,6 +7,7 @@
  */
 class UTBetrayalGameSettings extends UTDeathmatchSettings;
 
+`include(WebAdmin.uci)
 `if(`GAME_UT3)
 defaultProperties
 {
