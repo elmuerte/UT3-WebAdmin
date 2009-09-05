@@ -81,7 +81,7 @@ static final function String ColorToHTMLColor(color clr)
 }
 
 /**
- * Parse a timestamp to a DateTime structure. When no timestamp is given the current timestamp will be used.
+ * Parse a timestamp to a DateTime structure.
  * The format of the timestamp is: YYYY/MM/DD - HH:MM:SS
  */
 static final function bool getDateTime(out DateTime record, string ts)
