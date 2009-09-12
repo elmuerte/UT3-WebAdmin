@@ -16,10 +16,20 @@ struct MenuItem
 	 * bar
 	 * bar/quux
 	 * bar/quux2
+	 * bar/quux2+data
+	 *
+	 * The bar/quux2+data item will be considered as a sub page of bar/quux2
+	 * When checking for permissions bar/quux2 will be used instead of
+	 * bar/quux2+data
 	 */
 	var string path;
 	/**
-	 * Title of the menu item
+	 * The path to use for permission checking. Will default to path
+	 */
+	var string permPath;
+	/**
+	 * Title of the menu item. If empty the menu item is not shown in the
+	 * rendered menu
 	 */
 	var string title;
 	/**
@@ -63,6 +73,10 @@ function addMenuItem(MenuItem item)
 {
 	local int idx;
 	idx = menu.find('path', item.path);
+	if (len(item.permPath) == 0)
+	{
+		item.permPath = item.path;
+	}
 	if (idx > -1)
 	{
 		menu[idx].title = item.title;
@@ -79,7 +93,8 @@ function addMenuItem(MenuItem item)
  * Add a new menu item (or overwrite the previous for the given path).
  */
 function addMenu(string path, string title, IQueryHandler handler,
-	optional string description = "", optional int weight = 0)
+	optional string description = "", optional int weight = 0,
+	optional string permPath = "")
 {
 	local MenuItem item;
 	item.path = path;
@@ -87,6 +102,7 @@ function addMenu(string path, string title, IQueryHandler handler,
 	item.description = description;
 	item.weight = weight;
 	item.handler = handler;
+	item.permPath = permPath;
 	addMenuItem(item);
 }
 
@@ -127,7 +143,7 @@ function WebAdminMenu getUserMenu(IWebAdminUser forUser)
 	result.webadmin = webadmin;
 	foreach menu(entry)
 	{
-		if (forUser.canPerform(webadmin.getAuthURL(entry.path)))
+		if (forUser.canPerform(webadmin.getAuthURL(entry.permPath)))
 		{
 			result.addSortedItem(entry);
 		}

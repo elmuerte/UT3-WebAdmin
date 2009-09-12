@@ -203,14 +203,14 @@ function bool producesXhtml()
 function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/current", menuCurrent, self, menuCurrentDesc, -100);
-	menu.addMenu("/current/data", "", self);
+	menu.addMenu("/current/data", "", self,,, "/current");
 	menu.addMenu("/current/players", menuPlayers, self, menuPlayersDesc);
-	menu.addMenu("/current/players/data", "", self);
+	menu.addMenu("/current/players/data", "", self,,, "/current/players");
 	menu.addMenu("/current/chat", menuChat, self, menuChatDesc);
-	menu.addMenu("/current/chat/data", "", self);
+	menu.addMenu("/current/chat/data", "", self,,, "/current/chat");
 	menu.addMenu("/current/change", menuChange, self, menuChangeDesc);
-	menu.addMenu("/current/change/data", "", self);
-	menu.addMenu("/current/change/check", "", self);
+	menu.addMenu("/current/change/data", "", self,,, "/current/change");
+	menu.addMenu("/current/change/check", "", self,,, "/current/change");
 	if (bConsoleEnabled)
 	{
 		menu.addMenu("/console", menuConsole, self, menuConsoleDesc);
@@ -239,10 +239,6 @@ function bool handleQuery(WebAdminQuery q)
 			return true;
 		case "/current/chat/data":
 			handleCurrentChatData(q);
-			return true;
-		case "/current/chat/check":
-			q.response.SendStandardHeaders();
-			q.response.SendText("done");
 			return true;
 		case "/console":
 			if (bConsoleEnabled)

@@ -2,6 +2,9 @@ v1.17 - 2009-09-?? (requires UT3 2.1)
 -------------------------------------
 - fixes the issue where changes to game profile disappeared when a new map
   was loaded.
+- made some changes to the way the menu permissions are validated, the
+  urls used for AJAX requests are now dependent to their base url. This
+  addresses issues #74, #75
 
 v1.16 - 2009-07-30 (requires UT3 2.1)
 -------------------------------------

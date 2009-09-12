@@ -146,7 +146,7 @@ function registerMenuItems(WebAdminMenu menu)
 {
 	menu.addMenu("/voting", menuVoting, self, menuVotingDesc);
 	menu.addMenu("/voting/profiles", menuProfiles, self, menuProfilesDesc, -1);
-	menu.addMenu("/voting/profiles/data", "", self);
+	menu.addMenu("/voting/profiles/data", "", self,,, "/voting/profiles");
 	menu.addMenu("/voting/maplist", menuMapList, self, menuMapListDesc);
 	menu.addMenu("/voting/mutators", menuMuts, self, menuMutsDesc);
 }
