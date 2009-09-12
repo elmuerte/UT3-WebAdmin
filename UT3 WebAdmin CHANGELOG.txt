@@ -1,3 +1,8 @@
+v1.17 - 2009-09-?? (requires UT3 2.1)
+-------------------------------------
+- fixes the issue where changes to game profile disappeared when a new map
+  was loaded.
+
 v1.16 - 2009-07-30 (requires UT3 2.1)
 -------------------------------------
 - added a warning when the localization file is corrupt. This causes missing
