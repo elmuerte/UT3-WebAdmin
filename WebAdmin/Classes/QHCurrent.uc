@@ -389,8 +389,10 @@ function handleCurrent(WebAdminQuery q)
 	q.response.subst("time.remaining", webadmin.WorldInfo.Game.GameReplicationInfo.RemainingTime);
 
 	q.response.subst("server.name", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.ServerName));
+	`if(`GAME_UT3)
 	q.response.subst("server.admin.name", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.AdminName));
 	q.response.subst("server.admin.email", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.AdminEmail));
+	`endif
 	q.response.subst("server.motd", `HTMLEscape(webadmin.WorldInfo.Game.GameReplicationInfo.MessageOfTheDay));
 
 	buildSortedPRI(q.request.getVariable("sortby", "score"), q.request.getVariable("reverse", "true") ~= "true");
@@ -463,7 +465,8 @@ function buildSortedPRI(string sortkey, optional bool reverse=false, optional bo
 
 static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInfo PRI2, string key)
 {
-	local string s1, s2;
+	`if(`GAME_UT3)
+    local string s1, s2;
 	if (key ~= "name")
 	{
 		if (len(pri1.PlayerName) == 0)
@@ -482,14 +485,18 @@ static function bool comparePRI(PlayerReplicationInfo PRI1, PlayerReplicationInf
 		}
 		return caps(s1) > caps(s2);
 	}
-	else if (key ~= "playername")
+	else
+    `endif 
+    if (key ~= "playername" `if(`GAME_UT3) `else || key ~= "name" `endif)
 	{
 		return caps(pri1.PlayerName) > caps(pri2.PlayerName);
 	}
+	`if(`GAME_UT3)
 	else if (key ~= "playeralias")
 	{
 		return caps(pri1.PlayerAlias) > caps(pri2.PlayerAlias);
 	}
+	`endif
 	else if (key ~= "score")
 	{
 		return pri1.score > pri2.score;
@@ -535,15 +542,19 @@ static function substPri(WebAdminQuery q, PlayerReplicationInfo pri)
 {
 	q.response.subst("player.playerid", pri.PlayerID);
 	q.response.subst("player.playerkey", getPlayerKey(pri));
+	`if(`GAME_UT3)
 	if (len(pri.PlayerName) == 0)
 	{
 		q.response.subst("player.name", `HTMLEscape(pri.PlayerAlias));
 	}
 	else {
+	`endif
 		q.response.subst("player.name", `HTMLEscape(pri.PlayerName));
+	`if(`GAME_UT3)
 	}
-	q.response.subst("player.playername", `HTMLEscape(pri.PlayerName));
 	q.response.subst("player.playeralias", `HTMLEscape(pri.PlayerAlias));
+	`endif
+	q.response.subst("player.playername", `HTMLEscape(pri.PlayerName));
 	q.response.subst("player.score", int(pri.score));
 	`if(`GAME_UT3)
 	q.response.subst("player.deaths", int(pri.deaths));

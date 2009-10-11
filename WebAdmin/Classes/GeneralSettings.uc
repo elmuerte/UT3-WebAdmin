@@ -27,10 +27,12 @@ function initSettings()
 {
 	// Server Information
 	SetStringPropertyByName('ServerName', class'GameReplicationInfo'.default.ServerName);
+	`if(`GAME_UT3)
 	SetStringPropertyByName('ShortName', class'GameReplicationInfo'.default.ShortName);
 	SetStringPropertyByName('AdminName', class'GameReplicationInfo'.default.AdminName);
 	SetStringPropertyByName('AdminEmail', class'GameReplicationInfo'.default.AdminEmail);
 	SetIntPropertyByName('ServerRegion', class'GameReplicationInfo'.default.ServerRegion);
+	`endif
 	SetStringPropertyByName('MessageOfTheDay', class'GameReplicationInfo'.default.MessageOfTheDay);
 	SetIntPropertyByName('ServerSkillLevel', class'UTGame'.default.ServerSkillLevel);
 
@@ -118,10 +120,12 @@ function saveSettings()
 
 	// GRI
 	GetStringPropertyByName('ServerName', class'GameReplicationInfo'.default.ServerName);
+	`if(`GAME_UT3)
 	GetStringPropertyByName('ShortName', class'GameReplicationInfo'.default.ShortName);
 	GetStringPropertyByName('AdminName', class'GameReplicationInfo'.default.AdminName);
 	GetStringPropertyByName('AdminEmail', class'GameReplicationInfo'.default.AdminEmail);
 	GetIntPropertyByName('ServerRegion', class'GameReplicationInfo'.default.ServerRegion);
+	`endif
 	GetStringPropertyByName('MessageOfTheDay', class'GameReplicationInfo'.default.MessageOfTheDay);
 	class'GameReplicationInfo'.static.StaticSaveConfig();
 
@@ -260,14 +264,21 @@ defaultproperties
 	Properties.Add((PropertyId=2,Data=(Type=SDT_String)))
 	Properties.Add((PropertyId=3,Data=(Type=SDT_String)))
 	Properties.Add((PropertyId=4,Data=(Type=SDT_Int32)))
-	Properties.Add((PropertyId=5,Data=(Type=SDT_String)))
+    Properties.Add((PropertyId=5,Data=(Type=SDT_String)))
 	Properties.Add((PropertyId=6,Data=(Type=SDT_Int32)))
 
  	PropertyMappings.Add((Id=0,name="ServerName" `modloc(,ColumnHeaderText="Server name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
+ 	`if(`GAME_UT3)
  	PropertyMappings.Add((Id=1,Name="ShortName" `modloc(,ColumnHeaderText="Short Server Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=64))
  	PropertyMappings.Add((Id=2,Name="AdminName" `modloc(,ColumnHeaderText="Admin Name") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
  	PropertyMappings.Add((Id=3,Name="AdminEmail" `modloc(,ColumnHeaderText="Admin Email") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=256))
  	PropertyMappings.Add((Id=4,Name="ServerRegion" `modloc(,ColumnHeaderText="Server Region") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="None Specified") ),(Id=1 `modloc(,name="Southeast US") ),(Id=2 `modloc(,name="Western US") ),(Id=3 `modloc(,name="Midwest US") ),(Id=4 `modloc(,name="Northwest US, West Canada") ),(Id=5 `modloc(,name="Northeast US, East Canada") ),(Id=6 `modloc(,name="United Kingdom") ),(Id=7 `modloc(,name="Continental Europe") ),(Id=8 `modloc(,name="Central Asia, Middle East") ),(Id=9 `modloc(,name="Southeast Asia, Pacific") ),(Id=10 `modloc(,name="Africa") ),(Id=11 `modloc(,name="Australia / NZ / Pacific") ),(Id=12 `modloc(,name="Central, South America") ))))
+ 	`else
+ 	PropertyMappings.Add((Id=1))
+ 	PropertyMappings.Add((Id=2))
+ 	PropertyMappings.Add((Id=3))
+ 	PropertyMappings.Add((Id=4))
+ 	`endif
  	PropertyMappings.Add((Id=5,Name="MessageOfTheDay" `modloc(,ColumnHeaderText="Message of the Day") ,MappingType=PVMT_RawValue,MinVal=0,MaxVal=1024))
  	PropertyMappings.Add((Id=6,name="ServerSkillLevel" `modloc(,ColumnHeaderText="Server Skill Level name") ,MappingType=PVMT_IdMapped,ValueMappings=((Id=0 `modloc(,name="Beginner") ),(Id=1 `modloc(,name="Experienced") ),(Id=2 `modloc(,name="Expert")) )))
 
